@@ -3701,7 +3701,7 @@
             </div>
         </div>
 
-        @if (ViewBag.UsrCtry == 15 || (ViewBag.UsrCtry == 25 && ViewBag.NPHL_exist == true))
+        @*@if (ViewBag.UsrCtry == 15 || (ViewBag.UsrCtry == 25 && ViewBag.NPHL_exist == true))
         {
             <div class="row rowform" id="Test_National">
                 <div class="col-md-3_5">
@@ -3761,7 +3761,7 @@
                     </div>
                 </div>
             </div>
-        }
+        }*@
 
         <div class="row rowform">
             <div class="col-md-12">
@@ -3772,6 +3772,7 @@
         </div>
 
         <div data-bind="visible:ShowProcessed() || ShowProcessed_National()" style="padding-left:15px;">
+            <!-- Label: Laboratorio / Procesada / FIP / FFP / Resultado -->
             <div class="row rowform">
                 <div class="row rowform">
                     <div class="col-md-3">
@@ -3801,6 +3802,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Eliminar Tecnica / Laboratorio / Procesada fila lab / FIP / FFP / Vigilancia / Resultado  -->
             <div id="LabTests" data-bind="foreach: { data: LabTests }">
                 <div class="row rowform" style="border-bottom:dashed; border-bottom-width:thin; padding-bottom:5px;">
                     <div class="row rowform">
@@ -4093,6 +4096,7 @@
                 </div> @* Termina div row principal *@
             </div>
 
+            <!-- Boton: Añadir Resultado -->
             <div class="row rowform" data-bind="visible:app.Views.Contact.Flow_Local_Institution_Lab()">
                 <div class="col-md-8"></div>
                 <div class="col-md-4">

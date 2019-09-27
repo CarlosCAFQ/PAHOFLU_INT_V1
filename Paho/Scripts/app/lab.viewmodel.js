@@ -1,12 +1,186 @@
-﻿function LabTest(SampleNumber) {
-    var self = this;
+﻿// Clase CaseLabses
+function CaseLabses(SampleNumber) {
+    console.log("function CaseLabses(SampleNumber)->START->" + SampleNumber.toString());
+
+    var self_CL = this;
     var date_receive = new Date();
     var date_format_ = app.dataModel.date_format_;
     var date_format_moment = app.dataModel.date_format_moment;
     var date_format_ISO = app.dataModel.date_format_ISO;
-   
 
-    date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.RecDate()) === 'date' ? app.Views.Lab.RecDate() : parseDate($("#RecDate").val(), date_format_) : (SampleNumber == 2) ? jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_) : (SampleNumber == 3) ? jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_) : null;
+    self_CL.UsrCountry = ko.observable(app.Views.Home.UsrCountry());   // Pais del usuario logueado
+    self_CL.UsrInstID = ko.observable($('#IIDL').val());               // ID de la institucion del usuario
+    self_CL.Id = "";
+    self_CL.FlucaseID = "";
+    self_CL.CanEdit = ko.observable(true);
+
+    self_CL.LabID = ko.observable();
+    self_CL.RecDate12 = ko.observable(null);
+    self_CL.Identification_Test12 = ko.observable("");
+    self_CL.TempSample12 = ko.observable("").extend({ numeric: 2 });
+    self_CL.Processed12 = ko.observable("");
+    self_CL.NoProRen12 = ko.observable("");
+    self_CL.NoProRenId12 = ko.observable("");
+
+    // date_receive = (SampleNumber == 1) ? (jQuery.type(app.Views.Lab.RecDate12()) === 'date' ? app.Views.Lab.RecDate12() : parseDate($("#RecDate12").val(), date_format_)) :
+    date_receive = (SampleNumber == 1) ? (jQuery.type(self_CL.RecDate12()) === 'date' ? self_CL.RecDate12() : parseDate($("#RecDate12").val(), date_format_)) :
+                   (SampleNumber == 2) ? (jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_)) :
+                   (SampleNumber == 3) ? (jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_)) : null;
+
+    //self_CL.RecDate12.subscribe(function (newRecDate) {
+    //    if (self_CL.hasReset() != true && newRecDate != "" && newRecDate != null) {
+    //        var current_value = jQuery.type(newRecDate) === 'date' ? newRecDate : parseDate(newRecDate, date_format_);
+    //        var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
+    //        var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
+
+    //        if ($("#Rec_Date_NPHL").length > 0 && self_CL.NPHL_FlowExist() == true) {
+    //            var date_Ship_Date_NPHL = jQuery.type(self_CL.Ship_Date_NPHL()) === 'date' ? self_CL.Ship_Date_NPHL() : parseDate(self_CL.Ship_Date_NPHL(), date_format_);
+    //            if ((date_Ship_Date_NPHL == null || date_Ship_Date_NPHL == "") && self_CL.hasReset() != true) {
+    //                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+    //                alert(msgValidationRecSampleNPHL);
+    //                //self_CL.RecDate(null);
+    //            } else {
+    //                if (moment(current_value).isBefore(moment(date_Ship_Date_NPHL), "days")) {
+    //                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
+    //                    alert(msgValidationSampleDateNPHLValidateS1);
+    //                    //self_CL.RecDate(null);
+    //                }
+    //            }
+    //        } else if ((date_shipping_date != null) && self_CL.hasReset() != true) {
+    //            if (self_CL.UsrCountry() == 11 || self_CL.UsrCountry() == 119) {
+    //                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+    //                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+    //                    alert(msgValidationShippingDateValidateICS1);
+    //                    //msgValidationShippingDateValidateICS1
+    //                    self_CL.RecDate12(null);
+    //                }
+    //            } else {
+    //                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+    //                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+    //                    alert(msgValidationShippingDateValidateS1);
+    //                    self_CL.RecDate12(null);
+    //                }
+    //            }
+    //        } else if ((date_sample_date_ == null || date_sample_date_ == "") && self_CL.hasReset() != true) {
+    //            //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+    //            alert(msgValidationSampleDateS1);
+    //            self_CL.RecDate12(null);
+    //        } else {
+    //            if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+    //                //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
+    //                alert(msgValidationSampleDateValidateS1);
+    //                self_CL.RecDate12(null);
+    //            }
+    //        }
+    //    }
+    //});
+
+    //self.RecDate12.subscribe(function (newRecDate) {
+    //    if (self.hasReset() != true && newRecDate != "" && newRecDate != null) {
+    //        var current_value = jQuery.type(newRecDate) === 'date' ? newRecDate : parseDate(newRecDate, date_format_);
+    //        var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
+    //        var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
+
+    //        if ($("#Rec_Date_NPHL").length > 0 && self.NPHL_FlowExist() == true) {
+    //            var date_Ship_Date_NPHL = jQuery.type(self.Ship_Date_NPHL()) === 'date' ? self.Ship_Date_NPHL() : parseDate(self.Ship_Date_NPHL(), date_format_);
+    //            if ((date_Ship_Date_NPHL == null || date_Ship_Date_NPHL == "") && self.hasReset() != true) {
+    //                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+    //                alert(msgValidationRecSampleNPHL);
+    //                //self.RecDate(null);
+    //            } else {
+    //                if (moment(current_value).isBefore(moment(date_Ship_Date_NPHL), "days")) {
+    //                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
+    //                    alert(msgValidationSampleDateNPHLValidateS1);
+    //                    //self.RecDate(null);
+    //                }
+    //            }
+    //        } else if ((date_shipping_date != null) && self.hasReset() != true) {
+    //            if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
+    //                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+    //                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+    //                    alert(msgValidationShippingDateValidateICS1);
+    //                    //msgValidationShippingDateValidateICS1
+    //                    self.RecDate12(null);
+    //                }
+    //            } else {
+    //                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+    //                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+    //                    alert(msgValidationShippingDateValidateS1);
+    //                    self.RecDate12(null);
+    //                }
+    //            }
+    //        } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
+    //            //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+    //            alert(msgValidationSampleDateS1);
+    //            self.RecDate12(null);
+    //        } else {
+    //            if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+    //                //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
+    //                alert(msgValidationSampleDateValidateS1);
+    //                self.RecDate12(null);
+    //            }
+    //        }
+    //    }
+    //});
+
+    //****
+    self_CL.Processed12.subscribe(function (NewIsProcessed) {
+        console.log("self_CL.Processed12.subscribe____");
+        if (NewIsProcessed == "false") {
+            self_CL.Identification_Test12(null);
+            //self_CL.removeTestbyLab(self_CL.UsrInstID(), 1);
+            $("#addLabTest_1").hide();
+        } else if (NewIsProcessed == "true") {
+            $("#addLabTest_1").show();
+        }
+        console.log("self_CL.Processed12.subscribe____END");
+    });
+    //********************************
+    //self_CL.ShowProcessed12ab = ko.observable();
+    self_CL.ShowProcessed12 = ko.computed(function () {
+        console.log("self_CL.ShowProcessed12____bb");
+        self_CL.NoProRen12("");
+        self_CL.NoProRenId12("");
+        ////if (self_CL.Processed12 == "true" && self_CL.Processed_National == "false")
+        ////    self_CL.resetFinalResult();
+        return (self_CL.Processed12() === "true")
+    }, self_CL);
+
+    self_CL.NotShowProcessed12 = ko.computed(function () {
+        console.log("self_CL.NotShowProcessed12__");
+        return (self_CL.Processed12() === "false")
+    }, self_CL);
+
+    self_CL.NotShowProcessedOther12 = ko.computed(function () {
+        console.log("self_CL.NotShowProcessedOther12__");
+        return (self_CL.NoProRenId12() === "5")
+    }, self_CL);
+
+
+    self_CL.EnableCHI = ko.computed(function () {
+        return (self_CL.UsrCountry() != 7) ? true : false;
+
+    }, self_CL);
+
+    self_CL.DisableCHI = ko.computed(function () {
+        return (self_CL.UsrCountry() == 7) ? true : false;
+
+    }, self_CL);
+
+    console.log("function CaseLabses(SampleNumber)->END");
+};
+
+
+function LabTest(SampleNumber) {
+    var self = this;
+    var date_receive = new Date();
+    var date_format_ = app.dataModel.date_format_;
+    var date_format_moment = app.dataModel.date_format_moment;
+    var date_format_ISO = app.dataModel.date_format_ISO;   
+
+    date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.RecDate()) === 'date' ? app.Views.Lab.RecDate() : parseDate($("#RecDate").val(), date_format_) :
+                    (SampleNumber == 2) ? jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_) : 
+                    (SampleNumber == 3) ? jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_) : null;
     
     self.OrderArray
     self.Id = "";
@@ -25,7 +199,7 @@
     self.CanIFI = ko.observable(app.Views.Lab.CanIFILab());
     self.EndFlow = ko.observable("");
     self.ProcLabName = ko.observable("");
-    self.ProcessLab = ko.observable("");
+    self.ProcessLab = ko.observable("");                        // Radio button procesada en Test
     self.SampleNumber = ko.observable(SampleNumber);
     self.TestType = ko.observable("");
     self.OrdenTestType = 99;
@@ -366,6 +540,7 @@
         //console.log(self.CanEdit());
         return (self.ProcessLab() === "true")
     }, self);
+
     self.NotShowProcessedLab = ko.computed(function () {
         return (self.ProcessLab() === "false")
     }, self);
@@ -630,195 +805,193 @@ function LabViewModel(app, dataModel) {
     self.NoProRen3 = ko.observable("");
     self.NoProRenId3 = ko.observable("");
 
-    self.RecDate_National = ko.observable(null);
-    self.Identification_Test_National = ko.observable("");
-    self.TempSample_National = ko.observable("").extend({ numeric: 2 });
-    self.Processed_National = ko.observable("");
-    self.NoProRen_National = ko.observable("");
-    self.NoProRenId_National = ko.observable("");
+                    self.RecDate_National = ko.observable(null);
+                    self.Identification_Test_National = ko.observable("");
+                    self.TempSample_National = ko.observable("").extend({ numeric: 2 });
+                    self.Processed_National = ko.observable("");
+                    self.NoProRen_National = ko.observable("");
+                    self.NoProRenId_National = ko.observable("");
 
     self.CanPCRLab = ko.observable(true);
     self.CanIFILab = ko.observable(true);
 
-        // nuevos campos
-    self.Rec_Date_NPHL = ko.observable(null);
-    self.Identification_Test_NPHL = ko.observable("");
-    self.Temp_NPHL = ko.observable("").extend({ numeric: 2 });    
-    self.Observation_NPHL = ko.observable("");    
-    self.Ship_Date_NPHL = ko.observable(null);    
+    // nuevos campos
+                    self.Rec_Date_NPHL = ko.observable(null);
+                    self.Identification_Test_NPHL = ko.observable("");
+                    self.Temp_NPHL = ko.observable("").extend({ numeric: 2 });    
+                    self.Observation_NPHL = ko.observable("");    
+                    self.Ship_Date_NPHL = ko.observable(null);    
 
-    self.NPHL_Processed = ko.observable(null);
-    self.NPHL_NoProRenId = ko.observable(null);
-    self.NPHL_NoProRen = ko.observable(null);
-    self.NPHL_Conclusion = ko.observable("");
+                    self.NPHL_Processed = ko.observable(null);
+                    self.NPHL_NoProRenId = ko.observable(null);
+                    self.NPHL_NoProRen = ko.observable(null);
+                    self.NPHL_Conclusion = ko.observable("");
 
-    self.Rec_Date_NPHL_2 = ko.observable(null);
-    self.Identification_Test_NPHL_2 = ko.observable("");
-    self.Temp_NPHL_2 = ko.observable("").extend({ numeric: 2 });
-    self.Observation_NPHL_2 = ko.observable("");
-    self.Ship_Date_NPHL_2 = ko.observable(null);
+                    self.Rec_Date_NPHL_2 = ko.observable(null);
+                    self.Identification_Test_NPHL_2 = ko.observable("");
+                    self.Temp_NPHL_2 = ko.observable("").extend({ numeric: 2 });
+                    self.Observation_NPHL_2 = ko.observable("");
+                    self.Ship_Date_NPHL_2 = ko.observable(null);
 
-    self.NPHL_Processed_2 = ko.observable(null);
-    self.NPHL_NoProRenId_2 = ko.observable(null);
-    self.NPHL_NoProRen_2 = ko.observable(null);
-    self.NPHL_Conclusion_2 = ko.observable("");
+                    self.NPHL_Processed_2 = ko.observable(null);
+                    self.NPHL_NoProRenId_2 = ko.observable(null);
+                    self.NPHL_NoProRen_2 = ko.observable(null);
+                    self.NPHL_Conclusion_2 = ko.observable("");
 
-    self.Rec_Date_NPHL_3 = ko.observable(null);
-    self.Identification_Test_NPHL_3 = ko.observable("");
-    self.Temp_NPHL_3 = ko.observable("").extend({ numeric: 2 });
-    self.Observation_NPHL_3 = ko.observable("");
-    self.Ship_Date_NPHL_3 = ko.observable(null);
+                    self.Rec_Date_NPHL_3 = ko.observable(null);
+                    self.Identification_Test_NPHL_3 = ko.observable("");
+                    self.Temp_NPHL_3 = ko.observable("").extend({ numeric: 2 });
+                    self.Observation_NPHL_3 = ko.observable("");
+                    self.Ship_Date_NPHL_3 = ko.observable(null);
 
-    self.NPHL_Processed_3 = ko.observable(null);
-    self.NPHL_NoProRenId_3 = ko.observable(null);
-    self.NPHL_NoProRen_3 = ko.observable(null);
-    self.NPHL_Conclusion_3 = ko.observable("");
-    
-    
+                    self.NPHL_Processed_3 = ko.observable(null);
+                    self.NPHL_NoProRenId_3 = ko.observable(null);
+                    self.NPHL_NoProRen_3 = ko.observable(null);
+                    self.NPHL_Conclusion_3 = ko.observable("");
 
-    self.Rec_Date_NPHL.subscribe(function (newRecDateNPHL) {
-        if (self.hasReset() != true && newRecDateNPHL != "" && newRecDateNPHL != null && self.NPHL() == true) {
-            var current_value = jQuery.type(newRecDateNPHL) === 'date' ? newRecDateNPHL : parseDate(newRecDateNPHL, date_format_);
-            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
-            var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
+                    self.Rec_Date_NPHL.subscribe(function (newRecDateNPHL) {
+                        if (self.hasReset() != true && newRecDateNPHL != "" && newRecDateNPHL != null && self.NPHL() == true) {
+                            var current_value = jQuery.type(newRecDateNPHL) === 'date' ? newRecDateNPHL : parseDate(newRecDateNPHL, date_format_);
+                            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
+                            var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
 
 
-            if ((date_shipping_date != null) && self.hasReset() != true) {
+                            if ((date_shipping_date != null) && self.hasReset() != true) {
 
-                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
-                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
-                    alert(msgValidationShippingDateValidateS1);
-                    self.Rec_Date_NPHL(null);
-                }
+                                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+                                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+                                    alert(msgValidationShippingDateValidateS1);
+                                    self.Rec_Date_NPHL(null);
+                                }
 
-            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
-                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                alert(msgValidationSampleDateS1);
-                self.Rec_Date_NPHL(null);
-            } else {
-                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
-                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
-                    alert(msgValidationSampleDateValidateS1);
-                    self.Rec_Date_NPHL(null);
-                }
-            }
-        }
-    });
+                            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
+                                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                                alert(msgValidationSampleDateS1);
+                                self.Rec_Date_NPHL(null);
+                            } else {
+                                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+                                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
+                                    alert(msgValidationSampleDateValidateS1);
+                                    self.Rec_Date_NPHL(null);
+                                }
+                            }
+                        }
+                    });
 
-    self.Rec_Date_NPHL_2.subscribe(function (newRecDateNPHL) {
-        if (self.hasReset() != true && newRecDateNPHL != "" && newRecDateNPHL != null && self.NPHL() == true) {
-            var current_value = jQuery.type(newRecDateNPHL) === 'date' ? newRecDateNPHL : parseDate(newRecDateNPHL, date_format_);
-            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate2()) === 'date' ? app.Views.Hospital.SampleDate2() : parseDate(app.Views.Hospital.SampleDate2(), date_format_);
-            var date_shipping_date = $("#ShipDate2").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate2()) === 'date' ? app.Views.Hospital.ShipDate2() : parseDate(app.Views.Hospital.ShipDate2(), date_format_);
-
-
-            if ((date_shipping_date != null) && self.hasReset() != true) {
-
-                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
-                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
-                    alert(msgValidationShippingDateValidateS2);
-                    self.Rec_Date_NPHL_2(null);
-                }
-
-            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
-                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                alert(msgValidationSampleDateS2);
-                self.Rec_Date_NPHL_2(null);
-            } else {
-                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
-                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
-                    alert(msgValidationSampleDateValidateS2);
-                    self.Rec_Date_NPHL_2(null);
-                }
-            }
-        }
-    });
-
-    self.Rec_Date_NPHL_3.subscribe(function (newRecDateNPHL) {
-        if (self.hasReset() != true && newRecDateNPHL != "" && newRecDateNPHL != null && self.NPHL() == true) {
-            var current_value = jQuery.type(newRecDateNPHL) === 'date' ? newRecDateNPHL : parseDate(newRecDateNPHL, date_format_);
-            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate3()) === 'date' ? app.Views.Hospital.SampleDate3() : parseDate(app.Views.Hospital.SampleDate3(), date_format_);
-            var date_shipping_date = $("#ShipDate3").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate3()) === 'date' ? app.Views.Hospital.ShipDate3() : parseDate(app.Views.Hospital.ShipDate3(), date_format_);
+                    self.Rec_Date_NPHL_2.subscribe(function (newRecDateNPHL) {
+                        if (self.hasReset() != true && newRecDateNPHL != "" && newRecDateNPHL != null && self.NPHL() == true) {
+                            var current_value = jQuery.type(newRecDateNPHL) === 'date' ? newRecDateNPHL : parseDate(newRecDateNPHL, date_format_);
+                            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate2()) === 'date' ? app.Views.Hospital.SampleDate2() : parseDate(app.Views.Hospital.SampleDate2(), date_format_);
+                            var date_shipping_date = $("#ShipDate2").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate2()) === 'date' ? app.Views.Hospital.ShipDate2() : parseDate(app.Views.Hospital.ShipDate2(), date_format_);
 
 
-            if ((date_shipping_date != null) && self.hasReset() != true) {
+                            if ((date_shipping_date != null) && self.hasReset() != true) {
 
-                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
-                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
-                    alert(msgValidationShippingDateValidateS3);
-                    self.Rec_Date_NPHL_3(null);
-                }
+                                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+                                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+                                    alert(msgValidationShippingDateValidateS2);
+                                    self.Rec_Date_NPHL_2(null);
+                                }
 
-            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
-                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                alert(msgValidationSampleDateS3);
-                self.Rec_Date_NPHL_3(null);
-            } else {
-                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
-                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
-                    alert(msgValidationSampleDateValidateS3);
-                    self.Rec_Date_NPHL_3(null);
-                }
-            }
-        }
-    });
+                            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
+                                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                                alert(msgValidationSampleDateS2);
+                                self.Rec_Date_NPHL_2(null);
+                            } else {
+                                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+                                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
+                                    alert(msgValidationSampleDateValidateS2);
+                                    self.Rec_Date_NPHL_2(null);
+                                }
+                            }
+                        }
+                    });
 
-    self.Ship_Date_NPHL.subscribe(function (newShipDateNPHL) {
-        if (self.hasReset() != true && newShipDateNPHL != "" && newShipDateNPHL != null && self.NPHL() == true) {
-            var current_value = jQuery.type(newShipDateNPHL) === 'date' ? newShipDateNPHL : parseDate(newShipDateNPHL, date_format_);
-            var date_Rec_Date_NPHL = jQuery.type(self.Rec_Date_NPHL()) === 'date' ? self.Rec_Date_NPHL() : parseDate(self.Rec_Date_NPHL(), date_format_);
+                    self.Rec_Date_NPHL_3.subscribe(function (newRecDateNPHL) {
+                        if (self.hasReset() != true && newRecDateNPHL != "" && newRecDateNPHL != null && self.NPHL() == true) {
+                            var current_value = jQuery.type(newRecDateNPHL) === 'date' ? newRecDateNPHL : parseDate(newRecDateNPHL, date_format_);
+                            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate3()) === 'date' ? app.Views.Hospital.SampleDate3() : parseDate(app.Views.Hospital.SampleDate3(), date_format_);
+                            var date_shipping_date = $("#ShipDate3").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate3()) === 'date' ? app.Views.Hospital.ShipDate3() : parseDate(app.Views.Hospital.ShipDate3(), date_format_);
 
-            if ((date_Rec_Date_NPHL == null || date_Rec_Date_NPHL == "") && self.hasReset() != true) {
-                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                alert(msgValidationRecSampleNPHL);
-                self.Ship_Date_NPHL(null);
-            } else {
-                if (moment(current_value).isBefore(moment(date_Rec_Date_NPHL), "days")) {
-                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
-                    alert(msgValidationShipDateNPHLValidateS1);
-                    self.Ship_Date_NPHL(null);
-                }
-            }
-        }
-    });
 
-    self.Ship_Date_NPHL_2.subscribe(function (newShipDateNPHL) {
-        if (self.hasReset() != true && newShipDateNPHL != "" && newShipDateNPHL != null && self.NPHL() == true) {
-            var current_value = jQuery.type(newShipDateNPHL) === 'date' ? newShipDateNPHL : parseDate(newShipDateNPHL, date_format_);
-            var date_Rec_Date_NPHL_2 = jQuery.type(self.Rec_Date_NPHL_2()) === 'date' ? self.Rec_Date_NPHL_2() : parseDate(self.Rec_Date_NPHL_2(), date_format_);
+                            if ((date_shipping_date != null) && self.hasReset() != true) {
 
-            if ((date_Rec_Date_NPHL_2 == null || date_Rec_Date_NPHL_2 == "") && self.hasReset() != true) {
-                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                alert(msgValidationRecSampleNPHL);
-                self.Ship_Date_NPHL_2(null);
-            } else {
-                if (moment(current_value).isBefore(moment(date_Rec_Date_NPHL_2), "days")) {
-                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
-                    alert(msgValidationShipDateNPHLValidateS2);
-                    self.Ship_Date_NPHL_2(null);
-                }
-            }
-        }
-    });
+                                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+                                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+                                    alert(msgValidationShippingDateValidateS3);
+                                    self.Rec_Date_NPHL_3(null);
+                                }
 
-    self.Ship_Date_NPHL_3.subscribe(function (newShipDateNPHL) {
-        if (self.hasReset() != true && newShipDateNPHL != "" && newShipDateNPHL != null && self.NPHL() == true) {
-            var current_value = jQuery.type(newShipDateNPHL) === 'date' ? newShipDateNPHL : parseDate(newShipDateNPHL, date_format_);
-            var date_Rec_Date_NPHL_3 = jQuery.type(self.Rec_Date_NPHL_3()) === 'date' ? self.Rec_Date_NPHL_3() : parseDate(self.Rec_Date_NPHL_3(), date_format_);
+                            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
+                                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                                alert(msgValidationSampleDateS3);
+                                self.Rec_Date_NPHL_3(null);
+                            } else {
+                                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+                                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
+                                    alert(msgValidationSampleDateValidateS3);
+                                    self.Rec_Date_NPHL_3(null);
+                                }
+                            }
+                        }
+                    });
 
-            if ((date_Rec_Date_NPHL_3 == null || date_Rec_Date_NPHL_3 == "") && self.hasReset() != true) {
-                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                alert(msgValidationRecSampleNPHL);
-                self.Ship_Date_NPHL_3(null);
-            } else {
-                if (moment(current_value).isBefore(moment(date_Rec_Date_NPHL_3), "days")) {
-                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
-                    alert(msgValidationShipDateNPHLValidateS3);
-                    self.Ship_Date_NPHL_3(null);
-                }
-            }
-        }
-    });
+                    self.Ship_Date_NPHL.subscribe(function (newShipDateNPHL) {
+                        if (self.hasReset() != true && newShipDateNPHL != "" && newShipDateNPHL != null && self.NPHL() == true) {
+                            var current_value = jQuery.type(newShipDateNPHL) === 'date' ? newShipDateNPHL : parseDate(newShipDateNPHL, date_format_);
+                            var date_Rec_Date_NPHL = jQuery.type(self.Rec_Date_NPHL()) === 'date' ? self.Rec_Date_NPHL() : parseDate(self.Rec_Date_NPHL(), date_format_);
+
+                            if ((date_Rec_Date_NPHL == null || date_Rec_Date_NPHL == "") && self.hasReset() != true) {
+                                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                                alert(msgValidationRecSampleNPHL);
+                                self.Ship_Date_NPHL(null);
+                            } else {
+                                if (moment(current_value).isBefore(moment(date_Rec_Date_NPHL), "days")) {
+                                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
+                                    alert(msgValidationShipDateNPHLValidateS1);
+                                    self.Ship_Date_NPHL(null);
+                                }
+                            }
+                        }
+                    });
+
+                    self.Ship_Date_NPHL_2.subscribe(function (newShipDateNPHL) {
+                        if (self.hasReset() != true && newShipDateNPHL != "" && newShipDateNPHL != null && self.NPHL() == true) {
+                            var current_value = jQuery.type(newShipDateNPHL) === 'date' ? newShipDateNPHL : parseDate(newShipDateNPHL, date_format_);
+                            var date_Rec_Date_NPHL_2 = jQuery.type(self.Rec_Date_NPHL_2()) === 'date' ? self.Rec_Date_NPHL_2() : parseDate(self.Rec_Date_NPHL_2(), date_format_);
+
+                            if ((date_Rec_Date_NPHL_2 == null || date_Rec_Date_NPHL_2 == "") && self.hasReset() != true) {
+                                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                                alert(msgValidationRecSampleNPHL);
+                                self.Ship_Date_NPHL_2(null);
+                            } else {
+                                if (moment(current_value).isBefore(moment(date_Rec_Date_NPHL_2), "days")) {
+                                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
+                                    alert(msgValidationShipDateNPHLValidateS2);
+                                    self.Ship_Date_NPHL_2(null);
+                                }
+                            }
+                        }
+                    });
+
+                    self.Ship_Date_NPHL_3.subscribe(function (newShipDateNPHL) {
+                        if (self.hasReset() != true && newShipDateNPHL != "" && newShipDateNPHL != null && self.NPHL() == true) {
+                            var current_value = jQuery.type(newShipDateNPHL) === 'date' ? newShipDateNPHL : parseDate(newShipDateNPHL, date_format_);
+                            var date_Rec_Date_NPHL_3 = jQuery.type(self.Rec_Date_NPHL_3()) === 'date' ? self.Rec_Date_NPHL_3() : parseDate(self.Rec_Date_NPHL_3(), date_format_);
+
+                            if ((date_Rec_Date_NPHL_3 == null || date_Rec_Date_NPHL_3 == "") && self.hasReset() != true) {
+                                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                                alert(msgValidationRecSampleNPHL);
+                                self.Ship_Date_NPHL_3(null);
+                            } else {
+                                if (moment(current_value).isBefore(moment(date_Rec_Date_NPHL_3), "days")) {
+                                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
+                                    alert(msgValidationShipDateNPHLValidateS3);
+                                    self.Ship_Date_NPHL_3(null);
+                                }
+                            }
+                        }
+                    });
 
     self.RecDate.subscribe(function (newRecDate) {
         if (self.hasReset() != true && newRecDate != "" && newRecDate != null)
@@ -927,7 +1100,6 @@ function LabViewModel(app, dataModel) {
 
     });
 
-
     self.RecDate3.subscribe(function (newRecDate3) {
         if (self.UsrCountry() == 7 || self.UsrCountry() == 3 || self.UsrCountry() == 25) {
             if (self.hasReset() != true && newRecDate3 != "") {
@@ -975,36 +1147,37 @@ function LabViewModel(app, dataModel) {
 
     });
 
-    self.RecDate_National.subscribe(function (newRecDate_National) {
-        if (self.UsrCountry() == 15 || (self.UsrCountry() == 25 && self.NPHL_FlowExist())) {
-            if (self.hasReset() != true && newRecDate_National != "") {
-                var current_value = jQuery.type(newRecDate_National) === 'date' ? newRecDate_National : parseDate(newRecDate_National, date_format_);
-                var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
-                var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
+                    self.RecDate_National.subscribe(function (newRecDate_National) {
+                        if (self.UsrCountry() == 15 || (self.UsrCountry() == 25 && self.NPHL_FlowExist())) {
+                            if (self.hasReset() != true && newRecDate_National != "") {
+                                var current_value = jQuery.type(newRecDate_National) === 'date' ? newRecDate_National : parseDate(newRecDate_National, date_format_);
+                                var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
+                                var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
 
-                 if ((date_shipping_date != null) && self.hasReset() != true) {
+                                 if ((date_shipping_date != null) && self.hasReset() != true) {
 
-                    if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
-                        //alert("La fecha de recepción de Muestra 2 no puede ser menor a la fecha de envio de muestra de la Muestra 2");
-                        alert(msgValidationShippingDateValidateS1);
-                        self.RecDate(null);
-                    }
+                                    if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+                                        //alert("La fecha de recepción de Muestra 2 no puede ser menor a la fecha de envio de muestra de la Muestra 2");
+                                        alert(msgValidationShippingDateValidateS1);
+                                        self.RecDate(null);
+                                    }
 
-                } else if (date_sample_date_ == null || date_sample_date_ == "") {
-                    //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 2");
-                    alert(msgValidationSampleDateS1);
-                    self.RecDate2(null);
-                } else {
-                    if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
-                        //alert("La fecha de recepción de Muestra 2 no puede ser menor a la fecha de toma muestra de la Muestra 2");
-                        alert(msgValidationSampleDateValidateS1);
-                        self.RecDate2(null);
-                    }
-                }
-            }
-        }
+                                } else if (date_sample_date_ == null || date_sample_date_ == "") {
+                                    //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 2");
+                                    alert(msgValidationSampleDateS1);
+                                    self.RecDate2(null);
+                                } else {
+                                    if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+                                        //alert("La fecha de recepción de Muestra 2 no puede ser menor a la fecha de toma muestra de la Muestra 2");
+                                        alert(msgValidationSampleDateValidateS1);
+                                        self.RecDate2(null);
+                                    }
+                                }
+                            }
+                        }
 
-    });
+                    });
+
     /*self.RecDate3.subscribe(function (newRecDate3) {
         if (self.UsrCountry() == 7) {
             if (self.hasReset() != true && newRecDate3 != "") {
@@ -1168,7 +1341,7 @@ function LabViewModel(app, dataModel) {
 
     }
 
-   self.EndLabDate = ko.observable(null);
+    self.EndLabDate = ko.observable(null);
     self.Comments = ko.observable("");
 
 
@@ -1215,9 +1388,7 @@ function LabViewModel(app, dataModel) {
             $("#tab-case").hide();
         }
     });
-
-
-
+    
     self.EnableFinalResultVirusSubTypeID = ko.computed(function () {
         var result = self.FinalResultVirusTypeID() == "1";
         if (!result) self.FinalResultVirusSubTypeID("");
@@ -1259,8 +1430,7 @@ function LabViewModel(app, dataModel) {
                  
         });
     };
-
-
+    
     self.Processed.subscribe(function (NewIsProcessed) {
     //console.log("aqui Processed.subscribe" + NewIsProcessed);
         if (NewIsProcessed == "false")
@@ -2674,53 +2844,54 @@ function LabViewModel(app, dataModel) {
     };
 
    
-    self.ShowProcessedNPHL = ko.computed(function () {
-        self.NPHL_NoProRen("");
-        self.NPHL_NoProRenId("");
-        self.Ship_Date_NPHL("");
-        return (self.NPHL_Processed() === "true")
-    }, self);
+                    self.ShowProcessedNPHL = ko.computed(function () {
+                        self.NPHL_NoProRen("");
+                        self.NPHL_NoProRenId("");
+                        self.Ship_Date_NPHL("");
+                        return (self.NPHL_Processed() === "true")
+                    }, self);
 
-    self.NotShowNPHL_Processed = ko.computed(function () {
-        return (self.NPHL_Processed() === "false")
-    }, self);
+                    self.NotShowNPHL_Processed = ko.computed(function () {
+                        return (self.NPHL_Processed() === "false")
+                    }, self);
 
-    self.NotShowNPHL_ProcessedOther = ko.computed(function () {
-        return (self.NPHL_NoProRenId() === "5")
-    }, self);
+                    self.NotShowNPHL_ProcessedOther = ko.computed(function () {
+                        return (self.NPHL_NoProRenId() === "5")
+                    }, self);
+
+                    self.ShowProcessedNPHL_2 = ko.computed(function () {
+                        self.NPHL_NoProRen_2("");
+                        self.NPHL_NoProRenId_2("");
+                        self.Ship_Date_NPHL_2("");
+                        return (self.NPHL_Processed_2() === "true")
+                    }, self);
+
+                    self.NotShowNPHL_Processed_2 = ko.computed(function () {
+                        return (self.NPHL_Processed_2() === "false")
+                    }, self);
+
+                    self.NotShowNPHL_ProcessedOther_2 = ko.computed(function () {
+                        return (self.NPHL_NoProRenId_2() === "5")
+                    }, self);
+
+                    self.ShowProcessedNPHL_3 = ko.computed(function () {
+                        self.NPHL_NoProRen_3("");
+                        self.NPHL_NoProRenId_3("");
+                        self.resetFinalResult();
+                        return (self.NPHL_Processed_3() === "true")
+                    }, self);
+
+                    self.NotShowNPHL_Processed_3 = ko.computed(function () {
+                        return (self.NPHL_Processed_3() === "false")
+                    }, self);
+
+                    self.NotShowNPHL_ProcessedOther_3 = ko.computed(function () {
+                        return (self.NPHL_NoProRenId_3() === "5")
+                    }, self);
+
 
     self.ShowForeignLabCountryContainer = ko.computed(function () {
         return (self.ForeignLabCountry())
-    }, self);
-
-    self.ShowProcessedNPHL_2 = ko.computed(function () {
-        self.NPHL_NoProRen_2("");
-        self.NPHL_NoProRenId_2("");
-        self.Ship_Date_NPHL_2("");
-        return (self.NPHL_Processed_2() === "true")
-    }, self);
-
-    self.NotShowNPHL_Processed_2 = ko.computed(function () {
-        return (self.NPHL_Processed_2() === "false")
-    }, self);
-
-    self.NotShowNPHL_ProcessedOther_2 = ko.computed(function () {
-        return (self.NPHL_NoProRenId_2() === "5")
-    }, self);
-
-    self.ShowProcessedNPHL_3 = ko.computed(function () {
-        self.NPHL_NoProRen_3("");
-        self.NPHL_NoProRenId_3("");
-        self.resetFinalResult();
-        return (self.NPHL_Processed_3() === "true")
-    }, self);
-
-    self.NotShowNPHL_Processed_3 = ko.computed(function () {
-        return (self.NPHL_Processed_3() === "false")
-    }, self);
-
-    self.NotShowNPHL_ProcessedOther_3 = ko.computed(function () {
-        return (self.NPHL_NoProRenId_3() === "5")
     }, self);
 
     self.ShowProcessed = ko.computed(function () {
@@ -2770,19 +2941,19 @@ function LabViewModel(app, dataModel) {
         return (self.NoProRenId3() === "5")
     }, self);
 
-    self.ShowProcessed_National = ko.computed(function () {
-        self.NoProRen_National("");
-        self.NoProRenId_National("");
-        //self.OrdenFinalResult();
-        return (self.Processed_National() === "true")
-    }, self);
+                    self.ShowProcessed_National = ko.computed(function () {
+                        self.NoProRen_National("");
+                        self.NoProRenId_National("");
+                        //self.OrdenFinalResult();
+                        return (self.Processed_National() === "true")
+                    }, self);
 
-    self.NotShowProcessed_National = ko.computed(function () {
-        //console.log("aqui NotShowProcessed_National");
-        //self.resetFinalResult();
-        //self.OrdenFinalResult();
-        return (self.Processed_National() === "false")
-    }, self);
+                    self.NotShowProcessed_National = ko.computed(function () {
+                        //console.log("aqui NotShowProcessed_National");
+                        //self.resetFinalResult();
+                        //self.OrdenFinalResult();
+                        return (self.Processed_National() === "false")
+                    }, self);
 
     self.NotShowProcessed = ko.computed(function () {
         //self.resetFinalResult();
