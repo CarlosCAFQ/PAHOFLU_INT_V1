@@ -2418,6 +2418,24 @@ namespace Paho.Controllers
                 return Json(new
                 {
                     id = flucase.ID.ToString(),
+
+                    CaseLabs = (from cal in db.CaseLabses
+                                where cal.FlucaseID == Id
+                                select new
+                                {
+                                    Id = cal.Id,
+                                    FlucaseID = cal.FlucaseID,
+                                    LabID = cal.LabID,
+                                    CanEdit = institutionsIds.Contains(cal.LabID),
+                                    RecDate = cal.RecDate,
+                                    Identification_Test = cal.Identification_Test,
+                                    Processed = cal.Processed,
+                                    TempSample = cal.TempSample,
+                                    NoProRenId = cal.NoProRenId,
+                                    NoProRen = cal.NoProRen
+                                }
+                    ),
+
                     RecDate = flucase.RecDate,
                     Identification_Test = flucase.Identification_Test,
                     Processed = flucase.Processed,
@@ -2504,10 +2522,10 @@ namespace Paho.Controllers
                     CanIFILab = CanIFILab,
                     InstFlow_NPHL = user.Institution.NPHL != null ? (bool)user.Institution.NPHL : false,
                     ExistAnyInstitutionFlow_NPHL = user.Institution.CountryID != 15 ? db.InstitutionsConfiguration.OfType<InstitutionConfiguration>().Where(i => i.InstitutionParentID == flucase.HospitalID && i.InstitutionTo.NPHL == true).Any() : false,
-                // Lab Foreign
-                ForeignLabCountry = LabForeignCountry,
+                    // Lab Foreign
+                    ForeignLabCountry = LabForeignCountry,
                     ForeignLabLocal = LabForeignInstitutionLocal,
-                LabTests = (
+                    LabTests = (
                           from caselabtest in flucase.CaseLabTests
                           where caselabtest.SampleNumber == 1 || caselabtest.SampleNumber == null
                           select new

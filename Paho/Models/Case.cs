@@ -1346,6 +1346,7 @@ namespace Paho.Models
         public DateTime? CloseDate { get; set; }
         public string ObservationCase { get; set; }
         public virtual ICollection<CaseLabTest> CaseLabTests { get; set; }
+        //public virtual ICollection<CaseLab> CaseLabs { get; set; }			//**** NEW
         public virtual Hospital Hospital { get; set; }
         public virtual Lab Lab { get; set; }
         [ForeignKey("FinalResultVirusTypeID")]
@@ -1373,6 +1374,21 @@ namespace Paho.Models
         public int? MuestraID13 { get; set; }
         public int? MuestraID14 { get; set; }
         public int? MuestraID15 { get; set; }
+    }
+
+    public class CaseLabs			//**** NEW
+    {
+        public int Id { get; set; }
+        public int? FlucaseID { get; set; }
+        public int? LabID { get; set; }
+        public DateTime? RecDate { get; set; }
+        public string Identification_Test { get; set; }
+        public bool? Processed { get; set; }
+        public decimal? TempSample { get; set; }
+        public int? NoProRenId { get; set; }
+        public string NoProRen { get; set; }
+
+        //public virtual ICollection<CaseLabTest> CaseLabTests { get; set; }
     }
 
     public class CaseLabTest : CaseBase
@@ -1860,6 +1876,7 @@ namespace Paho.Models
 
         public DbSet<ConfAlertCaseDefinition> ConfAlertCaseDefinition { get; set; }
 
+        public DbSet<CaseLabs> CaseLabses { get; set; }                         //**** NEW
         public DbSet<CaseLabTest> CaseLabTests { get; set; }
         public DbSet<CaseSummary> CaseSummaries { get; set; }
         public DbSet<CaseSummaryJM> CaseSummariesJM { get; set; }       //#### CAFQ: Summary Jamaica

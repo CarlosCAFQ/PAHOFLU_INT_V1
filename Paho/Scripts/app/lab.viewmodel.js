@@ -1961,7 +1961,10 @@ function LabViewModel(app, dataModel) {
     self.GetLab = function (id) {
         self.Id = id;       
         $.getJSON(app.dataModel.getLabUrl, { id: id }, function (data, status) {
-
+                //
+            console.log(data);
+            console.log(data.CaseLabs);
+            console.log(data.LabTests);
                 // Laboratorio intermedio
                 (data.Rec_Date_NPHL) ? self.Rec_Date_NPHL(moment(data.Rec_Date_NPHL).clone().toDate()) : self.Rec_Date_NPHL(null);
                 self.Identification_Test_NPHL(data.Identification_Test_NPHL);
