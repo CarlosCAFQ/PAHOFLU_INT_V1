@@ -1,5 +1,5 @@
 ﻿$(function () {
-    console.log("app.initialize");
+    //console.log("app.initialize");
     app.initialize();
 
     

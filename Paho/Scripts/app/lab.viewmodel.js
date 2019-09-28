@@ -172,12 +172,14 @@ function CaseLabses(SampleNumber) {
 
 
 function LabTest(SampleNumber) {
+    console.log("function LabTest(SampleNumber)->START");
     var self = this;
     var date_receive = new Date();
     var date_format_ = app.dataModel.date_format_;
     var date_format_moment = app.dataModel.date_format_moment;
     var date_format_ISO = app.dataModel.date_format_ISO;   
 
+    self.RecDate12 = null;               //**** NEW: 190926     RecDate12
     date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.RecDate()) === 'date' ? app.Views.Lab.RecDate() : parseDate($("#RecDate").val(), date_format_) :
                     (SampleNumber == 2) ? jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_) : 
                     (SampleNumber == 3) ? jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_) : null;
@@ -752,9 +754,12 @@ function LabTest(SampleNumber) {
 
     };
 
+    console.log("function LabTest(SampleNumber)->END");
 };
 
 function LabViewModel(app, dataModel) {
+    console.log("function LabViewModel(app, dataModel)->START");
+
     var self = this;
     var date_format_ = app.dataModel.date_format_;
     var date_format_moment = app.dataModel.date_format_moment;
@@ -784,6 +789,7 @@ function LabViewModel(app, dataModel) {
     self.hasReset = ko.observable(false);
     self.hasGet = ko.observable(false);
 
+    //self.RecDate12 = ko.observable(null);               //**** NEW: 190926
     self.RecDate = ko.observable(null);
     self.Identification_Test = ko.observable("");
     self.TempSample1 = ko.observable("").extend({ numeric: 2 });
@@ -1344,7 +1350,7 @@ function LabViewModel(app, dataModel) {
     self.EndLabDate = ko.observable(null);
     self.Comments = ko.observable("");
 
-
+    self.CaseLabses = ko.observableArray([]);                   //**** NEW: 190926
     self.LabTests = ko.observableArray([]);
     self.LabTests_Sample2 = ko.observableArray([]);
     self.LabTests_Sample3 = ko.observableArray([]);
@@ -1958,13 +1964,18 @@ function LabViewModel(app, dataModel) {
         return msg;
     };
 
+    console.log("self.GetLab->Antes");
     self.GetLab = function (id) {
-        self.Id = id;       
+        self.Id = id;
+        var labRecDate = [];            //**** NEW: 190926 // Fecha de recepcion x cada lab
+
         $.getJSON(app.dataModel.getLabUrl, { id: id }, function (data, status) {
-                //
+            //
+            console.log("Data recibida getJSON");
             console.log(data);
             console.log(data.CaseLabs);
             console.log(data.LabTests);
+            console.log("Data recibida getJSON-END");
                 // Laboratorio intermedio
                 (data.Rec_Date_NPHL) ? self.Rec_Date_NPHL(moment(data.Rec_Date_NPHL).clone().toDate()) : self.Rec_Date_NPHL(null);
                 self.Identification_Test_NPHL(data.Identification_Test_NPHL);
@@ -1996,15 +2007,25 @@ function LabViewModel(app, dataModel) {
                 self.NPHL(data.InstFlow_NPHL);
 
                 self.NPHL_FlowExist(data.ExistAnyInstitutionFlow_NPHL);
+                    
+                //(data.RecDate) ? self.RecDate(moment(data.RecDate).clone().toDate()) : self.RecDate(null);
+                //self.Identification_Test(data.Identification_Test);
+                //self.Processed((data.Processed != null) ? data.Processed.toString() : "");
+                //self.NoProRen(data.NoProRen);
+                //self.NoProRenId(data.NoProRenId);
+                //self.TempSample1(data.TempSample1);
+                var recepDate = data.CaseLabs[0].RecDate;
+                (recepDate) ? self.RecDate(moment(recepDate).clone().toDate()) : self.RecDate(null);
+                self.Identification_Test(data.CaseLabs[0].Identification_Test);
+                self.Processed((data.CaseLabs[0].Processed != null) ? data.CaseLabs[0].Processed.toString() : "");
+                self.NoProRen(data.CaseLabs[0].NoProRen);
+                self.NoProRenId(data.CaseLabs[0].NoProRenId);
+                self.TempSample1(data.CaseLabs[0].TempSample);
 
-                (data.RecDate) ? self.RecDate(moment(data.RecDate).clone().toDate()) : self.RecDate(null);
-                self.Identification_Test(data.Identification_Test);
-                self.Processed((data.Processed != null) ? data.Processed.toString() : "");
-                self.NoProRen(data.NoProRen);
-                self.NoProRenId(data.NoProRenId);
-                self.TempSample1(data.TempSample1);
+                console.log("self.hasGet()->1");
                 self.hasGet(true);
                 console.log(self.hasGet());
+
                 (data.RecDate2) ? self.RecDate2(moment(data.RecDate2).clone().toDate()) : self.RecDate2(null);
                 self.Identification_Test2(data.Identification_Test2);
                 self.Processed2((data.Processed2 != null) ? data.Processed2.toString() : "");
@@ -2072,11 +2093,65 @@ function LabViewModel(app, dataModel) {
                 //console.log("max_flow " + self.flow_max_record());
                 //console.log("flow_institution " + app.Views.Contact.flow_institution());
 
+                // Datos cabecera lab
+                self.CaseLabses([]);                    //**** NEW: 190926
+                if (data.CaseLabs != "") {
+                    for (index = 0; index < data.CaseLabs.length; ++index) {
+                        var caselab = new CaseLabses(1);                       // Crea un objeto de la clase CaseLabses, enviandole el parametro numero de muestra(1)
+
+                        caselab.Id = data.CaseLabs[index].Id;               // Llenando las propiedades
+                        caselab.FlucaseID = data.CaseLabs[index].FlucaseID;
+                        var labId = data.CaseLabs[index].LabID;                        
+                        caselab.LabID(labId);           // //caselab.LabID(data.CaseLabs[index].LabID);
+                        caselab.CanEdit(data.CaseLabs[index].CanEdit);
+
+                        if (data.CaseLabs[index].RecDate) {
+                            var fech = moment(data.CaseLabs[index].RecDate).clone().toDate()
+                            //caselab.RecDate12(moment(data.CaseLabs[index].RecDate).clone().toDate());
+                            caselab.RecDate12(fech);
+                            labRecDate.push({ labId: labId, dateRec: fech });
+                        }
+                        caselab.Identification_Test12(data.CaseLabs[index].Identification_Test);
+                        caselab.Processed12((data.CaseLabs[index].Processed != null) ? data.CaseLabs[index].Processed.toString() : "");
+                        caselab.TempSample12(data.CaseLabs[index].TempSample);
+                        caselab.NoProRenId12(data.CaseLabs[index].NoProRenId);
+                        caselab.NoProRen12(data.CaseLabs[index].NoProRen);
+                        //console.log(caselab);
+                        console.log("q1a");
+                        self.CaseLabses.push(caselab);
+                        console.log("q2a");
+                    }
+                } else {
+                    var caselab = new CaseLabses(1);
+
+                    caselab.FlucaseID = self.Id;
+                    console.log("p1a");
+                    console.log(data.LabsResult);
+                    var labId = data.LabsResult[0].Id;
+                    //caselab.LabID(data.CaseLabs[index].LabID);
+                    caselab.LabID(labId);
+                    caselab.CanEdit(true);
+                    console.log("p2a");
+                    self.CaseLabses.push(caselab);
+                    console.log("p3a");
+                }
+
                 self.LabTests([]);
-                if (data.LabTests != "") {                  
+                if (data.LabTests != "") {
+                    console.log("Antes de crear objetos labtest->START");
                     for (index = 0; index < data.LabTests.length; ++index) {
+                        //**** NEW: 190926
+                        procLab = data.LabTests[index].ProcLab;
+                        resultado = $.grep(labRecDate, function (e) { return e.labId == procLab; });
+                        console.log("p4a");
+                        //self.RecDate12(resultado[0].dateRec);
+                        //console.log("p4b");
+                        
+                        //**** NEW: 190926 END
+
                         var labtest = new LabTest(1);
                         labtest.Id = data.LabTests[index].Id;
+                        labtest.RecDate12 = resultado[0].dateRec;                   //**** NEW: 190926
                         labtest.CaseLabID = self.Id;
                         labtest.CanEdit(data.LabTests[index].CanEdit);
                         labtest.CanModLab(data.LabTests[index].CanModLab);
@@ -2127,8 +2202,10 @@ function LabViewModel(app, dataModel) {
                         labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
                         if (data.LabTests[index].TestEndDate)
                             labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
+
                         self.LabTests.push(labtest);
                     }
+                    console.log("Antes de crear objetos labtest->END");
                 }
 
                 self.LabTests_Sample2([]);
@@ -2237,6 +2314,11 @@ function LabViewModel(app, dataModel) {
                     }
                 }
 
+                console.log("Data para foreach");
+                console.log(self.CaseLabses());
+                console.log(self.LabTests());
+                console.log("Data para foreach-END");
+
                 $("#FinalResult").prop('disabled', true);
                 $("#FinalResultVirusTypeID").prop('disabled', true);
                 $("#FinalResultVirusSubTypeID_1").prop('disabled', true);
@@ -2254,7 +2336,8 @@ function LabViewModel(app, dataModel) {
 
                 }
 
-                if (self.NPHL() == true) {
+                if (self.NPHL() == true)
+                {
                     $("#Rec_Date_NPHL").prop('disabled', false);                    
                     $("#Temp_NPHL").prop('disabled', false);
                     $("#Identification_Test_NPHL").prop('disabled', false);
@@ -2281,7 +2364,8 @@ function LabViewModel(app, dataModel) {
                     $("input[id*='NPHL_Processed_3']").prop('disabled', false);
                     $("#NPHL_NoProRenId_3").prop('disabled', false);
                     $("#NPHL_NoReason_3").prop('disabled', false);
-                } else {
+                } else
+                {
                     $("#Rec_Date_NPHL").prop('disabled', true);                    
                     $("#Temp_NPHL").prop('disabled', true);
                     $("#Identification_Test_NPHL").prop('disabled', true);
@@ -2324,7 +2408,7 @@ function LabViewModel(app, dataModel) {
                  alert(errorThrown);
              })
     };
-
+    console.log("self.GetLab->Final");
 
     self.OrdenFinalResult = function () {
 
@@ -3249,7 +3333,7 @@ function LabViewModel(app, dataModel) {
         return true;
     };
 
-
+    console.log("function LabViewModel(app, dataModel)->END");
 }
 
 app.addViewModel({

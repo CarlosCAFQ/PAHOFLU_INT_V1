@@ -2446,6 +2446,7 @@
     <Content Include="Views\Colony\Create.cshtml" />
     <Content Include="Views\Colony\Edit.cshtml" />
     <Content Include="Views\Colony\Delete.cshtml" />
+    <Content Include="Views\Home\_LabHead.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

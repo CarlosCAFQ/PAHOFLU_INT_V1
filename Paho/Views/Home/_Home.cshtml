@@ -3626,7 +3626,7 @@
         }
 
         @* Empieza muestra dos muestra 1 *@
-
+        <!-- Label: Muestra 1/Boton Print???/Linea HR -->
         <div class="row rowform" data-bind="visible:DisableCHI">
             <div class="col-md-12">
                 <div style="font-weight:bold;font-size:11px">
@@ -3642,7 +3642,8 @@
             </div>
         </div>
 
-        <div class="row rowform" id="Test_1">
+        <!-- Cabecera Lab1: Fecha Recepcion / Temperatura -->
+        @*<div class="row rowform" id="Test_1">
             <div class="col-md-3_5">
                 <div class='input-group'>
                     <span class="input-group-addon">
@@ -3657,13 +3658,12 @@
                         @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelTemp"))
                     </span>
                     <input id="TempSample1" type='text' class="form-control case_letter" data-bind="value: TempSample1" />
-
                 </div>
             </div>
+        </div>*@
 
-        </div>
-    
-        <div class="row rowform" id="Test_1" >
+        <!-- Procesada / Motivo No procesada / Identificador Muestra -->
+        @*<div class="row rowform" id="Test_1" >
             <div class="col-md-3_5">
                 <span>
                     @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelProcessed"))
@@ -3687,7 +3687,6 @@
                             optionsCaption: '@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabCaseLabelSelect"))...',
                             value: NoProRenId"></select>
                     <input id="NoReason" type='text' class="form-control case_letter" data-bind="value: NoProRen , visible:NotShowProcessedOther" />
-
                 </div>
             </div>
 
@@ -3699,7 +3698,10 @@
                     <input id="Identification_Test" name="Identification_Test" type='text' class="form-control case_letter" data-bind="value: Identification_Test" />
                 </div>
             </div>
-        </div>
+        </div>*@
+
+        <!-- Cabecera Lab1: Fecha Recepcion / Temperatura / etc -->
+        @Html.Partial("_LabHead")
 
         @*@if (ViewBag.UsrCtry == 15 || (ViewBag.UsrCtry == 25 && ViewBag.NPHL_exist == true))
         {
