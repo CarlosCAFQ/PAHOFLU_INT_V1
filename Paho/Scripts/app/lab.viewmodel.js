@@ -15,17 +15,348 @@ function CaseLabses(SampleNumber) {
     self_CL.CanEdit = ko.observable(true);
 
     self_CL.LabID = ko.observable();
-    self_CL.RecDate12 = ko.observable(null);
-    self_CL.Identification_Test12 = ko.observable("");
-    self_CL.TempSample12 = ko.observable("").extend({ numeric: 2 });
-    self_CL.Processed12 = ko.observable("");
-    self_CL.NoProRen12 = ko.observable("");
-    self_CL.NoProRenId12 = ko.observable("");
+
+    self_CL.RecDate = ko.observable(null);
+    self_CL.Identification_Test = ko.observable("");
+    self_CL.TempSample = ko.observable("").extend({ numeric: 2 });
+    self_CL.Processed = ko.observable("");
+    self_CL.NoProRen = ko.observable("");
+    self_CL.NoProRenId = ko.observable("");
+
+    //self_CL.LabTests = ko.observableArray([]);
+    self_CL.LabTests = ko.observableArray([]);
 
     // date_receive = (SampleNumber == 1) ? (jQuery.type(app.Views.Lab.RecDate12()) === 'date' ? app.Views.Lab.RecDate12() : parseDate($("#RecDate12").val(), date_format_)) :
-    date_receive = (SampleNumber == 1) ? (jQuery.type(self_CL.RecDate12()) === 'date' ? self_CL.RecDate12() : parseDate($("#RecDate12").val(), date_format_)) :
-                   (SampleNumber == 2) ? (jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_)) :
-                   (SampleNumber == 3) ? (jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_)) : null;
+    //date_receive = (SampleNumber == 1) ? (jQuery.type(self_CL.RecDate12()) === 'date' ? self_CL.RecDate12() : parseDate($("#RecDate12").val(), date_format_)) :
+    //               (SampleNumber == 2) ? (jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_)) :
+    //               (SampleNumber == 3) ? (jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_)) : null;
+
+    //date_receive = (SampleNumber == 1) ? jQuery.type(self_CL.RecDate()) === 'date' ? self_CL.RecDate() : parseDate($("#RecDate").val(), date_format_) :
+    //            (SampleNumber == 2) ? jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_) : 
+    //            (SampleNumber == 3) ? jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_) : null;
+    
+
+    self_CL.ShowProcessed = ko.computed(function () {
+        self_CL.NoProRen("");
+        self_CL.NoProRenId("");
+        //if (self_CL.Processed == "true" && self_CL.Processed_National == "false")
+        if (self_CL.Processed == "true"){
+            //////###self_CL.resetFinalResult();
+        }
+
+        return (self_CL.Processed() === "true");
+    }, self_CL);
+
+
+    self_LT.RecDate.subscribe(function (newRecDate) {
+        if (self_LT.hasReset() != true && newRecDate != "" && newRecDate != null) {
+            var current_value = jQuery.type(newRecDate) === 'date' ? newRecDate : parseDate(newRecDate, date_format_);
+            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
+            var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
+
+
+            if ($("#Rec_Date_NPHL").length > 0 && self_LT.NPHL_FlowExist() == true) {
+
+                var date_Ship_Date_NPHL = jQuery.type(self_LT.Ship_Date_NPHL()) === 'date' ? self_LT.Ship_Date_NPHL() : parseDate(self_LT.Ship_Date_NPHL(), date_format_);
+
+                if ((date_Ship_Date_NPHL == null || date_Ship_Date_NPHL == "") && self_LT.hasReset() != true) {
+                    //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                    alert(msgValidationRecSampleNPHL);
+                    //self_LT.RecDate(null);
+                } else {
+                    if (moment(current_value).isBefore(moment(date_Ship_Date_NPHL), "days")) {
+                        //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
+                        alert(msgValidationSampleDateNPHLValidateS1);
+                        //self_LT.RecDate(null);
+                    }
+                }
+
+            } else if ((date_shipping_date != null) && self_LT.hasReset() != true) {
+                if (self_LT.UsrCountry() == 11 || self_LT.UsrCountry() == 119) {
+                    if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+                        //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+                        alert(msgValidationShippingDateValidateICS1);
+                        //msgValidationShippingDateValidateICS1
+                        self_LT.RecDate(null);
+                    }
+                } else {
+                    if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+                        //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+                        alert(msgValidationShippingDateValidateS1);
+                        self_LT.RecDate(null);
+                    }
+                }
+                /*if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+                    alert(msgValidationShippingDateValidateS1);
+                    self_LT.RecDate(null);
+                }*/
+            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self_LT.hasReset() != true) {
+                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+                alert(msgValidationSampleDateS1);
+                self_LT.RecDate(null);
+            } else {
+                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
+                    alert(msgValidationSampleDateValidateS1);
+                    self_LT.RecDate(null);
+                }
+            }
+        }
+    });
+
+    self_CL.Processed.subscribe(function (NewIsProcessed) {
+        //console.log("aqui Processed.subscribe" + NewIsProcessed);
+        if (NewIsProcessed == "false") {
+            //////###self_CL.removeTestbyLab(self_CL.UsrInstID(), 1);
+            $("#addLabTest_1").hide();
+        } else if (NewIsProcessed == "true") {
+            $("#addLabTest_1").show();
+        }
+    });
+
+    self_CL.NotShowProcessedOther = ko.computed(function () {
+        return (self_CL.NoProRenId() === "5")
+    }, self_CL);
+
+
+    self_CL.NotShowProcessed = ko.computed(function () {
+        //self_CL.resetFinalResult();
+        //self_CL.OrdenFinalResult();
+        return (self_CL.Processed() === "false")
+    }, self_CL);
+
+    self_CL.addLabTest = function (sample_number, data) {
+        var erroMsg = self.validatebeforeadd(1, 2);
+        if (erroMsg) {
+            alert(erroMsg);
+            return;
+        }
+
+        var labtest = new LabTest(sample_number);
+
+        labtest.hideLabOptions = true;
+
+        //console.log(labtest.displayLabOptions + " **** ");
+        labtest.CaseLabID = self.Id;
+        labtest.SampleNumber(sample_number);
+        if (sample_number == 1) {
+            self_CL.LabTests.push(labtest);
+
+        //} else if (sample_number == 2) {
+        //    self.LabTests_Sample2.push(labtest);
+        //} else if (sample_number == 3) {
+        //    self.LabTests_Sample3.push(labtest);
+        //} else if (sample_number == 999) {
+        //    self.LabTestsExternal.push(labtest);
+        }
+
+    };
+
+    self.validatebeforeadd = function (nextStep, SaveVerif) {
+        var msg = "";
+
+        //self.ArrayValidate((nextStep == 1) ? self.LabTests() : (nextStep == 2) ? self.LabTests_Sample2() : self.LabTests_Sample3());
+        //for (index = 0; index < self.ArrayValidate().length; ++index) {
+        //    date_1 = self.ArrayValidate()[index].TestDate();
+        //    date_2 = self.ArrayValidate()[index].TestEndDate();
+        //    date_Received = self.RecDate();
+        //    var date_test_start = new Date();
+        //    var date_test_final = new Date();
+        //    var date_RecDate = new Date();
+        //    date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+        //    date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+        //    date_RecDate = jQuery.type(date_Received) === 'date' ? date_Received : parseDate($("#RecDate").val(), date_format_);
+
+        //    if (self.ArrayValidate()[index].ProcLab() === "" || typeof self.ArrayValidate()[index].ProcLab() === "undefined")
+        //        msg += "\n" + msgValidateProcessSelectLab;
+        //    //"'Laboratorio': Seleccione el laboratorio que procesa la prueba";
+
+        //    if (self.ArrayValidate()[index].ProcessLab() === "")
+        //        msg += "\n" + msgValidateProcessProcessLab;
+        //    //"'Procesada': Indique si la prueba fue procesada";
+
+        //    if (self.ArrayValidate()[index].ProcessLab() === "true") {
+
+        //        if (date_RecDate != null && date_test_start != null && moment(date_test_start).isBefore(moment(date_RecDate), 'days'))
+        //            msg += "\n" + msgValidateProcessStartReceiptDate;
+        //        //'Process start date' can not be less than the 'Date of receipt of the sample'
+        //        //"'Fecha de inicio del proceso' no puede ser menor a la 'Fecha de recepcion de la muestra'";
+        //        //return false;
+
+        //        if (date_test_start === null)
+        //            msg += "\n" + msgValidateProcessStartRequired;
+        //        //Process start date is required
+        //        //    "Fecha de inicio de proceso es requerida";
+        //        if (date_test_start != null && !moment(moment(date_test_start).format(date_format_moment), [date_format_moment], true).isValid())
+        //            msg += "\n" + msgValidateProcessStartInvalid;
+        //        //"Fecha de inicio de proceso es inválida";
+        //        //if (date_RecDate != null && date_test_start != null && moment(date_test_start).isBefore(moment(date_RecDate), 'days'))
+        //        //    msg += "\n" + "'Start date' cannot be less than the 'Received date'";
+
+        //        if (date_test_final === null)
+        //            msg += "\n" + msgValidateProcessEndDateRequired;
+        //        //"Fecha final del proceso es requerida";
+        //        if (date_test_final != null && !moment(moment(date_test_final).format(date_format_moment), [date_format_moment], true).isValid())
+        //            msg += "\n" + msgValidateProcessEndDateInvalid;
+        //        //"Fecha final del proceso es inválida";
+        //        if (date_test_start != null && date_test_final != null
+        //            && moment(date_test_start).isAfter(moment(date_test_final), 'days'))
+        //            msg += "\n" + msgValidateProcessEndDateStartDate;
+        //        //'Process end date' can not be less than 'Process start date'
+        //        //"'Fecha final del proceso' no puede ser menor a la 'Fecha de inicio del proceso'";
+
+        //        if (self.ArrayValidate()[index].TestType() === "")
+        //            msg += "\n" + msgValidateProcessType;
+        //        //Insert the type of completed process
+        //        //"Indique el tipo de proceso realizado";
+
+        //        if (self.ArrayValidate()[index].TestResultID() === "")
+        //            msg += "\n" + msgValidateProcessResult;
+        //        //Insert the result of the process
+        //        //"Indique el resultado del proceso";
+
+        //        // revision para agregar los subtipos de Chile
+        //        if (self.ArrayValidate()[index].TestResultID() === "P"
+        //            && self.ArrayValidate()[index].VirusTypeID() === "1"
+        //            && self.ArrayValidate()[index].TestType() === "2"
+        //            && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P"
+        //            && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
+        //            && self.ArrayValidate()[index].UsrCountry() == 7) // Esta línea es porque esta validación es solo para Chile
+        //            msg += "\n" + msgValidateProcessResult_Subtype;
+
+
+        //        if ((self.ArrayValidate()[index].TestResultID() === "P") && (self.ArrayValidate()[index].VirusTypeID() === "" || self.ArrayValidate()[index].VirusTypeID() == undefined)) {
+        //            msg += "\n" + msgValidateProcessVirus;
+        //            //Insert the detected virus
+        //            //"Ingrese el virus detectado";
+        //            //|| self.ArrayValidate()[index].TestResultID() === "I"
+        //        }
+        //        else {
+        //            if (self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTVirusType() === "" && self.ArrayValidate()[index].VirusTypeID() != "" && self.ArrayValidate()[index].TestType() === "2")
+        //            { msg += "\n" + "Ingreso el CT de Virus"; }
+        //        }
+
+        //        if ((self.ArrayValidate()[index].TestResultID() === "P") && self.ArrayValidate()[index].VirusTypeID() === "9" && (self.ArrayValidate()[index].OtherVirusTypeID() === "" || self.ArrayValidate()[index].OtherVirusTypeID() == undefined) && self.ArrayValidate()[index].OtherVirus() === "") {
+        //            msg += "\n" + msgValidateProcessOtherVirus;
+        //            //  Insert the other detected virus
+        //            //"Indique el otro virus detectado";
+        //            //|| self.ArrayValidate()[index].TestResultID() === "I"
+        //        }
+        //        else {
+        //            if (self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTOtherVirusType() === "" && self.ArrayValidate()[index].VirusTypeID() === "9" && self.ArrayValidate()[index].TestType() === "2" && self.ArrayValidate()[index].OtherVirusTypeID() != "")
+        //            { msg += "\n" + "Ingreso el CT de Otro Virus"; }
+        //        }
+
+
+        //        if (self.ArrayValidate()[index].TestResultID() === "P"
+        //            && self.ArrayValidate()[index].VirusTypeID() === "1"
+        //            && (self.ArrayValidate()[index].VirusSubTypeID() === "" || self.ArrayValidate()[index].VirusSubTypeID() == undefined)
+        //            && self.ArrayValidate()[index].TestType() === "2") {
+        //            //console.log("Aqui virusSubtiypeID");
+
+        //            if (self.ArrayValidate()[index].UsrCountry() == 7) {
+
+        //                if ((self.ArrayValidate()[index].VirusSubTypeID() === "" || self.ArrayValidate()[index].VirusSubTypeID() == undefined) && (self.ArrayValidate()[index].VirusSubTypeID_2() === "" || self.ArrayValidate()[index].VirusSubTypeID_2() == undefined))
+        //                    msg += "\n" + msgValidateProcessSubtype;
+
+        //            } else {
+        //                msg += "\n" + msgValidateProcessSubtype;
+        //            }
+
+
+        //            //  Insert the detected Subtype
+        //            //"Ingrese el Subtipo detectado";
+        //        }
+        //        else {
+        //            if ((self.ArrayValidate()[index].VirusSubTypeID() == 3 || self.ArrayValidate()[index].VirusSubTypeID() == 10) && self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTSubType() === "" && self.ArrayValidate()[index].VirusSubTypeID() != "1" && self.ArrayValidate()[index].VirusTypeID() === "1" && self.ArrayValidate()[index].TestType() === "2")
+        //            { msg += "\n" + "Ingreso el CT de Subtipo"; }
+        //        }
+
+        //        if (self.ArrayValidate()[index].LabID() == self.ISPID() || self.UsrCountry() != 7) {
+        //            if (self.ArrayValidate()[index].TestResultID() === "P" && self.ArrayValidate()[index].VirusTypeID() === "2" && self.ArrayValidate()[index].VirusLineageID() === "" && self.ArrayValidate()[index].TestType() === "2") {
+        //                msg += "\n" + msgValidateProcessLinage;
+        //                //Insert the detected Linage
+        //                //"Ingrese el Linaje detectado";
+        //            }
+        //            else {
+        //                if ((self.ArrayValidate()[index].VirusLineageID() == 2 || self.ArrayValidate()[index].VirusLineageID() == 3) && self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTLineage() === "" && self.ArrayValidate()[index].VirusTypeID() === "2" && self.ArrayValidate()[index].TestType() === "2")
+        //                { msg += "\n" + "Ingreso el CT de Linaje"; }
+        //            }
+        //        }
+
+
+        //        if (self.ArrayValidate()[index].RNP() === "" && self.ArrayValidate()[index].TestType() === "2" && self.ArrayValidate()[index].UsrCountry() == 7)
+        //        { msg += "\n" + "Ingrese el RNP"; }
+
+        //    }
+
+        //};
+
+        //var ArrayValidate = $.grep(self.ArrayValidate(), function (v) {
+        //    return (v.TestType() === "2" && v.ProcLab() == self.UsrInstID() && (v.LabID() == "" || v.LabID() == self.UsrInstID()));
+        //});
+
+        //if (SaveVerif == 1 && ArrayValidate.length > 1)
+        //    ArrayValidate.length = ArrayValidate.length - 1;
+
+        //if (ArrayValidate.length >= 4)
+        //    msg += "\n" + msgValidateProcessPCR3times;
+        ////For PCR can not be more than 3 processes for the same laboratory
+        ////"Para PCR no puede ser mayor a 3 procesos para el mismo laboratorio";
+
+        //ArrayValidate = $.grep(self.ArrayValidate(), function (v) {
+        //    return (v.TestType() === "1" && v.ProcLab() == self.UsrInstID());
+        //});
+        //if (ArrayValidate.length >= 4)
+        //    msg += "\n" + msgValidateProcessIFI3times;
+        ////For IF it can not be more than 3 processes for the same laboratory
+        ////"Para IF no puede ser mayor a 3 procesos para el mismo laboratorio";
+
+        return msg;
+    };
+
+    self_CL.removeLabTest = function (sample_number, data) {
+        if (sample_number == 1) {
+            self_CL.LabTests.remove(data);
+        //} else if (sample_number == 2) {
+        //    self_CL.LabTests_Sample2.remove(data);
+        //} else if (sample_number == 3) {
+        //    self_CL.LabTests_Sample3.remove(data);
+        //} else if (sample_number == 999) {
+        //    self_CL.LabTestsExternal.remove(data);
+        }
+
+        ///self_CL.OrdenFinalResult();
+    };
+
+    self_CL.removeTestbyLab = function (LabId, SampleNumber) {
+
+        self_CL.LabTests.forEach(function (c, i) {
+            //console.log("CanEdit - " + c.CanEdit() + " - LabId" + LabId);
+            if (c.CanDeleteProcess() == true) {
+                //console.log("borrar");
+                self_CL.removeLabTest(SampleNumber, c)
+            }
+
+        });
+    };
+
+    self_CL.EnableCHI = ko.computed(function () {
+        return (self_CL.UsrCountry() != 7) ? true : false;
+
+    }, self_CL);
+
+    self_CL.DisableCHI = ko.computed(function () {
+        return (self_CL.UsrCountry() == 7) ? true : false;
+
+    }, self_CL);
+
+    self_CL.ActiveCHI = ko.computed(function () {
+        return (self_CL.UsrCountry() == 7) ? true : false;
+    }, self_CL);
+
+
 
     //self_CL.RecDate12.subscribe(function (newRecDate) {
     //    if (self_CL.hasReset() != true && newRecDate != "" && newRecDate != null) {
@@ -123,153 +454,162 @@ function CaseLabses(SampleNumber) {
     //    }
     //});
 
-    //****
-    self_CL.Processed12.subscribe(function (NewIsProcessed) {
-        console.log("self_CL.Processed12.subscribe____");
-        if (NewIsProcessed == "false") {
-            self_CL.Identification_Test12(null);
-            //self_CL.removeTestbyLab(self_CL.UsrInstID(), 1);
-            $("#addLabTest_1").hide();
-        } else if (NewIsProcessed == "true") {
-            $("#addLabTest_1").show();
-        }
-        console.log("self_CL.Processed12.subscribe____END");
-    });
-    //********************************
-    //self_CL.ShowProcessed12ab = ko.observable();
-    self_CL.ShowProcessed12 = ko.computed(function () {
-        console.log("self_CL.ShowProcessed12____bb");
-        self_CL.NoProRen12("");
-        self_CL.NoProRenId12("");
-        ////if (self_CL.Processed12 == "true" && self_CL.Processed_National == "false")
-        ////    self_CL.resetFinalResult();
-        return (self_CL.Processed12() === "true")
-    }, self_CL);
+    ////****
+    //self_CL.Processed12.subscribe(function (NewIsProcessed) {
+    //    console.log("self_CL.Processed12.subscribe____");
+    //    if (NewIsProcessed == "false") {
+    //        self_CL.Identification_Test12(null);
+    //        //self_CL.removeTestbyLab(self_CL.UsrInstID(), 1);
+    //        $("#addLabTest_1").hide();
+    //    } else if (NewIsProcessed == "true") {
+    //        $("#addLabTest_1").show();
+    //    }
+    //    console.log("self_CL.Processed12.subscribe____END");
+    //});
+    ////********************************
+    ////self_CL.ShowProcessed12ab = ko.observable();
+    //self_CL.ShowProcessed12 = ko.computed(function () {
+    //    console.log("self_CL.ShowProcessed12____bb");
+    //    self_CL.NoProRen12("");
+    //    self_CL.NoProRenId12("");
+    //    ////if (self_CL.Processed12 == "true" && self_CL.Processed_National == "false")
+    //    ////    self_CL.resetFinalResult();
+    //    return (self_CL.Processed12() === "true")
+    //}, self_CL);
 
-    self_CL.NotShowProcessed12 = ko.computed(function () {
-        console.log("self_CL.NotShowProcessed12__");
-        return (self_CL.Processed12() === "false")
-    }, self_CL);
+    //self_CL.NotShowProcessed12 = ko.computed(function () {
+    //    console.log("self_CL.NotShowProcessed12__");
+    //    return (self_CL.Processed12() === "false")
+    //}, self_CL);
 
-    self_CL.NotShowProcessedOther12 = ko.computed(function () {
-        console.log("self_CL.NotShowProcessedOther12__");
-        return (self_CL.NoProRenId12() === "5")
-    }, self_CL);
+    //self_CL.NotShowProcessedOther12 = ko.computed(function () {
+    //    console.log("self_CL.NotShowProcessedOther12__");
+    //    return (self_CL.NoProRenId12() === "5")
+    //}, self_CL);
 
 
-    self_CL.EnableCHI = ko.computed(function () {
-        return (self_CL.UsrCountry() != 7) ? true : false;
+    //self_CL.EnableCHI = ko.computed(function () {
+    //    return (self_CL.UsrCountry() != 7) ? true : false;
 
-    }, self_CL);
+    //}, self_CL);
 
-    self_CL.DisableCHI = ko.computed(function () {
-        return (self_CL.UsrCountry() == 7) ? true : false;
+    //self_CL.DisableCHI = ko.computed(function () {
+    //    return (self_CL.UsrCountry() == 7) ? true : false;
 
-    }, self_CL);
+    //}, self_CL);
 
     console.log("function CaseLabses(SampleNumber)->END");
 };
 
-
 function LabTest(SampleNumber) {
     console.log("function LabTest(SampleNumber)->START");
-    var self = this;
+    var self_LT = this;
     var date_receive = new Date();
     var date_format_ = app.dataModel.date_format_;
     var date_format_moment = app.dataModel.date_format_moment;
     var date_format_ISO = app.dataModel.date_format_ISO;   
-
-    self.RecDate12 = null;               //**** NEW: 190926     RecDate12
-    date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.RecDate()) === 'date' ? app.Views.Lab.RecDate() : parseDate($("#RecDate").val(), date_format_) :
+    console.log("\tFecha RecDate")
+    console.log(app.Views.Lab.CaseLabses.RecDate);
+    console.log("\tFecha RecDate 1")
+    //self_LT.RecDate = null;               //**** NEW: 190926     RecDate12
+    date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.CaseLabses.RecDate) === 'date' ? app.Views.Lab.CaseLabses.RecDate : parseDate($("#RecDate").val(), date_format_) :
                     (SampleNumber == 2) ? jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_) : 
                     (SampleNumber == 3) ? jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_) : null;
     
-    self.OrderArray
-    self.Id = "";
-    self.UsrCountry = ko.observable(app.Views.Home.UsrCountry());   // Pais del usuario logueado
-    self.UsrInstID = ko.observable($('#IIDL').val());               // ID de la institucion del usuario
-    self.CaseLabID = "";
-    self.OrdenLabID = 99;
-    self.hasGet_Local = ko.observable(app.Views.Lab.hasGet());
-    self.LabDummy = ko.observable("");
-    self.ProcLab = ko.observable("");
-    self.LabID = ko.observable("");
-    self.CanEdit = ko.observable(true);
-    self.CanModLab = ko.observable(true);
-	self.CanDeleteProcess = ko.observable(true);											
-    self.CanPCR = ko.observable(app.Views.Lab.CanPCRLab());
-    self.CanIFI = ko.observable(app.Views.Lab.CanIFILab());
-    self.EndFlow = ko.observable("");
-    self.ProcLabName = ko.observable("");
-    self.ProcessLab = ko.observable("");                        // Radio button procesada en Test
-    self.SampleNumber = ko.observable(SampleNumber);
-    self.TestType = ko.observable("");
-    self.OrdenTestType = 99;
-    self.TestDate = ko.observable(null);
-    self.TestResultID = ko.observable("");
-    self.OrdenTestResultID = 99;
-    self.VirusTypeID = ko.observable("");
-    self.CTVirusType = ko.observable("").extend({numeric : 2});
-    self.CTRLVirusType = ko.observable("").extend({ numeric: 2 });
-    self.OrdenVirusTypeID = 99;
-    self.OtherVirusTypeID = ko.observable("");
-    self.CTOtherVirusType = ko.observable("").extend({ numeric: 2 });
-    self.CTRLOtherVirusType = ko.observable("").extend({ numeric: 2 });
-    self.OtherVirus = ko.observable("");
-    self.VirusSubTypeID = ko.observable("");
-    self.CTSubType = ko.observable("").extend({ numeric: 2 });
-    self.CTRLSubType = ko.observable("").extend({ numeric: 2 });
-    self.OrdenSubTypeID = 99;
+    self_LT.OrderArray
+    self_LT.Id = "";
+    self_LT.UsrCountry = ko.observable(app.Views.Home.UsrCountry());   // Pais del usuario logueado
+    self_LT.UsrInstID = ko.observable($('#IIDL').val());               // ID de la institucion del usuario
+    self_LT.CaseLabID = "";
+    self_LT.OrdenLabID = 99;
+    self_LT.hasGet_Local = ko.observable(app.Views.Lab.hasGet());
+    self_LT.LabDummy = ko.observable("");
+    self_LT.ProcLab = ko.observable("");
+    self_LT.LabID = ko.observable("");
+    self_LT.CanEdit = ko.observable(true);
+    self_LT.CanModLab = ko.observable(true);
+	self_LT.CanDeleteProcess = ko.observable(true);											
+    self_LT.CanPCR = ko.observable(app.Views.Lab.CanPCRLab());
+    self_LT.CanIFI = ko.observable(app.Views.Lab.CanIFILab());
+    self_LT.EndFlow = ko.observable("");
+    self_LT.ProcLabName = ko.observable("");
+    console.log("\tLaboratorio ProcLabName")
+    console.log(self_LT.ProcLabName());
+    console.log("\tLaboratorio ProcLabName 1")
+
+    self_LT.ProcessLab = ko.observable("");                        // Radio button procesada en Test
+    self_LT.SampleNumber = ko.observable(SampleNumber);
+    self_LT.TestType = ko.observable("");
+    self_LT.OrdenTestType = 99;
+    self_LT.TestDate = ko.observable(null);
+    self_LT.TestResultID = ko.observable("");
+    self_LT.OrdenTestResultID = 99;
+    self_LT.VirusTypeID = ko.observable("");
+    self_LT.CTVirusType = ko.observable("").extend({numeric : 2});
+    self_LT.CTRLVirusType = ko.observable("").extend({ numeric: 2 });
+    self_LT.OrdenVirusTypeID = 99;
+    self_LT.OtherVirusTypeID = ko.observable("");
+    self_LT.CTOtherVirusType = ko.observable("").extend({ numeric: 2 });
+    self_LT.CTRLOtherVirusType = ko.observable("").extend({ numeric: 2 });
+    self_LT.OtherVirus = ko.observable("");
+    self_LT.VirusSubTypeID = ko.observable("");
+    self_LT.CTSubType = ko.observable("").extend({ numeric: 2 });
+    self_LT.CTRLSubType = ko.observable("").extend({ numeric: 2 });
+    self_LT.OrdenSubTypeID = 99;
     // Modificacion solicitada por Rodrigo - Chile
-    self.TestResultID_VirusSubType = ko.observable("");
-    self.OrdenTestResultID_VirusSubType = 99;
-    self.VirusSubTypeID_2 = ko.observable("");
-    self.CTSubType_2 = ko.observable("").extend({ numeric: 2 });
-    self.CTRLSubType_2 = ko.observable("").extend({ numeric: 2 });
-    self.OrdenSubTypeID_2 = 99;
-    self.TestResultID_VirusSubType_2 = ko.observable("");
-    self.OrdenTestResultID_VirusSubType_2 = 99;
+    self_LT.TestResultID_VirusSubType = ko.observable("");
+    self_LT.OrdenTestResultID_VirusSubType = 99;
+    self_LT.VirusSubTypeID_2 = ko.observable("");
+    self_LT.CTSubType_2 = ko.observable("").extend({ numeric: 2 });
+    self_LT.CTRLSubType_2 = ko.observable("").extend({ numeric: 2 });
+    self_LT.OrdenSubTypeID_2 = 99;
+    self_LT.TestResultID_VirusSubType_2 = ko.observable("");
+    self_LT.OrdenTestResultID_VirusSubType_2 = 99;
     // Termina modificación
-    self.VirusLineageID = ko.observable("");
-    self.CTLineage = ko.observable("").extend({ numeric: 2 });
-    self.CTRLLineage = ko.observable("").extend({ numeric: 2 });
-    self.OrdenLineageID = 99;
-    self.RNP = ko.observable("").extend({ numeric: 2 });
-    self.CTRLRNP = ko.observable("").extend({ numeric: 2 });
-    self.CTRLNegative = ko.observable("").extend({ numeric: 2 });
-    self.TestEndDate = ko.observable(null);
+    self_LT.VirusLineageID = ko.observable("");
+    self_LT.CTLineage = ko.observable("").extend({ numeric: 2 });
+    self_LT.CTRLLineage = ko.observable("").extend({ numeric: 2 });
+    self_LT.OrdenLineageID = 99;
+    self_LT.RNP = ko.observable("").extend({ numeric: 2 });
+    self_LT.CTRLRNP = ko.observable("").extend({ numeric: 2 });
+    self_LT.CTRLNegative = ko.observable("").extend({ numeric: 2 });
+    self_LT.TestEndDate = ko.observable(null);
     // Área de virus
-    self.InfA = ko.observable("");
-    self.InfB = ko.observable("");
-    self.ParaInfI = ko.observable("");
-    self.ParaInfII = ko.observable("");
-    self.ParaInfIII = ko.observable("");
-    self.RSV = ko.observable("");
-    self.Adenovirus = ko.observable("");
-    self.Metapneumovirus = ko.observable("");
-    self.hideLabOptions = false;
-    self.EnableCHI = ko.computed(function () {
-        return (self.UsrCountry() != 7) ? true : false;
+    self_LT.InfA = ko.observable("");
+    self_LT.InfB = ko.observable("");
+    self_LT.ParaInfI = ko.observable("");
+    self_LT.ParaInfII = ko.observable("");
+    self_LT.ParaInfIII = ko.observable("");
+    self_LT.RSV = ko.observable("");
+    self_LT.Adenovirus = ko.observable("");
+    self_LT.Metapneumovirus = ko.observable("");
+    self_LT.hideLabOptions = false;
+    self_LT.EnableCHI = ko.computed(function () {
+        return (self_LT.UsrCountry() != 7) ? true : false;
 
-    }, self);
+    }, self_LT);
 
-    self.DisableCHI = ko.computed(function () {
-        return (self.UsrCountry() == 7) ? true : false;
+    self_LT.DisableCHI = ko.computed(function () {
+        return (self_LT.UsrCountry() == 7) ? true : false;
 
-    }, self);
+    }, self_LT);
 
-    self.IFI_option = ko.computed(function () {
-        return (self.UsrCountry() == 7 && self.TestType() == 1) ? true : false;
+    self_LT.IFI_option = ko.computed(function () {
+        return (self_LT.UsrCountry() == 7 && self_LT.TestType() == 1) ? true : false;
 
-    }, self);
+    }, self_LT);
 
-    self.TestDate.subscribe(function (newTestDate) {
+    self_LT.TestDate.subscribe(function (newTestDate) {
         var current_value = jQuery.type(newTestDate) === 'date' ? newTestDate : parseDate(newTestDate, date_format_);
         //date_receive = (SampleNumber == 1) ? parseDate($("#RecDate").val(), date_format_) : (SampleNumber == 2) ? parseDate($("#RecDate2").val(), date_format_) : (SampleNumber == 2) ? parseDate($("#RecDate3").val(), date_format_) : null;
         //date_receive = typeof (date_receive) == "object" ? date_receive : parseDate(date_receive, date_format_);
-        date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.RecDate()) === 'date' ? app.Views.Lab.RecDate() : parseDate($("#RecDate").val(), date_format_) : (SampleNumber == 2) ? jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_) : (SampleNumber == 3) ? jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_) : null;
-
-        if (date_receive == null && (self.UsrCountry() == 15 || (self.UsrCountry() == 25 )))
+        date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.CaseLabses.RecDate) === 'date' ? app.Views.Lab.CaseLabses.RecDate : parseDate($("#RecDate").val(), date_format_) :
+            (SampleNumber == 2) ? jQuery.type(app.Views.Lab.RecDate2()) === 'date' ? app.Views.Lab.RecDate2() : parseDate($("#RecDate2").val(), date_format_) :
+            (SampleNumber == 3) ? jQuery.type(app.Views.Lab.RecDate3()) === 'date' ? app.Views.Lab.RecDate3() : parseDate($("#RecDate3").val(), date_format_) : null;
+        console.log("e5");
+        console.log(date_receive);
+        console.log("e6");
+        if (date_receive == null && (self_LT.UsrCountry() == 15 || (self_LT.UsrCountry() == 25 )))
         {
             date_receive = (SampleNumber == 1) ? jQuery.type(app.Views.Lab.RecDate_National()) === 'date' ? app.Views.Lab.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_) :  null;
         }
@@ -277,50 +617,50 @@ function LabTest(SampleNumber) {
         if (date_receive == null || date_receive == "") {
             //alert("Por favor ingrese antes la fecha de recepción de muestra de la Muestra 1");
             alert(msgValidationTestDateInvalidDate);
-            self.TestDate(null);
+            self_LT.TestDate(null);
         } else {
             if (moment(current_value).isBefore(moment(date_receive), "days")) {
                 //alert("La fecha de proceso de la Muestra 1 no puede ser menor a la fecha de recepción de muestra de la Muestra 1");
                 alert(msgValidationTestDateProcessAlert);
-                self.TestDate(null);
+                self_LT.TestDate(null);
             }
         }
         
     });
 
-    self.TestEndDate.subscribe(function (newTestEndDate) {
+    self_LT.TestEndDate.subscribe(function (newTestEndDate) {
         var current_value = jQuery.type(newTestEndDate) === 'date' ? newTestEndDate : parseDate(newTestEndDate, date_format_);
-        var date_TestBeginDate = jQuery.type(self.TestDate()) === 'date' ? self.TestDate() : parseDate(self.TestDate(), date_format_);
+        var date_TestBeginDate = jQuery.type(self_LT.TestDate()) === 'date' ? self_LT.TestDate() : parseDate(self_LT.TestDate(), date_format_);
 
         if (date_TestBeginDate == null || date_TestBeginDate == "") {
             //alert("Por favor ingrese antes la fecha de inicio del proceso");
             alert(msgValidationTestBeginDateInvalidDate);
-            self.TestEndDate("");
+            self_LT.TestEndDate("");
         } else {
             if (moment(current_value).isBefore(moment(date_TestBeginDate), "days")) {
                 //alert("La fecha de fin de proceso de la Muestra 1 no puede ser menor a la fecha de inicio de proceso de muestra de la Muestra 1");
                 alert(msgValidationTestBeginDateProcessAlert);
-                self.TestEndDate("");
+                self_LT.TestEndDate("");
             }
         }
 
     });
 
-    self.EnableTestResult = ko.computed(function (option, item) {
-        if (self.TestType() != "") {
+    self_LT.EnableTestResult = ko.computed(function (option, item) {
+        if (self_LT.TestType() != "") {
             return true;
         }
         else {
-            self.TestResultID("");
-            self.OrdenTestResultID = 99;
+            self_LT.TestResultID("");
+            self_LT.OrdenTestResultID = 99;
             return false;
         }
-    }, self);
+    }, self_LT);
 
-    self.EnableVirusTypes = ko.computed(function () {
-        //if (((self.TestResultID() != "U" && self.TestResultID() != "N" && self.EnableCHI()) || (self.TestResultID() != "U" && self.DisableCHI())) && self.TestResultID() != "" && typeof self.TestResultID() != "undefined") { // Desactivado por requerimiento de RRR y Suriname porque si les interesa ingresar cuando es negativo
-        if (self.TestResultID() != "NA" && self.TestResultID() != "NB" && self.TestResultID() != "MI" && self.TestResultID() != "I" && self.TestResultID() != "V" && self.TestResultID() != "U" && self.TestResultID() != "" && typeof self.TestResultID() != "undefined") {
-            if ((self.TestType() == 1 && self.TestResultID() == "N") || (self.UsrCountry() == 3 && self.TestResultID() == "N")) {
+    self_LT.EnableVirusTypes = ko.computed(function () {
+        //if (((self_LT.TestResultID() != "U" && self_LT.TestResultID() != "N" && self_LT.EnableCHI()) || (self_LT.TestResultID() != "U" && self_LT.DisableCHI())) && self_LT.TestResultID() != "" && typeof self_LT.TestResultID() != "undefined") { // Desactivado por requerimiento de RRR y Suriname porque si les interesa ingresar cuando es negativo
+        if (self_LT.TestResultID() != "NA" && self_LT.TestResultID() != "NB" && self_LT.TestResultID() != "MI" && self_LT.TestResultID() != "I" && self_LT.TestResultID() != "V" && self_LT.TestResultID() != "U" && self_LT.TestResultID() != "" && typeof self_LT.TestResultID() != "undefined") {
+            if ((self_LT.TestType() == 1 && self_LT.TestResultID() == "N") || (self_LT.UsrCountry() == 3 && self_LT.TestResultID() == "N")) {
 
                 return false;
             } else {
@@ -329,279 +669,279 @@ function LabTest(SampleNumber) {
             }   
         }
         else {
-            self.VirusTypeID("");
-            self.OrdenVirusTypeID = 99;
+            self_LT.VirusTypeID("");
+            self_LT.OrdenVirusTypeID = 99;
             return false;
         }
-    }, self);
+    }, self_LT);
 
-    self.EnableCTVirusType = ko.computed(function () {
-        if (self.UsrCountry() == 7 && self.TestType() == 2 && self.VirusTypeID() != "") {
+    self_LT.EnableCTVirusType = ko.computed(function () {
+        if (self_LT.UsrCountry() == 7 && self_LT.TestType() == 2 && self_LT.VirusTypeID() != "") {
 
             return true;
         }
         else {
-            self.CTVirusType("");
+            self_LT.CTVirusType("");
             return false;
         }
             
-    }, self);
+    }, self_LT);
 
-    self.EnableOtherVirusTypes = ko.computed(function () {
-        if (self.VirusTypeID() == "9") {
-
-            return true;
-        }
-        else {
-            self.OtherVirusTypeID("");
-            return false;
-        }
-    }, self);
-
-    self.EnableCTOtherVirusType = ko.computed(function () {
-        if (self.UsrCountry() == 7 && self.VirusTypeID() == 9 && self.TestType() == 2) {
+    self_LT.EnableOtherVirusTypes = ko.computed(function () {
+        if (self_LT.VirusTypeID() == "9") {
 
             return true;
         }
         else {
-            self.CTOtherVirusType("");
+            self_LT.OtherVirusTypeID("");
+            return false;
+        }
+    }, self_LT);
+
+    self_LT.EnableCTOtherVirusType = ko.computed(function () {
+        if (self_LT.UsrCountry() == 7 && self_LT.VirusTypeID() == 9 && self_LT.TestType() == 2) {
+
+            return true;
+        }
+        else {
+            self_LT.CTOtherVirusType("");
             return false;
         }
 
-    }, self);
+    }, self_LT);
 
-    self.EnableVirusSubTypeID = ko.computed(function () {
-        //var result = (self.VirusTypeID() == "1" && self.TestResultID() == "P"); // modificacion solicitada por Rodrigo
+    self_LT.EnableVirusSubTypeID = ko.computed(function () {
+        //var result = (self_LT.VirusTypeID() == "1" && self_LT.TestResultID() == "P"); // modificacion solicitada por Rodrigo
         //console.log("EnableVirusSubTypeID");
-        var result = (self.VirusTypeID() == "1" && self.TestResultID() == "P");
+        var result = (self_LT.VirusTypeID() == "1" && self_LT.TestResultID() == "P");
         if (!result) {
-            self.VirusSubTypeID("");
-            self.OrdenSubTypeID = 99;
-            self.TestResultID_VirusSubType("");
-            self.CTSubType("");
-            self.CTRLSubType("")
+            self_LT.VirusSubTypeID("");
+            self_LT.OrdenSubTypeID = 99;
+            self_LT.TestResultID_VirusSubType("");
+            self_LT.CTSubType("");
+            self_LT.CTRLSubType("")
         };
-        if (self.TestType() == "1") {
-            self.VirusSubTypeID("");
-            self.OrdenSubTypeID = 99; self.TestResultID_VirusSubType("");
-            self.CTSubType("");
-            self.CTRLSubType("")
+        if (self_LT.TestType() == "1") {
+            self_LT.VirusSubTypeID("");
+            self_LT.OrdenSubTypeID = 99; self_LT.TestResultID_VirusSubType("");
+            self_LT.CTSubType("");
+            self_LT.CTRLSubType("")
             return false;
         }
             
         return result;
-    }, self);
+    }, self_LT);
 
-    self.EnableTestResultID_VirusSubTypeID = ko.computed(function () {
-        //var result = (self.VirusTypeID() == "1" && self.TestResultID() == "P"); // modificacion solicitada por Rodrigo
+    self_LT.EnableTestResultID_VirusSubTypeID = ko.computed(function () {
+        //var result = (self_LT.VirusTypeID() == "1" && self_LT.TestResultID() == "P"); // modificacion solicitada por Rodrigo
         //console.log("EnableVirusSubTypeID");
-        var result = (self.VirusTypeID() == "1" && self.TestResultID() == "P" && self.UsrCountry() == 7);
+        var result = (self_LT.VirusTypeID() == "1" && self_LT.TestResultID() == "P" && self_LT.UsrCountry() == 7);
         if (!result) {
-            self.TestResultID_VirusSubType("");
+            self_LT.TestResultID_VirusSubType("");
         };
-        if (self.TestType() == "1") {
-            self.TestResultID_VirusSubType("");
+        if (self_LT.TestType() == "1") {
+            self_LT.TestResultID_VirusSubType("");
             return false;
         }
 
         return result;
-    }, self);
+    }, self_LT);
 
     // Aqui agregar la funcion para esconder el resultado del subtipo
 
-    self.EnableVirusSubTypeID_2 = ko.computed(function () {
-        //var result = (self.VirusTypeID() == "1" && self.TestResultID() == "P"); // modificacion solicitada por Rodrigo
+    self_LT.EnableVirusSubTypeID_2 = ko.computed(function () {
+        //var result = (self_LT.VirusTypeID() == "1" && self_LT.TestResultID() == "P"); // modificacion solicitada por Rodrigo
         //console.log("EnableVirusSubTypeID_2");
-        var result = (self.VirusTypeID() == "1" && self.UsrCountry() == 7 && self.TestResultID() == "P");
+        var result = (self_LT.VirusTypeID() == "1" && self_LT.UsrCountry() == 7 && self_LT.TestResultID() == "P");
         if (!result) {
-            self.VirusSubTypeID_2("");
-            self.OrdenSubTypeID_2 = 99;
-            self.TestResultID_VirusSubType_2("");
-            self.CTSubType_2("");
-            self.CTRLSubType_2("")
+            self_LT.VirusSubTypeID_2("");
+            self_LT.OrdenSubTypeID_2 = 99;
+            self_LT.TestResultID_VirusSubType_2("");
+            self_LT.CTSubType_2("");
+            self_LT.CTRLSubType_2("")
         };
-        if (self.TestType() == "1") {
-            self.VirusSubTypeID_2("");
-            self.OrdenSubTypeID_2 = 99;
-            self.TestResultID_VirusSubType_2("");
-            self.CTSubType_2("");
-            self.CTRLSubType_2("")
+        if (self_LT.TestType() == "1") {
+            self_LT.VirusSubTypeID_2("");
+            self_LT.OrdenSubTypeID_2 = 99;
+            self_LT.TestResultID_VirusSubType_2("");
+            self_LT.CTSubType_2("");
+            self_LT.CTRLSubType_2("")
             return false;
         }
 
         return result;
-    }, self);
+    }, self_LT);
 
     //CT Subtype 
-    self.EnableCTSubType = ko.computed(function () {
-        if ((self.VirusSubTypeID() == 3 || self.VirusSubTypeID() == 4 || self.VirusSubTypeID() == 5 || self.VirusSubTypeID() == 10) && self.TestType() == 2 && self.UsrCountry() == 7) {
+    self_LT.EnableCTSubType = ko.computed(function () {
+        if ((self_LT.VirusSubTypeID() == 3 || self_LT.VirusSubTypeID() == 4 || self_LT.VirusSubTypeID() == 5 || self_LT.VirusSubTypeID() == 10) && self_LT.TestType() == 2 && self_LT.UsrCountry() == 7) {
 
             return true;
         }
         else {
-            self.CTSubType("");
+            self_LT.CTSubType("");
             return false;
         }
             
-    }, self);
-    self.EnableCTSubType_2 = ko.computed(function () {
-        if ((self.VirusSubTypeID_2() == 3 || self.VirusSubTypeID_2() == 4 || self.VirusSubTypeID_2() == 5 || self.VirusSubTypeID_2() == 10) && self.TestType() == 2 && self.UsrCountry() == 7) {
+    }, self_LT);
+    self_LT.EnableCTSubType_2 = ko.computed(function () {
+        if ((self_LT.VirusSubTypeID_2() == 3 || self_LT.VirusSubTypeID_2() == 4 || self_LT.VirusSubTypeID_2() == 5 || self_LT.VirusSubTypeID_2() == 10) && self_LT.TestType() == 2 && self_LT.UsrCountry() == 7) {
 
             return true;
         }
         else {
-            self.CTSubType_2("");
+            self_LT.CTSubType_2("");
             return false;
         }
 
-    }, self);
-    self.EnableCTLineage = ko.computed(function () {
-        if ((self.VirusLineageID() != 1) && self.TestType() == 2 && self.UsrCountry() == 7) {
+    }, self_LT);
+    self_LT.EnableCTLineage = ko.computed(function () {
+        if ((self_LT.VirusLineageID() != 1) && self_LT.TestType() == 2 && self_LT.UsrCountry() == 7) {
 
             return true;
         }
         else {
-            self.CTLineage("");
+            self_LT.CTLineage("");
             return false;
         }
 
-    }, self);
+    }, self_LT);
 
-    self.EnableRNP = ko.computed(function () {
+    self_LT.EnableRNP = ko.computed(function () {
         // Desactivado porque solicitaron que fuera para todos los virus
-        //(self.VirusSubTypeID() == 3 || self.VirusSubTypeID() == 10 || self.VirusTypeID() == 1 || self.VirusTypeID() == 2)
-        if (self.TestType() == 2 && self.UsrCountry() == 7) {
+        //(self_LT.VirusSubTypeID() == 3 || self_LT.VirusSubTypeID() == 10 || self_LT.VirusTypeID() == 1 || self_LT.VirusTypeID() == 2)
+        if (self_LT.TestType() == 2 && self_LT.UsrCountry() == 7) {
 
             return true;
         }
         else {
-            self.RNP("");
+            self_LT.RNP("");
             return false;
         }
 
-    }, self);
+    }, self_LT);
 
 
-    self.EnableCTRLNegative = ko.computed(function () {
+    self_LT.EnableCTRLNegative = ko.computed(function () {
         // Desactivado porque solicitaron que fuera para todos los virus
-        //(self.VirusSubTypeID() == 3 || self.VirusSubTypeID() == 10 || self.VirusTypeID() == 1 || self.VirusTypeID() == 2)
-        //if (self.TestType() == 2 && self.UsrCountry() == 7 && self.TestResultID() == "N") { // Modificado a solicitur de Rodrigo que siempre aparezca aunque el resultado sea positivo
-        if (self.TestType() == 2 && self.UsrCountry() == 7 ) {
+        //(self_LT.VirusSubTypeID() == 3 || self_LT.VirusSubTypeID() == 10 || self_LT.VirusTypeID() == 1 || self_LT.VirusTypeID() == 2)
+        //if (self_LT.TestType() == 2 && self_LT.UsrCountry() == 7 && self_LT.TestResultID() == "N") { // Modificado a solicitur de Rodrigo que siempre aparezca aunque el resultado sea positivo
+        if (self_LT.TestType() == 2 && self_LT.UsrCountry() == 7 ) {
 
             return true;
         }
         else {
-            self.CTRLNegative("");
+            self_LT.CTRLNegative("");
             return false;
         }
 
-    }, self);
+    }, self_LT);
 
-    self.EnableVirusLineageID = ko.computed(function () {
-        var result = (self.VirusTypeID() == "2"  && self.TestResultID() == "P"); if (!result) self.VirusLineageID("");
-        if (self.TestType() == "1") {
-            self.VirusLineageID("");
-            self.OrdenLineageID = 99;
+    self_LT.EnableVirusLineageID = ko.computed(function () {
+        var result = (self_LT.VirusTypeID() == "2"  && self_LT.TestResultID() == "P"); if (!result) self_LT.VirusLineageID("");
+        if (self_LT.TestType() == "1") {
+            self_LT.VirusLineageID("");
+            self_LT.OrdenLineageID = 99;
             return false;
         }
         return result;
-    }, self);
+    }, self_LT);
 
-    self.ProcessLab.subscribe(function (process) {
-        self.TestType(null);
-        self.TestEndDate(null);
-        self.TestDate(null);
-        self.TestResultID(null);
-        self.VirusTypeID(null);
-        self.CTVirusType("");
-        self.CTRLVirusType("");
-        self.VirusSubTypeID("");
-        self.CTSubType("");
-        self.CTRLSubType("");
-        self.TestResultID_VirusSubType("");
-        self.VirusSubTypeID_2("");
-        self.CTSubType_2("");
-        self.CTRLSubType_2("");
-        self.TestResultID_VirusSubType_2("");
-        self.VirusLineageID("");
-        self.CTLineage("");
-        self.CTRLLineage("");
-        self.RNP("");
-        self.CTRLNegative("");
-        self.InfA("");
-        self.InfB("");
-        self.ParaInfI("");
-        self.ParaInfII("");
-        self.ParaInfIII("");
-        self.RSV("");
-        self.Adenovirus("");
-        self.Metapneumovirus("");
+    self_LT.ProcessLab.subscribe(function (process) {
+        self_LT.TestType(null);
+        self_LT.TestEndDate(null);
+        self_LT.TestDate(null);
+        self_LT.TestResultID(null);
+        self_LT.VirusTypeID(null);
+        self_LT.CTVirusType("");
+        self_LT.CTRLVirusType("");
+        self_LT.VirusSubTypeID("");
+        self_LT.CTSubType("");
+        self_LT.CTRLSubType("");
+        self_LT.TestResultID_VirusSubType("");
+        self_LT.VirusSubTypeID_2("");
+        self_LT.CTSubType_2("");
+        self_LT.CTRLSubType_2("");
+        self_LT.TestResultID_VirusSubType_2("");
+        self_LT.VirusLineageID("");
+        self_LT.CTLineage("");
+        self_LT.CTRLLineage("");
+        self_LT.RNP("");
+        self_LT.CTRLNegative("");
+        self_LT.InfA("");
+        self_LT.InfB("");
+        self_LT.ParaInfI("");
+        self_LT.ParaInfII("");
+        self_LT.ParaInfIII("");
+        self_LT.RSV("");
+        self_LT.Adenovirus("");
+        self_LT.Metapneumovirus("");
     });
 
-    self.ShowProcessedLab = ko.computed(function () {
-        //console.log(self.CanEdit());
-        return (self.ProcessLab() === "true")
-    }, self);
+    self_LT.ShowProcessedLab = ko.computed(function () {
+        //console.log(self_LT.CanEdit());
+        return (self_LT.ProcessLab() === "true")
+    }, self_LT);
 
-    self.NotShowProcessedLab = ko.computed(function () {
-        return (self.ProcessLab() === "false")
-    }, self);
+    self_LT.NotShowProcessedLab = ko.computed(function () {
+        return (self_LT.ProcessLab() === "false")
+    }, self_LT);
 
     // Asignacion de resultado automaticamente
-    self.VirusTypeID.subscribe(function (new_virus) {
+    self_LT.VirusTypeID.subscribe(function (new_virus) {
         //console.log("VirusTypeID");
         if (new_virus != "" && new_virus != null) {
             var category = ko.utils.arrayFirst(app.Views.Home.CVT(), function (category) {
                 return category.Id === new_virus;
             });
             if (category != null && category != "undefined") {
-                self.OrdenVirusTypeID = category.orden;
-                //console.log("OrdenVirusTypeID --" + self.OrdenVirusTypeID);
+                self_LT.OrdenVirusTypeID = category.orden;
+                //console.log("OrdenVirusTypeID --" + self_LT.OrdenVirusTypeID);
             }
             
             app.Views.Lab.OrdenFinalResult();
         }
         if (!app.Views.Lab.hasGet()) {
             // subtipo1
-            self.VirusSubTypeID("");
-            self.TestResultID_VirusSubType("");
-            self.CTSubType("");
-            self.CTRLSubType("");
-            self.OrdenTestResultID_VirusSubType = 99;
-            self.OrdenSubTypeID = 99;
+            self_LT.VirusSubTypeID("");
+            self_LT.TestResultID_VirusSubType("");
+            self_LT.CTSubType("");
+            self_LT.CTRLSubType("");
+            self_LT.OrdenTestResultID_VirusSubType = 99;
+            self_LT.OrdenSubTypeID = 99;
             // subtipo 2
-            self.VirusSubTypeID_2("");
-            self.TestResultID_VirusSubType_2("");
-            self.CTSubType_2("");
-            self.CTRLSubType_2("");
-            self.OrdenTestResultID_VirusSubType_2 = 99;
-            self.OrdenSubTypeID_2 = 99;
+            self_LT.VirusSubTypeID_2("");
+            self_LT.TestResultID_VirusSubType_2("");
+            self_LT.CTSubType_2("");
+            self_LT.CTRLSubType_2("");
+            self_LT.OrdenTestResultID_VirusSubType_2 = 99;
+            self_LT.OrdenSubTypeID_2 = 99;
             // Lineage
-            self.VirusLineageID("");
-            self.CTLineage("");
-            self.CTRLLineage("");
-            self.OrdenLineageID = 99;
+            self_LT.VirusLineageID("");
+            self_LT.CTLineage("");
+            self_LT.CTRLLineage("");
+            self_LT.OrdenLineageID = 99;
         }
         
     });
 
-    self.LabID.subscribe(function (new_Lab_Select) {
+    self_LT.LabID.subscribe(function (new_Lab_Select) {
         //console.log("Lab_assign -- " + new_Lab_Select);
         if (new_Lab_Select != "" && new_Lab_Select != null) {
             //console.log(app.Views.Contact.IntsFlow());
             var category = ko.utils.arrayFirst(app.Views.Contact.IntsFlow(), function (category) {
-                //console.log(" LabId ++ " + self.LabID());
+                //console.log(" LabId ++ " + self_LT.LabID());
                 return category.LabID ===  new_Lab_Select;
             });
             if (category != null && category != "undefined") {
-                self.OrdenLabID = category.OPbyL;
+                self_LT.OrdenLabID = category.OPbyL;
             }  
             app.Views.Lab.OrdenFinalResult();
         }
 
     });
 
-    self.VirusSubTypeID.subscribe(function (new_subtype) {
+    self_LT.VirusSubTypeID.subscribe(function (new_subtype) {
         //console.log("VirusSubTypeID");
         if (new_subtype != "" && new_subtype != null) {
 
@@ -609,13 +949,13 @@ function LabTest(SampleNumber) {
                 return category.Id === new_subtype;
             });
             if (category != null && category != "undefined")
-            self.OrdenSubTypeID = category.orden;
+            self_LT.OrdenSubTypeID = category.orden;
             app.Views.Lab.OrdenFinalResult();
         }
 
     });
 
-    self.VirusLineageID.subscribe(function (new_lineage) {
+    self_LT.VirusLineageID.subscribe(function (new_lineage) {
         //console.log("VirusLineageID");
         if (new_lineage != "" && new_lineage != null) {
             var category = ko.utils.arrayFirst(app.Views.Home.CVL(), function (category) {
@@ -623,13 +963,13 @@ function LabTest(SampleNumber) {
             });
 
             if (category != null && category != "undefined")
-            self.OrdenLineageID = category.orden;
+            self_LT.OrdenLineageID = category.orden;
             app.Views.Lab.OrdenFinalResult();
         }
 
     });
 
-    self.TestType.subscribe(function (new_test_type) {
+    self_LT.TestType.subscribe(function (new_test_type) {
         //console.log("TestType");
         if (new_test_type != "" && new_test_type != null) {
 
@@ -637,17 +977,17 @@ function LabTest(SampleNumber) {
                 return category.Id === new_test_type;
             });
             if (category != null && category != "undefined")
-                self.OrdenTestType = category.orden;
+                self_LT.OrdenTestType = category.orden;
 
-            if (self.LabID() === "")
-                self.LabID(self.ProcLab());
+            if (self_LT.LabID() === "")
+                self_LT.LabID(self_LT.ProcLab());
 
             app.Views.Lab.OrdenFinalResult();
         }
 
     });
 
-    self.TestResultID.subscribe(function (new_test_result) {
+    self_LT.TestResultID.subscribe(function (new_test_result) {
         //console.log("TestResultID");
         if (new_test_result != "" && new_test_result != null) {
             //alert(new_test_result);
@@ -656,23 +996,23 @@ function LabTest(SampleNumber) {
             });
             //alert(category.orden);
             if (category != null && category != "undefined")
-            self.OrdenTestResultID = category.orden;
+            self_LT.OrdenTestResultID = category.orden;
 
             app.Views.Lab.OrdenFinalResult();
         }
 
         if (!app.Views.Lab.hasGet()) {
             console.log("aquí si");
-            self.VirusTypeID("");
-            self.CTVirusType("");
-            self.CTRLVirusType("");
-            self.OrdenVirusTypeID = 99;
+            self_LT.VirusTypeID("");
+            self_LT.CTVirusType("");
+            self_LT.CTRLVirusType("");
+            self_LT.OrdenVirusTypeID = 99;
         }
 
 
     });
 
-    self.TestResultID_VirusSubType.subscribe(function (new_test_result_virussubtype) {
+    self_LT.TestResultID_VirusSubType.subscribe(function (new_test_result_virussubtype) {
         //console.log("TestResultID_VirusSubType");
         //console.log(new_test_result_virussubtype);
         if (new_test_result_virussubtype != "" && new_test_result_virussubtype != null) {
@@ -682,14 +1022,14 @@ function LabTest(SampleNumber) {
             });
             //console.log(category.orden);
             if (category != null && category != "undefined")
-                self.OrdenTestResultID_VirusSubType = category.orden;
+                self_LT.OrdenTestResultID_VirusSubType = category.orden;
             
             app.Views.Lab.OrdenFinalResult();
         }
 
     });
 
-    self.TestResultID_VirusSubType_2.subscribe(function (new_test_result_virussubtype) {
+    self_LT.TestResultID_VirusSubType_2.subscribe(function (new_test_result_virussubtype) {
         //console.log("TestResultID_VirusSubType_2");
         if (new_test_result_virussubtype != "" && new_test_result_virussubtype != null) {
             //alert(new_test_result);
@@ -698,7 +1038,7 @@ function LabTest(SampleNumber) {
             });
             //alert(category.orden);
             if (category != null && category != "undefined")
-                self.OrdenTestResultID_VirusSubType_2 = category.orden;
+                self_LT.OrdenTestResultID_VirusSubType_2 = category.orden;
 
             app.Views.Lab.OrdenFinalResult();
         }
@@ -706,7 +1046,7 @@ function LabTest(SampleNumber) {
     });
 
 
-    self.VisibleFalseIFIVirus = function (option, item) {
+    self_LT.VisibleFalseIFIVirus = function (option, item) {
         //console.log('item id = ' + item.id);
         if (!(app.Views.Lab.CanPCRLab() == true) && typeof (item) != 'undefined' ) {
             //console.log('RemoveIFIVirus');
@@ -723,7 +1063,7 @@ function LabTest(SampleNumber) {
 
     };
 
-    self.VisibleTestResultIFI = function (option, item) {
+    self_LT.VisibleTestResultIFI = function (option, item) {
         //console.log('item id = ');
         //console.log(app.Views.Lab.CanIFILab());
         //console.log(typeof (item));
@@ -758,7 +1098,7 @@ function LabTest(SampleNumber) {
 };
 
 function LabViewModel(app, dataModel) {
-    console.log("function LabViewModel(app, dataModel)->START");
+    console.log("function LabViewModel(app, dataModel)->STARTT");
 
     var self = this;
     var date_format_ = app.dataModel.date_format_;
@@ -789,13 +1129,13 @@ function LabViewModel(app, dataModel) {
     self.hasReset = ko.observable(false);
     self.hasGet = ko.observable(false);
 
-    //self.RecDate12 = ko.observable(null);               //**** NEW: 190926
-    self.RecDate = ko.observable(null);
-    self.Identification_Test = ko.observable("");
-    self.TempSample1 = ko.observable("").extend({ numeric: 2 });
-    self.Processed = ko.observable("");
-    self.NoProRen = ko.observable("");
-    self.NoProRenId = ko.observable("");
+    ////self.RecDate12 = ko.observable(null);               //**** NEW: 190926
+    //self.RecDate = ko.observable(null);
+    //self.Identification_Test = ko.observable("");
+    //self.TempSample1 = ko.observable("").extend({ numeric: 2 });
+    //self.Processed = ko.observable("");
+    //self.NoProRen = ko.observable("");
+    //self.NoProRenId = ko.observable("");
 
     self.RecDate2 = ko.observable(null);
     self.Identification_Test2 = ko.observable("");
@@ -999,65 +1339,65 @@ function LabViewModel(app, dataModel) {
                         }
                     });
 
-    self.RecDate.subscribe(function (newRecDate) {
-        if (self.hasReset() != true && newRecDate != "" && newRecDate != null)
-        {
-            var current_value = jQuery.type(newRecDate) === 'date' ? newRecDate : parseDate(newRecDate, date_format_);
-            var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
-            var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
+    //self.RecDate.subscribe(function (newRecDate) {            //**** NEW: 190926
+    //    if (self.hasReset() != true && newRecDate != "" && newRecDate != null)
+    //    {
+    //        var current_value = jQuery.type(newRecDate) === 'date' ? newRecDate : parseDate(newRecDate, date_format_);
+    //        var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
+    //        var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
 
 
-            if ($("#Rec_Date_NPHL").length > 0 && self.NPHL_FlowExist() == true) {
+    //        if ($("#Rec_Date_NPHL").length > 0 && self.NPHL_FlowExist() == true) {
 
-                var date_Ship_Date_NPHL = jQuery.type(self.Ship_Date_NPHL()) === 'date' ? self.Ship_Date_NPHL() : parseDate(self.Ship_Date_NPHL(), date_format_);
+    //            var date_Ship_Date_NPHL = jQuery.type(self.Ship_Date_NPHL()) === 'date' ? self.Ship_Date_NPHL() : parseDate(self.Ship_Date_NPHL(), date_format_);
 
-                if ((date_Ship_Date_NPHL == null || date_Ship_Date_NPHL == "") && self.hasReset() != true) {
-                    //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                    alert(msgValidationRecSampleNPHL);
-                    //self.RecDate(null);
-                } else {
-                    if (moment(current_value).isBefore(moment(date_Ship_Date_NPHL), "days")) {
-                        //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
-                        alert(msgValidationSampleDateNPHLValidateS1);
-                        //self.RecDate(null);
-                    }
-                }
+    //            if ((date_Ship_Date_NPHL == null || date_Ship_Date_NPHL == "") && self.hasReset() != true) {
+    //                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+    //                alert(msgValidationRecSampleNPHL);
+    //                //self.RecDate(null);
+    //            } else {
+    //                if (moment(current_value).isBefore(moment(date_Ship_Date_NPHL), "days")) {
+    //                    //alert("La fecha de envío de la Muestra  no puede ser menor a la fecha de recepción de la muestra en NPHL");
+    //                    alert(msgValidationSampleDateNPHLValidateS1);
+    //                    //self.RecDate(null);
+    //                }
+    //            }
 
-            } else if ((date_shipping_date != null) && self.hasReset() != true) {
-                if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
-                    if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
-                        //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
-                        alert(msgValidationShippingDateValidateICS1);
-                              //msgValidationShippingDateValidateICS1
-                        self.RecDate(null);
-                    }
-                } else {
-                    if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
-                        //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
-                        alert(msgValidationShippingDateValidateS1);
-                        self.RecDate(null);
-                    }
-                }
+    //        } else if ((date_shipping_date != null) && self.hasReset() != true) {
+    //            if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
+    //                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+    //                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+    //                    alert(msgValidationShippingDateValidateICS1);
+    //                          //msgValidationShippingDateValidateICS1
+    //                    self.RecDate(null);
+    //                }
+    //            } else {
+    //                if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+    //                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+    //                    alert(msgValidationShippingDateValidateS1);
+    //                    self.RecDate(null);
+    //                }
+    //            }
 
-                /*if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
-                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
-                    alert(msgValidationShippingDateValidateS1);
-                    self.RecDate(null);
-                }*/
+    //            /*if (moment(current_value).isBefore(moment(date_shipping_date), "days")) {
+    //                //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
+    //                alert(msgValidationShippingDateValidateS1);
+    //                self.RecDate(null);
+    //            }*/
 
-            } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
-                //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
-                alert(msgValidationSampleDateS1);
-                    self.RecDate(null);
-                } else {
-                    if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
-                        //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
-                        alert(msgValidationSampleDateValidateS1);
-                        self.RecDate(null);
-                    }
-                  }
-        }
-    });
+    //        } else if ((date_sample_date_ == null || date_sample_date_ == "") && self.hasReset() != true) {
+    //            //alert("Por favor ingrese antes la fecha de toma muestra de la Muestra 1");
+    //            alert(msgValidationSampleDateS1);
+    //                self.RecDate(null);
+    //            } else {
+    //                if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
+    //                    //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de toma muestra de la Muestra 1");
+    //                    alert(msgValidationSampleDateValidateS1);
+    //                    self.RecDate(null);
+    //                }
+    //              }
+    //    }
+    //});
 
     self.RecDate2.subscribe(function (newRecDate2) {
         if (self.UsrCountry() == 7 || self.UsrCountry() == 3 || self.UsrCountry() == 25) {
@@ -1212,7 +1552,7 @@ function LabViewModel(app, dataModel) {
     self.EnableCHI = ko.computed(function () {
         return (self.UsrCountry() != 7) ? true : false;
 
-    }, self);
+    }, self); 
 
     self.DisableCHI = ko.computed(function () {
         return (self.UsrCountry() == 7) ? true : false;
@@ -1351,7 +1691,8 @@ function LabViewModel(app, dataModel) {
     self.Comments = ko.observable("");
 
     self.CaseLabses = ko.observableArray([]);                   //**** NEW: 190926
-    self.LabTests = ko.observableArray([]);
+    self.LabTestsEndFlow = ko.observableArray([]);              //**** NEW: 190926
+
     self.LabTests_Sample2 = ko.observableArray([]);
     self.LabTests_Sample3 = ko.observableArray([]);
     self.LabTestsExternal = ko.observableArray([]);
@@ -1425,30 +1766,28 @@ function LabViewModel(app, dataModel) {
         var result = self.FinalResultVirusTypeID_3() == "2"; if (!result) self.FinalResultVirusLineageID_3(""); return result;
     }, self);
 
-    self.removeTestbyLab = function (LabId, SampleNumber) {
+    //self.removeTestbyLab = function (LabId, SampleNumber) {
 
-        self.LabTests().forEach(function (c, i) {
-            //console.log("CanEdit - " + c.CanEdit() + " - LabId" + LabId);
-            if (c.CanDeleteProcess() == true) {
-                //console.log("borrar");
-                self.removeLabTest(SampleNumber, c)
-            }
+    //    self.LabTests().forEach(function (c, i) {
+    //        //console.log("CanEdit - " + c.CanEdit() + " - LabId" + LabId);
+    //        if (c.CanDeleteProcess() == true) {
+    //            //console.log("borrar");
+    //            self.removeLabTest(SampleNumber, c)
+    //        }
                  
-        });
-    };
+    //    });
+    //};
     
-    self.Processed.subscribe(function (NewIsProcessed) {
-    //console.log("aqui Processed.subscribe" + NewIsProcessed);
-        if (NewIsProcessed == "false")
-        {
-            self.removeTestbyLab(self.UsrInstID(), 1);
-            $("#addLabTest_1").hide();
-        } else if (NewIsProcessed == "true") {
-
-            $("#addLabTest_1").show();
-        }
-            
-    });
+    //self.Processed.subscribe(function (NewIsProcessed) {          //**** NEW: 190926
+    ////console.log("aqui Processed.subscribe" + NewIsProcessed);
+    //    if (NewIsProcessed == "false")
+    //    {
+    //        self.removeTestbyLab(self.UsrInstID(), 1);
+    //        $("#addLabTest_1").hide();
+    //    } else if (NewIsProcessed == "true") {
+    //        $("#addLabTest_1").show();
+    //    }            
+    //});
 
     self.Processed_National.subscribe(function (NewIsProcessed) {
         //console.log("aqui Processed_National.subscribe");
@@ -1488,8 +1827,7 @@ function LabViewModel(app, dataModel) {
         };
     };
 
-    self.isISP = ko.computed(function () {
-        
+    self.isISP = ko.computed(function () {        
         if (self.UsrCountry() == 7) {
             var labtests_check = $.grep(self.LabsResult(), function (v) {
                 return v.Id === "97";
@@ -1525,50 +1863,44 @@ function LabViewModel(app, dataModel) {
         }));
     };
 
-    self.addLabTest = function (sample_number, data) {
-        var erroMsg = self.validatebeforeadd(1,2);
-        if (erroMsg) {
-            alert(erroMsg);
-            return;
-        }
+    //self.addLabTest = function (sample_number, data) {
+    //    var erroMsg = self.validatebeforeadd(1,2);
+    //    if (erroMsg) {
+    //        alert(erroMsg);
+    //        return;
+    //    }
 
-        var labtest = new LabTest(sample_number);
+    //    var labtest = new LabTest(sample_number);
 
-        labtest.hideLabOptions = true;
+    //    labtest.hideLabOptions = true;
        
-        //console.log(labtest.displayLabOptions + " **** ");
-        labtest.CaseLabID = self.Id;
-        labtest.SampleNumber(sample_number);
-        if (sample_number == 1) {
-            self.LabTests.push(labtest);
-        } else if (sample_number == 2) {
-            self.LabTests_Sample2.push(labtest);
-        } else if (sample_number == 3) {
-            self.LabTests_Sample3.push(labtest);
-        } else if (sample_number == 999) {
-            self.LabTestsExternal.push(labtest);
-        }
-         
-    };
+    //    //console.log(labtest.displayLabOptions + " **** ");
+    //    labtest.CaseLabID = self.Id;
+    //    labtest.SampleNumber(sample_number);
+    //    if (sample_number == 1) {
+    //        self.LabTests.push(labtest);
+    //    } else if (sample_number == 2) {
+    //        self.LabTests_Sample2.push(labtest);
+    //    } else if (sample_number == 3) {
+    //        self.LabTests_Sample3.push(labtest);
+    //    } else if (sample_number == 999) {
+    //        self.LabTestsExternal.push(labtest);
+    //    }         
+    //};
 
-    self.removeLabTest = function (sample_number, data) {
+    //self.removeLabTest = function (sample_number, data) {
+    //    if (sample_number == 1) {
+    //        self.LabTests.remove(data);
+    //    } else if (sample_number == 2) {
+    //        self.LabTests_Sample2.remove(data);
+    //    } else if (sample_number == 3) {
+    //        self.LabTests_Sample3.remove(data);
+    //    } else if (sample_number == 999) {
+    //        self.LabTestsExternal.remove(data);
+    //    }
 
-        //console.log(data);
-        //console.log(sample_number);
-        if (sample_number == 1) {
-            //console.log("aquí");
-            self.LabTests.remove(data);
-        } else if (sample_number == 2) {
-            self.LabTests_Sample2.remove(data);
-        } else if (sample_number == 3) {
-            self.LabTests_Sample3.remove(data);
-        } else if (sample_number == 999) {
-            self.LabTestsExternal.remove(data);
-        }
-
-        self.OrdenFinalResult();
-
-    };
+    //    self.OrdenFinalResult();
+    //};
 
 
     self.ResetLab = function () {
@@ -1585,16 +1917,24 @@ function LabViewModel(app, dataModel) {
         self.NoProRen_National("");
         self.NoProRenId_National("");
 
-        self.RecDate(null);
         //self.RecDate(null);
-        self.Processed("");
-        self.TempSample1("");
+        //self.Processed("");
+        //self.TempSample1("");
+        //self.NoProRen("");
+        //self.NoProRenId("");
+        
         self.RecDate2(null);
         self.Processed2("");
         self.TempSample2("");
+        self.NoProRen2("");
+        self.NoProRenId2("");
+        
         self.RecDate3(null);
         self.Processed3("");
         self.TempSample3("");
+        self.NoProRen3("");
+        self.NoProRenId3("");
+
         //Agregar laboratorio intermedio
         self.Rec_Date_NPHL(null);
         self.Identification_Test_NPHL("");
@@ -1642,13 +1982,7 @@ function LabViewModel(app, dataModel) {
         self.GeneticGroup("");
         self.GeneticGroup_2("");
         self.GeneticGroup_3("");
-        
-        self.NoProRen("");
-        self.NoProRen2("");
-        self.NoProRen3("");
-        self.NoProRenId("");
-        self.NoProRenId2("");
-        self.NoProRenId3("");
+
         self.LabTests([]);
         self.LabTests_Sample2([]);
         self.LabTests_Sample3([]);
@@ -1674,308 +2008,307 @@ function LabViewModel(app, dataModel) {
         self.FinalResultVirusLineageID_3("");
     };
 
-    self.validate = function (nextStep) {
-        var msg = "";
-        rec_date = jQuery.type(self.RecDate()) === 'date' ? self.RecDate() : parseDate($("#RecDate").val(), date_format_);
-        rec_date_national = jQuery.type(self.RecDate_National()) === 'date' ? self.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
-        date_close_date_lab = jQuery.type(self.EndLabDate()) === 'date' ? self.EndLabDate() :  parseDate($("#EndLabDate").val(), date_format_);
-        //var date_ShipDate = new Date();
-        date_ShipDate = jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate($("#ShipDate").val(), date_format_);
+    //self.validate = function (nextStep) {
+    //    var msg = "";
+    //    rec_date = jQuery.type(self.RecDate()) === 'date' ? self.RecDate() : parseDate($("#RecDate").val(), date_format_);
+    //    rec_date_national = jQuery.type(self.RecDate_National()) === 'date' ? self.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
+    //    date_close_date_lab = jQuery.type(self.EndLabDate()) === 'date' ? self.EndLabDate() :  parseDate($("#EndLabDate").val(), date_format_);
+    //    //var date_ShipDate = new Date();
+    //    date_ShipDate = jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate($("#ShipDate").val(), date_format_);
 
-        //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && $("#RecDate").val() !="") {
-        if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed() == "true") {
+    //    //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && $("#RecDate").val() !="") {
+    //    if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed() == "true") {
 
-            if ($("#RecDate").val() == "")
-                msg += "\n" + msgValidateRecDateRequired;
-                    //"Fecha de recepción es requerida";
-            if ($("#RecDate").val() != "" && !moment(moment(rec_date).format(date_format_moment), [date_format_moment], true).isValid())
-                msg += "\n" + msgValidateRecDateInvalid;
-                    //"Fecha de recepción es inválida ";
+    //        if ($("#RecDate").val() == "")
+    //            msg += "\n" + msgValidateRecDateRequired;
+    //                //"Fecha de recepción es requerida";
+    //        if ($("#RecDate").val() != "" && !moment(moment(rec_date).format(date_format_moment), [date_format_moment], true).isValid())
+    //            msg += "\n" + msgValidateRecDateInvalid;
+    //                //"Fecha de recepción es inválida ";
 
-            if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
-                if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(rec_date), 'days'))
-                    msg += "\n" + msgValidateRecDateShipDateIC;
-            } else {
-                if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(date_ShipDate), 'days'))
-                    msg += "\n" + msgValidateRecDateShipDate;
-                //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
-            }
+    //        if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
+    //            if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(rec_date), 'days'))
+    //                msg += "\n" + msgValidateRecDateShipDateIC;
+    //        } else {
+    //            if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(date_ShipDate), 'days'))
+    //                msg += "\n" + msgValidateRecDateShipDate;
+    //            //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
+    //        }
 
-            if (self.Processed() == "true") {
-                if (self.LabTests().length <= 0) {
-                    msg += "\n" + msgValidateInsertResult;
-                        //"Inserte al menos un resultado";
-                }
+    //        if (self.Processed() == "true") {
+    //            if (self.LabTests().length <= 0) {
+    //                msg += "\n" + msgValidateInsertResult;
+    //                    //"Inserte al menos un resultado";
+    //            }
 
-                // Verificación de procesos uno de la muestra 1
-                var errRes = self.validatebeforeadd(1,1);
-                if (errRes != "") {
-                    msg += errRes;
-                }
-            }
+    //            // Verificación de procesos uno de la muestra 1
+    //            var errRes = self.validatebeforeadd(1,1);
+    //            if (errRes != "") {
+    //                msg += errRes;
+    //            }
+    //        }
 
-            var labtests_check = $.grep(self.LabTests(), function (v) {
-                return v.TestType() === "2" || v.TestType() === "1";
-            });
-            if (labtests_check.length > 0) {
-                if ($("#EndLabDate").val() == "")
-                    msg += "\n" + msgValidateFinalResultDate;
-                        //"Fecha del resultado final es requerida";
+    //        var labtests_check = $.grep(self.LabTests(), function (v) {
+    //            return v.TestType() === "2" || v.TestType() === "1";
+    //        });
+    //        if (labtests_check.length > 0) {
+    //            if ($("#EndLabDate").val() == "")
+    //                msg += "\n" + msgValidateFinalResultDate;
+    //                    //"Fecha del resultado final es requerida";
 
-                if ($("#EndLabDate").val() != "") {
-                    if (!moment(moment(date_close_date_lab).format(date_format_moment), [date_format_moment], true).isValid())
-                        msg += "\n" + msgValidateFinalResultDateInvalid;
-                            //"Fecha del resultado final es inválida";
+    //            if ($("#EndLabDate").val() != "") {
+    //                if (!moment(moment(date_close_date_lab).format(date_format_moment), [date_format_moment], true).isValid())
+    //                    msg += "\n" + msgValidateFinalResultDateInvalid;
+    //                        //"Fecha del resultado final es inválida";
 
-                    if ($("#RecDate").val() != "" && moment(rec_date).isAfter(moment(date_close_date_lab), 'days'))
-                        msg += "\n" + msgValidateFinalResultDateRecDate;
-                            //"'Fecha del resultado final' no puede ser anterior a la 'Fecha de recepción'";
+    //                if ($("#RecDate").val() != "" && moment(rec_date).isAfter(moment(date_close_date_lab), 'days'))
+    //                    msg += "\n" + msgValidateFinalResultDateRecDate;
+    //                        //"'Fecha del resultado final' no puede ser anterior a la 'Fecha de recepción'";
 
-                    if (!self.FinalResult() || self.FinalResult() == "") {
-                        msg += "\n" + msgValidateFinalResult;
-                            //"Selecione un resultado final";
-                    }
-                }
-            }
+    //                if (!self.FinalResult() || self.FinalResult() == "") {
+    //                    msg += "\n" + msgValidateFinalResult;
+    //                        //"Selecione un resultado final";
+    //                }
+    //            }
+    //        }
 
-            self.ArrayValidate(self.LabTests().concat(self.LabTests_Sample2()).concat(self.LabTests_Sample3()));
-            for (index = 0; index < self.ArrayValidate().length; ++index) {
+    //        self.ArrayValidate(self.LabTests().concat(self.LabTests_Sample2()).concat(self.LabTests_Sample3()));
+    //        for (index = 0; index < self.ArrayValidate().length; ++index) {
 
-                if (self.ArrayValidate()[index].TestResultID() === "P"  // Resultado general Positivo
-                    && self.ArrayValidate()[index].VirusTypeID() === "1" // Virus seleccionado 
-                    && self.ArrayValidate()[index].TestType() === "2"   // Tipo de técnica es PCR
-                    && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P" && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
-                    && self.UsrCountry() == 7)
-                    msg += "\n" + msgValidateProcessResult_Subtype;
-            }
+    //            if (self.ArrayValidate()[index].TestResultID() === "P"  // Resultado general Positivo
+    //                && self.ArrayValidate()[index].VirusTypeID() === "1" // Virus seleccionado 
+    //                && self.ArrayValidate()[index].TestType() === "2"   // Tipo de técnica es PCR
+    //                && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P" && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
+    //                && self.UsrCountry() == 7)
+    //                msg += "\n" + msgValidateProcessResult_Subtype;
+    //        }
 
-        }
+    //    }
 
-        if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed_National() == "true") {
-            if ($("#RecDate_National").val() == "")
-                msg += "\n" + msgValidateRecDateRequired;
-            //"Fecha de recepción es requerida";
-            if ($("#RecDate_National").val() != "" && !moment(moment(rec_date_national).format(date_format_moment), [date_format_moment], true).isValid())
-                msg += "\n" + msgValidateRecDateInvalid;
+    //    if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed_National() == "true") {
+    //        if ($("#RecDate_National").val() == "")
+    //            msg += "\n" + msgValidateRecDateRequired;
+    //        //"Fecha de recepción es requerida";
+    //        if ($("#RecDate_National").val() != "" && !moment(moment(rec_date_national).format(date_format_moment), [date_format_moment], true).isValid())
+    //            msg += "\n" + msgValidateRecDateInvalid;
 
-            if (date_ShipDate != null && rec_date_national != null && moment(rec_date_national).isBefore(moment(date_ShipDate), 'days'))
-                msg += "\n" + msgValidateRecDateShipDate;
-            //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
+    //        if (date_ShipDate != null && rec_date_national != null && moment(rec_date_national).isBefore(moment(date_ShipDate), 'days'))
+    //            msg += "\n" + msgValidateRecDateShipDate;
+    //        //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
 
-            if (self.Processed_National() == "true") {
-                if (self.LabTests().length <= 0) {
-                    msg += "\n" + msgValidateInsertResult;
-                    //"Inserte al menos un resultado";
-                }
+    //        if (self.Processed_National() == "true") {
+    //            if (self.LabTests().length <= 0) {
+    //                msg += "\n" + msgValidateInsertResult;
+    //                //"Inserte al menos un resultado";
+    //            }
 
-                // Verificación de procesos uno de la muestra 1
-                //var errRes = self.validatebeforeadd(1, 1);
-                //if (errRes != "") {
-                //    msg += errRes;
-                //}
-            }
-        }
+    //            // Verificación de procesos uno de la muestra 1
+    //            //var errRes = self.validatebeforeadd(1, 1);
+    //            //if (errRes != "") {
+    //            //    msg += errRes;
+    //            //}
+    //        }
+    //    }
 
-        if (self.Processed() == "false" &&  self.NoProRenId() == "") {
-            msg += "\n" + msgValidateProcessedReason;
-                //"Indique la razón porque no fue procesada la muestra";
-        }
+    //    if (self.Processed() == "false" &&  self.NoProRenId() == "") {
+    //        msg += "\n" + msgValidateProcessedReason;
+    //            //"Indique la razón porque no fue procesada la muestra";
+    //    }
 
-        if (self.Processed_National() == "false" && self.NoProRenId_National() == "") {
-            msg += "\n" + msgValidateProcessedReason;
-            //"Indique la razón porque no fue procesada la muestra";
-        }
+    //    if (self.Processed_National() == "false" && self.NoProRenId_National() == "") {
+    //        msg += "\n" + msgValidateProcessedReason;
+    //        //"Indique la razón porque no fue procesada la muestra";
+    //    }
 
-        if (msg !== "") { alert(msgValidationTitleLab + msg); $('#tabs').tabs({ active: 4 }); return false; }
+    //    if (msg !== "") { alert(msgValidationTitleLab + msg); $('#tabs').tabs({ active: 4 }); return false; }
 
-        //if (self.UsrCountry == 7) {
-        //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 4 }); return false; }
-        //} else {
-        //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 5 }); return false; }
-        //}
+    //    //if (self.UsrCountry == 7) {
+    //    //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 4 }); return false; }
+    //    //} else {
+    //    //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 5 }); return false; }
+    //    //}
         
-        if (nextStep != null) nextStep();
-        return true;
-    };
+    //    if (nextStep != null) nextStep();
+    //    return true;
+    //};
 
-    self.validatebeforeadd = function (nextStep, SaveVerif) {
-        var msg = "";
-        self.ArrayValidate((nextStep == 1) ? self.LabTests() : (nextStep == 2) ? self.LabTests_Sample2() : self.LabTests_Sample3());
-        for (index = 0; index < self.ArrayValidate().length; ++index) {
-            date_1 = self.ArrayValidate()[index].TestDate();
-            date_2 = self.ArrayValidate()[index].TestEndDate();
-            date_Received = self.RecDate();
-            var date_test_start = new Date();
-            var date_test_final = new Date();
-            var date_RecDate = new Date();
-            date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
-            date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
-            date_RecDate = jQuery.type(date_Received) === 'date' ? date_Received : parseDate($("#RecDate").val(), date_format_);
+    //self.validatebeforeadd = function (nextStep, SaveVerif) {
+    //    var msg = "";
+    //    self.ArrayValidate((nextStep == 1) ? self.LabTests() : (nextStep == 2) ? self.LabTests_Sample2() : self.LabTests_Sample3());
+    //    for (index = 0; index < self.ArrayValidate().length; ++index) {
+    //        date_1 = self.ArrayValidate()[index].TestDate();
+    //        date_2 = self.ArrayValidate()[index].TestEndDate();
+    //        date_Received = self.RecDate();
+    //        var date_test_start = new Date();
+    //        var date_test_final = new Date();
+    //        var date_RecDate = new Date();
+    //        date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+    //        date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+    //        date_RecDate = jQuery.type(date_Received) === 'date' ? date_Received : parseDate($("#RecDate").val(), date_format_);
 
-            if (self.ArrayValidate()[index].ProcLab() === "" || typeof self.ArrayValidate()[index].ProcLab() === "undefined")
-                msg += "\n" + msgValidateProcessSelectLab;
-                    //"'Laboratorio': Seleccione el laboratorio que procesa la prueba";
+    //        if (self.ArrayValidate()[index].ProcLab() === "" || typeof self.ArrayValidate()[index].ProcLab() === "undefined")
+    //            msg += "\n" + msgValidateProcessSelectLab;
+    //                //"'Laboratorio': Seleccione el laboratorio que procesa la prueba";
 
-            if (self.ArrayValidate()[index].ProcessLab() === "")
-                msg += "\n" + msgValidateProcessProcessLab;
-                    //"'Procesada': Indique si la prueba fue procesada";
+    //        if (self.ArrayValidate()[index].ProcessLab() === "")
+    //            msg += "\n" + msgValidateProcessProcessLab;
+    //                //"'Procesada': Indique si la prueba fue procesada";
  
-            if (self.ArrayValidate()[index].ProcessLab() === "true") {
+    //        if (self.ArrayValidate()[index].ProcessLab() === "true") {
 
-                if (date_RecDate != null && date_test_start != null && moment(date_test_start).isBefore(moment(date_RecDate), 'days'))
-                    msg += "\n" + msgValidateProcessStartReceiptDate;
-                    //'Process start date' can not be less than the 'Date of receipt of the sample'
-                        //"'Fecha de inicio del proceso' no puede ser menor a la 'Fecha de recepcion de la muestra'";
-                //return false;
+    //            if (date_RecDate != null && date_test_start != null && moment(date_test_start).isBefore(moment(date_RecDate), 'days'))
+    //                msg += "\n" + msgValidateProcessStartReceiptDate;
+    //                //'Process start date' can not be less than the 'Date of receipt of the sample'
+    //                    //"'Fecha de inicio del proceso' no puede ser menor a la 'Fecha de recepcion de la muestra'";
+    //            //return false;
 
-                if (date_test_start === null)
-                    msg += "\n" + msgValidateProcessStartRequired;
-                    //Process start date is required
-                    //    "Fecha de inicio de proceso es requerida";
-                if (date_test_start != null && !moment(moment(date_test_start).format(date_format_moment), [date_format_moment], true).isValid())
-                    msg += "\n" + msgValidateProcessStartInvalid;
-                        //"Fecha de inicio de proceso es inválida";
-                //if (date_RecDate != null && date_test_start != null && moment(date_test_start).isBefore(moment(date_RecDate), 'days'))
-                //    msg += "\n" + "'Start date' cannot be less than the 'Received date'";
+    //            if (date_test_start === null)
+    //                msg += "\n" + msgValidateProcessStartRequired;
+    //                //Process start date is required
+    //                //    "Fecha de inicio de proceso es requerida";
+    //            if (date_test_start != null && !moment(moment(date_test_start).format(date_format_moment), [date_format_moment], true).isValid())
+    //                msg += "\n" + msgValidateProcessStartInvalid;
+    //                    //"Fecha de inicio de proceso es inválida";
+    //            //if (date_RecDate != null && date_test_start != null && moment(date_test_start).isBefore(moment(date_RecDate), 'days'))
+    //            //    msg += "\n" + "'Start date' cannot be less than the 'Received date'";
 
-                if (date_test_final === null)
-                    msg += "\n" + msgValidateProcessEndDateRequired;
-                        //"Fecha final del proceso es requerida";
-                if (date_test_final != null && !moment(moment(date_test_final).format(date_format_moment), [date_format_moment], true).isValid())
-                    msg += "\n" + msgValidateProcessEndDateInvalid;
-                        //"Fecha final del proceso es inválida";
-                if (date_test_start != null && date_test_final != null
-                    && moment(date_test_start).isAfter(moment(date_test_final), 'days'))
-                    msg += "\n" + msgValidateProcessEndDateStartDate;
-                        //'Process end date' can not be less than 'Process start date'
-                        //"'Fecha final del proceso' no puede ser menor a la 'Fecha de inicio del proceso'";
+    //            if (date_test_final === null)
+    //                msg += "\n" + msgValidateProcessEndDateRequired;
+    //                    //"Fecha final del proceso es requerida";
+    //            if (date_test_final != null && !moment(moment(date_test_final).format(date_format_moment), [date_format_moment], true).isValid())
+    //                msg += "\n" + msgValidateProcessEndDateInvalid;
+    //                    //"Fecha final del proceso es inválida";
+    //            if (date_test_start != null && date_test_final != null
+    //                && moment(date_test_start).isAfter(moment(date_test_final), 'days'))
+    //                msg += "\n" + msgValidateProcessEndDateStartDate;
+    //                    //'Process end date' can not be less than 'Process start date'
+    //                    //"'Fecha final del proceso' no puede ser menor a la 'Fecha de inicio del proceso'";
 
-                if (self.ArrayValidate()[index].TestType() === "")
-                    msg += "\n" + msgValidateProcessType;
-                        //Insert the type of completed process
-                        //"Indique el tipo de proceso realizado";
+    //            if (self.ArrayValidate()[index].TestType() === "")
+    //                msg += "\n" + msgValidateProcessType;
+    //                    //Insert the type of completed process
+    //                    //"Indique el tipo de proceso realizado";
 
-                if (self.ArrayValidate()[index].TestResultID() === "")
-                    msg += "\n" + msgValidateProcessResult;
-                        //Insert the result of the process
-                        //"Indique el resultado del proceso";
+    //            if (self.ArrayValidate()[index].TestResultID() === "")
+    //                msg += "\n" + msgValidateProcessResult;
+    //                    //Insert the result of the process
+    //                    //"Indique el resultado del proceso";
 
-                        // revision para agregar los subtipos de Chile
-                if (self.ArrayValidate()[index].TestResultID() === "P"
-                    && self.ArrayValidate()[index].VirusTypeID() === "1"
-                    && self.ArrayValidate()[index].TestType() === "2"
-                    && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P"
-                    && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
-                    && self.ArrayValidate()[index].UsrCountry() == 7) // Esta línea es porque esta validación es solo para Chile
-                    msg += "\n" + msgValidateProcessResult_Subtype;
-
-
-                if ((self.ArrayValidate()[index].TestResultID() === "P" ) && (self.ArrayValidate()[index].VirusTypeID() === "" || self.ArrayValidate()[index].VirusTypeID() == undefined))
-                {
-                    msg += "\n" + msgValidateProcessVirus;
-                        //Insert the detected virus
-                        //"Ingrese el virus detectado";
-                        //|| self.ArrayValidate()[index].TestResultID() === "I"
-                }
-                else {
-                    if (self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTVirusType() === "" && self.ArrayValidate()[index].VirusTypeID() != "" && self.ArrayValidate()[index].TestType() === "2")
-                    { msg += "\n" + "Ingreso el CT de Virus"; }
-                }
-
-                if ((self.ArrayValidate()[index].TestResultID() === "P" ) && self.ArrayValidate()[index].VirusTypeID() === "9" && (self.ArrayValidate()[index].OtherVirusTypeID() === "" || self.ArrayValidate()[index].OtherVirusTypeID() == undefined) && self.ArrayValidate()[index].OtherVirus() === "")
-                {
-                    msg += "\n" + msgValidateProcessOtherVirus;
-                      //  Insert the other detected virus
-                    //"Indique el otro virus detectado";
-                    //|| self.ArrayValidate()[index].TestResultID() === "I"
-                }
-                else {
-                    if (self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTOtherVirusType() === "" && self.ArrayValidate()[index].VirusTypeID() === "9" && self.ArrayValidate()[index].TestType() === "2" && self.ArrayValidate()[index].OtherVirusTypeID() != "")
-                    { msg += "\n" + "Ingreso el CT de Otro Virus"; }
-                }
+    //                    // revision para agregar los subtipos de Chile
+    //            if (self.ArrayValidate()[index].TestResultID() === "P"
+    //                && self.ArrayValidate()[index].VirusTypeID() === "1"
+    //                && self.ArrayValidate()[index].TestType() === "2"
+    //                && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P"
+    //                && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
+    //                && self.ArrayValidate()[index].UsrCountry() == 7) // Esta línea es porque esta validación es solo para Chile
+    //                msg += "\n" + msgValidateProcessResult_Subtype;
 
 
-                if (self.ArrayValidate()[index].TestResultID() === "P"
-                    && self.ArrayValidate()[index].VirusTypeID() === "1" 
-                    && (self.ArrayValidate()[index].VirusSubTypeID() === "" || self.ArrayValidate()[index].VirusSubTypeID() == undefined )
-                    && self.ArrayValidate()[index].TestType() === "2") 
-                {
-                    //console.log("Aqui virusSubtiypeID");
+    //            if ((self.ArrayValidate()[index].TestResultID() === "P" ) && (self.ArrayValidate()[index].VirusTypeID() === "" || self.ArrayValidate()[index].VirusTypeID() == undefined))
+    //            {
+    //                msg += "\n" + msgValidateProcessVirus;
+    //                    //Insert the detected virus
+    //                    //"Ingrese el virus detectado";
+    //                    //|| self.ArrayValidate()[index].TestResultID() === "I"
+    //            }
+    //            else {
+    //                if (self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTVirusType() === "" && self.ArrayValidate()[index].VirusTypeID() != "" && self.ArrayValidate()[index].TestType() === "2")
+    //                { msg += "\n" + "Ingreso el CT de Virus"; }
+    //            }
 
-                    if (self.ArrayValidate()[index].UsrCountry() == 7) {
+    //            if ((self.ArrayValidate()[index].TestResultID() === "P" ) && self.ArrayValidate()[index].VirusTypeID() === "9" && (self.ArrayValidate()[index].OtherVirusTypeID() === "" || self.ArrayValidate()[index].OtherVirusTypeID() == undefined) && self.ArrayValidate()[index].OtherVirus() === "")
+    //            {
+    //                msg += "\n" + msgValidateProcessOtherVirus;
+    //                  //  Insert the other detected virus
+    //                //"Indique el otro virus detectado";
+    //                //|| self.ArrayValidate()[index].TestResultID() === "I"
+    //            }
+    //            else {
+    //                if (self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTOtherVirusType() === "" && self.ArrayValidate()[index].VirusTypeID() === "9" && self.ArrayValidate()[index].TestType() === "2" && self.ArrayValidate()[index].OtherVirusTypeID() != "")
+    //                { msg += "\n" + "Ingreso el CT de Otro Virus"; }
+    //            }
 
-                        if  ((self.ArrayValidate()[index].VirusSubTypeID() === "" || self.ArrayValidate()[index].VirusSubTypeID() == undefined ) && (self.ArrayValidate()[index].VirusSubTypeID_2() === "" || self.ArrayValidate()[index].VirusSubTypeID_2() == undefined) )
-                            msg += "\n" + msgValidateProcessSubtype;
 
-                    } else {
-                        msg += "\n" + msgValidateProcessSubtype;
-                    }
+    //            if (self.ArrayValidate()[index].TestResultID() === "P"
+    //                && self.ArrayValidate()[index].VirusTypeID() === "1" 
+    //                && (self.ArrayValidate()[index].VirusSubTypeID() === "" || self.ArrayValidate()[index].VirusSubTypeID() == undefined )
+    //                && self.ArrayValidate()[index].TestType() === "2") 
+    //            {
+    //                //console.log("Aqui virusSubtiypeID");
+
+    //                if (self.ArrayValidate()[index].UsrCountry() == 7) {
+
+    //                    if  ((self.ArrayValidate()[index].VirusSubTypeID() === "" || self.ArrayValidate()[index].VirusSubTypeID() == undefined ) && (self.ArrayValidate()[index].VirusSubTypeID_2() === "" || self.ArrayValidate()[index].VirusSubTypeID_2() == undefined) )
+    //                        msg += "\n" + msgValidateProcessSubtype;
+
+    //                } else {
+    //                    msg += "\n" + msgValidateProcessSubtype;
+    //                }
 
 
-                      //  Insert the detected Subtype
-                      //"Ingrese el Subtipo detectado";
-                }
-                else {
-                    if ((self.ArrayValidate()[index].VirusSubTypeID() == 3 || self.ArrayValidate()[index].VirusSubTypeID() == 10) && self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTSubType() === "" && self.ArrayValidate()[index].VirusSubTypeID() != "1" && self.ArrayValidate()[index].VirusTypeID() === "1" && self.ArrayValidate()[index].TestType() === "2")
-                    { msg += "\n" + "Ingreso el CT de Subtipo"; }
-                }
+    //                  //  Insert the detected Subtype
+    //                  //"Ingrese el Subtipo detectado";
+    //            }
+    //            else {
+    //                if ((self.ArrayValidate()[index].VirusSubTypeID() == 3 || self.ArrayValidate()[index].VirusSubTypeID() == 10) && self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTSubType() === "" && self.ArrayValidate()[index].VirusSubTypeID() != "1" && self.ArrayValidate()[index].VirusTypeID() === "1" && self.ArrayValidate()[index].TestType() === "2")
+    //                { msg += "\n" + "Ingreso el CT de Subtipo"; }
+    //            }
 
-                if (self.ArrayValidate()[index].LabID() == self.ISPID() || self.UsrCountry() != 7) {
-                    if (self.ArrayValidate()[index].TestResultID() === "P" && self.ArrayValidate()[index].VirusTypeID() === "2" && self.ArrayValidate()[index].VirusLineageID() === "" && self.ArrayValidate()[index].TestType() === "2")
-                    {
-                        msg += "\n" + msgValidateProcessLinage;
-                          //Insert the detected Linage
-                          //"Ingrese el Linaje detectado";
-                    }
-                    else {
-                        if ((self.ArrayValidate()[index].VirusLineageID() == 2 || self.ArrayValidate()[index].VirusLineageID() == 3) && self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTLineage() === "" && self.ArrayValidate()[index].VirusTypeID() === "2" && self.ArrayValidate()[index].TestType() === "2")
-                        { msg += "\n" + "Ingreso el CT de Linaje"; }
-                    }
-                }
+    //            if (self.ArrayValidate()[index].LabID() == self.ISPID() || self.UsrCountry() != 7) {
+    //                if (self.ArrayValidate()[index].TestResultID() === "P" && self.ArrayValidate()[index].VirusTypeID() === "2" && self.ArrayValidate()[index].VirusLineageID() === "" && self.ArrayValidate()[index].TestType() === "2")
+    //                {
+    //                    msg += "\n" + msgValidateProcessLinage;
+    //                      //Insert the detected Linage
+    //                      //"Ingrese el Linaje detectado";
+    //                }
+    //                else {
+    //                    if ((self.ArrayValidate()[index].VirusLineageID() == 2 || self.ArrayValidate()[index].VirusLineageID() == 3) && self.ArrayValidate()[index].UsrCountry() == 7 && self.ArrayValidate()[index].CTLineage() === "" && self.ArrayValidate()[index].VirusTypeID() === "2" && self.ArrayValidate()[index].TestType() === "2")
+    //                    { msg += "\n" + "Ingreso el CT de Linaje"; }
+    //                }
+    //            }
                 
 
-                if (self.ArrayValidate()[index].RNP() === "" && self.ArrayValidate()[index].TestType() === "2" && self.ArrayValidate()[index].UsrCountry() == 7)
-                { msg += "\n" + "Ingrese el RNP"; }
+    //            if (self.ArrayValidate()[index].RNP() === "" && self.ArrayValidate()[index].TestType() === "2" && self.ArrayValidate()[index].UsrCountry() == 7)
+    //            { msg += "\n" + "Ingrese el RNP"; }
 
-            }
+    //        }
             
-        };
+    //    };
 
-        var ArrayValidate = $.grep(self.ArrayValidate(), function (v) {
-            return (v.TestType() === "2" && v.ProcLab() == self.UsrInstID() && (v.LabID() == "" || v.LabID() == self.UsrInstID() ));
-        });
+    //    var ArrayValidate = $.grep(self.ArrayValidate(), function (v) {
+    //        return (v.TestType() === "2" && v.ProcLab() == self.UsrInstID() && (v.LabID() == "" || v.LabID() == self.UsrInstID() ));
+    //    });
 
-        if (SaveVerif == 1 && ArrayValidate.length > 1)
-            ArrayValidate.length = ArrayValidate.length - 1;
+    //    if (SaveVerif == 1 && ArrayValidate.length > 1)
+    //        ArrayValidate.length = ArrayValidate.length - 1;
 
-        if (ArrayValidate.length >= 4)
-            msg += "\n" + msgValidateProcessPCR3times;
-                //For PCR can not be more than 3 processes for the same laboratory
-                //"Para PCR no puede ser mayor a 3 procesos para el mismo laboratorio";
+    //    if (ArrayValidate.length >= 4)
+    //        msg += "\n" + msgValidateProcessPCR3times;
+    //            //For PCR can not be more than 3 processes for the same laboratory
+    //            //"Para PCR no puede ser mayor a 3 procesos para el mismo laboratorio";
 
-        ArrayValidate = $.grep(self.ArrayValidate(), function (v) {
-            return (v.TestType() === "1" && v.ProcLab() == self.UsrInstID());
-        });
-        if (ArrayValidate.length >= 4)
-            msg += "\n" + msgValidateProcessIFI3times;
-                //For IF it can not be more than 3 processes for the same laboratory
-                //"Para IF no puede ser mayor a 3 procesos para el mismo laboratorio";
+    //    ArrayValidate = $.grep(self.ArrayValidate(), function (v) {
+    //        return (v.TestType() === "1" && v.ProcLab() == self.UsrInstID());
+    //    });
+    //    if (ArrayValidate.length >= 4)
+    //        msg += "\n" + msgValidateProcessIFI3times;
+    //            //For IF it can not be more than 3 processes for the same laboratory
+    //            //"Para IF no puede ser mayor a 3 procesos para el mismo laboratorio";
         
-        return msg;
-    };
+    //    return msg;
+    //};
 
-    console.log("self.GetLab->Antes");
+    console.log("\tself.GetLab->Antes");
     self.GetLab = function (id) {
         self.Id = id;
         var labRecDate = [];            //**** NEW: 190926 // Fecha de recepcion x cada lab
 
         $.getJSON(app.dataModel.getLabUrl, { id: id }, function (data, status) {
-            //
-            console.log("Data recibida getJSON");
+            console.log("\tData recibida getJSON");
             console.log(data);
             console.log(data.CaseLabs);
             console.log(data.LabTests);
-            console.log("Data recibida getJSON-END");
+            console.log("\tData recibida getJSON-END");
                 // Laboratorio intermedio
                 (data.Rec_Date_NPHL) ? self.Rec_Date_NPHL(moment(data.Rec_Date_NPHL).clone().toDate()) : self.Rec_Date_NPHL(null);
                 self.Identification_Test_NPHL(data.Identification_Test_NPHL);
@@ -2008,23 +2341,23 @@ function LabViewModel(app, dataModel) {
 
                 self.NPHL_FlowExist(data.ExistAnyInstitutionFlow_NPHL);
                     
-                //(data.RecDate) ? self.RecDate(moment(data.RecDate).clone().toDate()) : self.RecDate(null);
-                //self.Identification_Test(data.Identification_Test);
-                //self.Processed((data.Processed != null) ? data.Processed.toString() : "");
-                //self.NoProRen(data.NoProRen);
-                //self.NoProRenId(data.NoProRenId);
-                //self.TempSample1(data.TempSample1);
-                var recepDate = data.CaseLabs[0].RecDate;
-                (recepDate) ? self.RecDate(moment(recepDate).clone().toDate()) : self.RecDate(null);
-                self.Identification_Test(data.CaseLabs[0].Identification_Test);
-                self.Processed((data.CaseLabs[0].Processed != null) ? data.CaseLabs[0].Processed.toString() : "");
-                self.NoProRen(data.CaseLabs[0].NoProRen);
-                self.NoProRenId(data.CaseLabs[0].NoProRenId);
-                self.TempSample1(data.CaseLabs[0].TempSample);
+                ////(data.RecDate) ? self.RecDate(moment(data.RecDate).clone().toDate()) : self.RecDate(null);
+                ////self.Identification_Test(data.Identification_Test);
+                ////self.Processed((data.Processed != null) ? data.Processed.toString() : "");
+                ////self.NoProRen(data.NoProRen);
+                ////self.NoProRenId(data.NoProRenId);
+                ////self.TempSample1(data.TempSample1);
+                //var recepDate = data.CaseLabs[0].RecDate;
+                //(recepDate) ? self.RecDate(moment(recepDate).clone().toDate()) : self.RecDate(null);
+                //self.Identification_Test(data.CaseLabs[0].Identification_Test);
+                //self.Processed((data.CaseLabs[0].Processed != null) ? data.CaseLabs[0].Processed.toString() : "");
+                //self.NoProRen(data.CaseLabs[0].NoProRen);
+                //self.NoProRenId(data.CaseLabs[0].NoProRenId);
+                //self.TempSample1(data.CaseLabs[0].TempSample);
 
-                console.log("self.hasGet()->1");
+                //console.log("self.hasGet()->1");
                 self.hasGet(true);
-                console.log(self.hasGet());
+                //console.log(self.hasGet());
 
                 (data.RecDate2) ? self.RecDate2(moment(data.RecDate2).clone().toDate()) : self.RecDate2(null);
                 self.Identification_Test2(data.Identification_Test2);
@@ -2108,215 +2441,330 @@ function LabViewModel(app, dataModel) {
                         if (data.CaseLabs[index].RecDate) {
                             var fech = moment(data.CaseLabs[index].RecDate).clone().toDate()
                             //caselab.RecDate12(moment(data.CaseLabs[index].RecDate).clone().toDate());
-                            caselab.RecDate12(fech);
+                            caselab.RecDate(fech);
                             labRecDate.push({ labId: labId, dateRec: fech });
                         }
-                        caselab.Identification_Test12(data.CaseLabs[index].Identification_Test);
-                        caselab.Processed12((data.CaseLabs[index].Processed != null) ? data.CaseLabs[index].Processed.toString() : "");
-                        caselab.TempSample12(data.CaseLabs[index].TempSample);
-                        caselab.NoProRenId12(data.CaseLabs[index].NoProRenId);
-                        caselab.NoProRen12(data.CaseLabs[index].NoProRen);
+                        caselab.Identification_Test(data.CaseLabs[index].Identification_Test);
+                        caselab.Processed((data.CaseLabs[index].Processed != null) ? data.CaseLabs[index].Processed.toString() : "");
+                        caselab.TempSample(data.CaseLabs[index].TempSample);
+                        caselab.NoProRenId(data.CaseLabs[index].NoProRenId);
+                        caselab.NoProRen(data.CaseLabs[index].NoProRen);
+
+                        //****************
+                        caselab.LabTests([]);
+                        if (data.LabTests != "") {
+                            for (index = 0; index < data.LabTests.length; ++index) {
+                                if (data.LabTests[index].ProcLab.toString() == labId) {
+                                    console.log("index-" + index);
+
+                                    var labtest = new LabTest(1);
+                                    labtest.Id = data.LabTests[index].Id;
+                                    ///////labtest.RecDate = resultado[0].dateRec;                   //**** NEW: 190926
+                                    labtest.CaseLabID = self.Id;
+                                    labtest.CanEdit(data.LabTests[index].CanEdit);
+                                    labtest.CanModLab(data.LabTests[index].CanModLab);
+                                    labtest.CanDeleteProcess(data.LabTests[index].CanDeleteProcess);
+                                    //console.log(data.LabTests[index].CanEdit);
+                                    labtest.CanPCR((typeof data.LabTests[index].CanPCR === "undefined") ? false : data.LabTests[index].CanPCR);
+                                    labtest.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
+                                    labtest.EndFlow(data.LabTests[index].EndFlow);
+                                    labtest.ProcLab(data.LabTests[index].ProcLab.toString());
+                                    labtest.LabID(data.LabTests[index].ProcLab.toString());
+                                    labtest.ProcLabName(data.LabTests[index].ProcLabName.toString());
+                                    console.log("\td1");
+                                    console.log(data.LabTests[index].ProcLabName.toString());
+                                    console.log(labtest.ProcLabName());
+                                    console.log("\td2");
+                                    labtest.ProcessLab(data.LabTests[index].ProcessLab.toString());
+                                    labtest.TestType(data.LabTests[index].TestType);
+                                    labtest.SampleNumber(1);
+                                    if (data.LabTests[index].TestDate)
+                                        labtest.TestDate(moment(data.LabTests[index].TestDate).clone().toDate());
+                                    labtest.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 2) ? 'NB' : data.LabTests[index].TestResultID);
+                                    labtest.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N') ? null : data.LabTests[index].VirusTypeID);
+                                    console.log(labtest.TestResultID());
+                                    labtest.CTVirusType(data.LabTests[index].CTVirusType);
+                                    labtest.CTRLVirusType(data.LabTests[index].CTRLVirusType);
+                                    labtest.OtherVirusTypeID(data.LabTests[index].OtherVirusTypeID);
+                                    labtest.CTOtherVirusType(data.LabTests[index].CTOtherVirusType);
+                                    labtest.CTRLOtherVirusType(data.LabTests[index].CTRLOtherVirusType);
+                                    labtest.OtherVirus(data.LabTests[index].OtherVirus);
+                                    labtest.InfA(data.LabTests[index].InfA);
+                                    labtest.VirusSubTypeID(data.LabTests[index].VirusSubTypeID);
+                                    //console.log(data.LabTests[index].CTSubType);
+                                    labtest.CTSubType(data.LabTests[index].CTSubType);
+                                    labtest.CTRLSubType(data.LabTests[index].CTRLSubType);
+                                    labtest.TestResultID_VirusSubType(data.LabTests[index].TestResultID_VirusSubType);
+                                    labtest.VirusSubTypeID_2(data.LabTests[index].VirusSubTypeID_2);
+                                    labtest.CTSubType_2(data.LabTests[index].CTSubType_2);
+                                    labtest.CTRLSubType_2(data.LabTests[index].CTRLSubType_2);
+                                    labtest.TestResultID_VirusSubType_2(data.LabTests[index].TestResultID_VirusSubType_2);
+                                    labtest.InfB(data.LabTests[index].InfB);
+                                    labtest.VirusLineageID(data.LabTests[index].VirusLineageID);
+                                    labtest.CTLineage(data.LabTests[index].CTLineage);
+                                    labtest.CTRLLineage(data.LabTests[index].CTRLLineage);
+                                    labtest.ParaInfI(data.LabTests[index].ParaInfI);
+                                    labtest.ParaInfII(data.LabTests[index].ParaInfII);
+                                    labtest.ParaInfIII(data.LabTests[index].ParaInfIII);
+                                    labtest.RSV(data.LabTests[index].RSV);
+                                    labtest.Adenovirus(data.LabTests[index].Adenovirus);
+                                    labtest.Metapneumovirus(data.LabTests[index].Metapneumovirus);
+                                    labtest.RNP(data.LabTests[index].RNP);
+                                    labtest.CTRLRNP(data.LabTests[index].CTRLRNP);
+                                    labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
+                                    if (data.LabTests[index].TestEndDate)
+                                        labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
+
+                                    //****
+                                    //labTestsX.push(labtest);
+                                    caselab.LabTests.push(labtest);
+
+                                    console.log("Se hizo push en array->CaseLabs.LabTests");
+
+                                }
+                            }// END for
+                        }
+                        console.log("E1");
+                        console.log(caselab.LabTests());
+                        console.log("E1a");
+
+
+                        //****************
+                        //console.log("q1aa");
                         //console.log(caselab);
-                        console.log("q1a");
+                        //console.log("q1bb");
                         self.CaseLabses.push(caselab);
-                        console.log("q2a");
+                        console.log("Se hizo push en array->CaseLabses");
                     }
-                } else {
+                }
+                else
+                {
+                    console.log("p1a");
                     var caselab = new CaseLabses(1);
 
                     caselab.FlucaseID = self.Id;
-                    console.log("p1a");
+                    
                     console.log(data.LabsResult);
                     var labId = data.LabsResult[0].Id;
                     //caselab.LabID(data.CaseLabs[index].LabID);
                     caselab.LabID(labId);
                     caselab.CanEdit(true);
-                    console.log("p2a");
+                    //console.log("p2a");
                     self.CaseLabses.push(caselab);
-                    console.log("p3a");
+                    console.log("Se hizo push en array cuando no llegaron datos->CaseLabses");
                 }
-
-                self.LabTests([]);
-                if (data.LabTests != "") {
-                    console.log("Antes de crear objetos labtest->START");
-                    for (index = 0; index < data.LabTests.length; ++index) {
-                        //**** NEW: 190926
-                        procLab = data.LabTests[index].ProcLab;
-                        resultado = $.grep(labRecDate, function (e) { return e.labId == procLab; });
-                        console.log("p4a");
-                        //self.RecDate12(resultado[0].dateRec);
-                        //console.log("p4b");
-                        
-                        //**** NEW: 190926 END
-
-                        var labtest = new LabTest(1);
-                        labtest.Id = data.LabTests[index].Id;
-                        labtest.RecDate12 = resultado[0].dateRec;                   //**** NEW: 190926
-                        labtest.CaseLabID = self.Id;
-                        labtest.CanEdit(data.LabTests[index].CanEdit);
-                        labtest.CanModLab(data.LabTests[index].CanModLab);
-						labtest.CanDeleteProcess(data.LabTests[index].CanDeleteProcess);																
-                        //console.log(data.LabTests[index].CanEdit);
-                        labtest.CanPCR((typeof data.LabTests[index].CanPCR === "undefined" ) ? false : data.LabTests[index].CanPCR );
-                        labtest.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
-                        labtest.EndFlow(data.LabTests[index].EndFlow);
-                        labtest.ProcLab(data.LabTests[index].ProcLab.toString());
-                        labtest.LabID(data.LabTests[index].ProcLab.toString());
-                        labtest.ProcLabName(data.LabTests[index].ProcLabName.toString());
-                        labtest.ProcessLab(data.LabTests[index].ProcessLab.toString());
-                        labtest.TestType(data.LabTests[index].TestType);
-                        labtest.SampleNumber(1);
-                        if (data.LabTests[index].TestDate)
-                            labtest.TestDate(moment(data.LabTests[index].TestDate).clone().toDate());
-                        labtest.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 2) ? 'NB' : data.LabTests[index].TestResultID);
-                        labtest.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N') ? null : data.LabTests[index].VirusTypeID);
-                        console.log(labtest.TestResultID());
-                        labtest.CTVirusType(data.LabTests[index].CTVirusType);
-                        labtest.CTRLVirusType(data.LabTests[index].CTRLVirusType);
-                        labtest.OtherVirusTypeID(data.LabTests[index].OtherVirusTypeID);
-                        labtest.CTOtherVirusType(data.LabTests[index].CTOtherVirusType);
-                        labtest.CTRLOtherVirusType(data.LabTests[index].CTRLOtherVirusType);
-                        labtest.OtherVirus(data.LabTests[index].OtherVirus);
-                        labtest.InfA(data.LabTests[index].InfA);
-                        labtest.VirusSubTypeID(data.LabTests[index].VirusSubTypeID);
-                        //console.log(data.LabTests[index].CTSubType);
-                        labtest.CTSubType(data.LabTests[index].CTSubType);
-                        labtest.CTRLSubType(data.LabTests[index].CTRLSubType);
-                        labtest.TestResultID_VirusSubType(data.LabTests[index].TestResultID_VirusSubType);
-                        labtest.VirusSubTypeID_2(data.LabTests[index].VirusSubTypeID_2);
-                        labtest.CTSubType_2(data.LabTests[index].CTSubType_2);
-                        labtest.CTRLSubType_2(data.LabTests[index].CTRLSubType_2);
-                        labtest.TestResultID_VirusSubType_2(data.LabTests[index].TestResultID_VirusSubType_2);
-                        labtest.InfB(data.LabTests[index].InfB);
-                        labtest.VirusLineageID(data.LabTests[index].VirusLineageID);
-                        labtest.CTLineage(data.LabTests[index].CTLineage);
-                        labtest.CTRLLineage(data.LabTests[index].CTRLLineage);
-                        labtest.ParaInfI(data.LabTests[index].ParaInfI);
-                        labtest.ParaInfII(data.LabTests[index].ParaInfII);
-                        labtest.ParaInfIII(data.LabTests[index].ParaInfIII);
-                        labtest.RSV(data.LabTests[index].RSV);
-                        labtest.Adenovirus(data.LabTests[index].Adenovirus);
-                        labtest.Metapneumovirus(data.LabTests[index].Metapneumovirus);
-                        labtest.RNP(data.LabTests[index].RNP);
-                        labtest.CTRLRNP(data.LabTests[index].CTRLRNP);
-                        labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
-                        if (data.LabTests[index].TestEndDate)
-                            labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
-
-                        self.LabTests.push(labtest);
-                    }
-                    console.log("Antes de crear objetos labtest->END");
-                }
-
-                self.LabTests_Sample2([]);
-                if (data.LabTests_Sample2 != "") {
-                    for (index = 0; index < data.LabTests_Sample2.length; ++index) {
-                        var labtest_s2 = new LabTest(2);
-                        labtest_s2.Id = data.LabTests_Sample2[index].Id;
-                        labtest_s2.CaseLabID = self.Id;
-                        labtest_s2.CanEdit(data.LabTests_Sample2[index].CanEdit);
-                        labtest_s2.CanModLab(data.LabTests_Sample2[index].CanModLab);
-						labtest_s2.CanDeleteProcess(data.LabTests_Sample2[index].CanDeleteProcess);																		   
-                        labtest_s2.CanPCR((typeof data.LabTests_Sample2[index].CanPCR === "undefined") ? false : data.LabTests_Sample2[index].CanPCR);
-                        labtest_s2.CanIFI((typeof data.LabTests_Sample2[index].CanIFI === "undefined") ? false : data.LabTests_Sample2[index].CanIFI);
-                        labtest_s2.ProcLab(data.LabTests_Sample2[index].ProcLab.toString());
-                        //console.log("--ProcLab Sample2 -- " + labtest.ProcLab());
-                        labtest_s2.LabID(data.LabTests_Sample2[index].ProcLab.toString());
-                        labtest_s2.ProcLabName(data.LabTests_Sample2[index].ProcLabName.toString());
-                        labtest_s2.ProcessLab(data.LabTests_Sample2[index].ProcessLab.toString());
-                        labtest_s2.TestType(data.LabTests_Sample2[index].TestType);
-                        labtest_s2.SampleNumber(2);
-                        if (data.LabTests_Sample2[index].TestDate)
-                            labtest_s2.TestDate(moment(data.LabTests_Sample2[index].TestDate).clone().toDate());
-                        //labtest_s2.TestResultID(data.LabTests_Sample2[index].TestResultID);
-                        //labtest_s2.VirusTypeID(data.LabTests_Sample2[index].VirusTypeID);
-                        labtest_s2.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample2[index].TestResultID);
-                        labtest_s2.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N') ? null : data.LabTests_Sample2[index].VirusTypeID);
-                        labtest_s2.CTVirusType(data.LabTests_Sample2[index].CTVirusType);
-                        labtest_s2.CTRLVirusType(data.LabTests_Sample2[index].CTRLVirusType);
-                        labtest_s2.OtherVirusTypeID(data.LabTests_Sample2[index].OtherVirusTypeID);
-                        labtest_s2.CTOtherVirusType(data.LabTests_Sample2[index].CTOtherVirusType);
-                        labtest_s2.CTRLOtherVirusType(data.LabTests_Sample2[index].CTRLOtherVirusType);
-                        labtest_s2.OtherVirus(data.LabTests_Sample2[index].OtherVirus);
-                        labtest_s2.InfA(data.LabTests_Sample2[index].InfA);
-                        labtest_s2.VirusSubTypeID(data.LabTests_Sample2[index].VirusSubTypeID);
-                        labtest_s2.CTSubType(data.LabTests_Sample2[index].CTSubType);
-                        labtest_s2.CTRLSubType(data.LabTests_Sample2[index].CTRLSubType);
-                        labtest_s2.InfB(data.LabTests_Sample2[index].InfB);
-                        labtest_s2.VirusLineageID(data.LabTests_Sample2[index].VirusLineageID);
-                        labtest_s2.CTLineage(data.LabTests_Sample2[index].CTLineage);
-                        labtest_s2.CTRLLineage(data.LabTests_Sample2[index].CTRLLineage);
-                        labtest_s2.ParaInfI(data.LabTests_Sample2[index].ParaInfI);
-                        labtest_s2.ParaInfII(data.LabTests_Sample2[index].ParaInfII);
-                        labtest_s2.ParaInfIII(data.LabTests_Sample2[index].ParaInfIII);
-                        labtest_s2.RSV(data.LabTests_Sample2[index].RSV);
-                        labtest_s2.Adenovirus(data.LabTests_Sample2[index].Adenovirus);
-                        labtest_s2.Metapneumovirus(data.LabTests_Sample2[index].Metapneumovirus);
-                        labtest_s2.RNP(data.LabTests_Sample2[index].RNP);
-                        labtest_s2.CTRLRNP(data.LabTests_Sample2[index].CTRLRNP);
-                        labtest_s2.CTRLNegative(data.LabTests_Sample2[index].CTRLNegative);
-                        if (data.LabTests_Sample2[index].TestEndDate)
-                            labtest_s2.TestEndDate(moment(data.LabTests_Sample2[index].TestEndDate).clone().toDate());
-                        self.LabTests_Sample2.push(labtest_s2);
-                    }
-                }
-
-                self.LabTests_Sample3([]);
-                if (data.LabTests_Sample3 != "") {
-                    for (index = 0; index < data.LabTests_Sample3.length; ++index) {
-                        var labtest_s3 = new LabTest(3);
-                        labtest_s3.Id = data.LabTests_Sample3[index].Id;
-                        labtest_s3.CaseLabID = self.Id;
-                        labtest_s3.CanEdit(data.LabTests_Sample3[index].CanEdit);
-                        labtest_s3.CanModLab(data.LabTests_Sample3[index].CanModLab);
-						labtest_s3.CanDeleteProcess(data.LabTests_Sample3[index].CanDeleteProcess);																		   
-                        labtest_s3.CanPCR((typeof data.LabTests_Sample3[index].CanPCR === "undefined") ? false : data.LabTests_Sample3[index].CanPCR);
-                        labtest_s3.CanIFI((typeof data.LabTests_Sample3[index].CanIFI === "undefined") ? false : data.LabTests_Sample3[index].CanIFI);
-                        labtest_s3.ProcLab(data.LabTests_Sample3[index].ProcLab.toString());
-                        //console.log("--ProcLab Sample3 -- " + labtest.ProcLab());
-                        labtest_s3.LabID(data.LabTests_Sample3[index].ProcLab.toString());
-                        labtest_s3.ProcLabName(data.LabTests_Sample3[index].ProcLabName.toString());
-                        labtest_s3.ProcessLab(data.LabTests_Sample3[index].ProcessLab.toString());
-                        labtest_s3.TestType(data.LabTests_Sample3[index].TestType);
-                        labtest_s3.SampleNumber(3);
-                        if (data.LabTests_Sample3[index].TestDate)
-                            labtest_s3.TestDate(moment(data.LabTests_Sample3[index].TestDate).clone().toDate());
-                        //labtest_s3.TestResultID(data.LabTests_Sample3[index].TestResultID);
-                        //labtest_s3.VirusTypeID(data.LabTests_Sample3[index].VirusTypeID);
-                        labtest_s3.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample3[index].TestResultID);
-                        labtest_s3.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N') ? null : data.LabTests_Sample3[index].VirusTypeID);
-                        labtest_s3.CTVirusType(data.LabTests_Sample3[index].CTVirusType);
-                        labtest_s3.CTRLVirusType(data.LabTests_Sample3[index].CTRLVirusType);
-                        labtest_s3.OtherVirusTypeID(data.LabTests_Sample3[index].OtherVirusTypeID);
-                        labtest_s3.CTOtherVirusType(data.LabTests_Sample3[index].CTOtherVirusType);
-                        labtest_s3.CTRLOtherVirusType(data.LabTests_Sample3[index].CTRLOtherVirusType);
-                        labtest_s2.OtherVirus(data.LabTests_Sample3[index].OtherVirus);
-                        labtest_s3.InfA(data.LabTests_Sample3[index].InfA);
-                        labtest_s3.VirusSubTypeID(data.LabTests_Sample3[index].VirusSubTypeID);
-                        labtest_s3.CTSubType(data.LabTests_Sample3[index].CTSubType);
-                        labtest_s3.CTRLSubType(data.LabTests_Sample3[index].CTRLSubType);
-                        labtest_s3.InfB(data.LabTests_Sample3[index].InfB);
-                        labtest_s3.VirusLineageID(data.LabTests_Sample3[index].VirusLineageID);
-                        labtest_s3.CTLineage(data.LabTests_Sample3[index].CTLineage);
-                        labtest_s3.CTRLLineage(data.LabTests_Sample3[index].CTRLLineage);
-                        labtest_s3.ParaInfI(data.LabTests_Sample3[index].ParaInfI);
-                        labtest_s3.ParaInfII(data.LabTests_Sample3[index].ParaInfII);
-                        labtest_s3.ParaInfIII(data.LabTests_Sample3[index].ParaInfIII);
-                        labtest_s3.RSV(data.LabTests_Sample3[index].RSV);
-                        labtest_s3.Adenovirus(data.LabTests_Sample3[index].Adenovirus);
-                        labtest_s3.Metapneumovirus(data.LabTests_Sample3[index].Metapneumovirus);
-                        labtest_s3.RNP(data.LabTests_Sample3[index].RNP);
-                        labtest_s3.CTRLRNP(data.LabTests_Sample3[index].CTRLRNP);
-                        labtest_s3.CTRLNegative(data.LabTests_Sample3[index].CTRLNegative);
-                        if (data.LabTests_Sample3[index].TestEndDate)
-                            labtest_s3.TestEndDate(moment(data.LabTests_Sample3[index].TestEndDate).clone().toDate());
-                        self.LabTests_Sample3.push(labtest_s3);
-                    }
-                }
-
-                console.log("Data para foreach");
+                console.log("Array de objetos CaseLabses->1");
+                console.log(self.CaseLabses);
                 console.log(self.CaseLabses());
-                console.log(self.LabTests());
+                console.log("Array de objetos CaseLabses->1a");
+
+                self.LabTestsEndFlow([]);
+                if (data.LabTests != "") {
+                    for (index = 0; index < data.LabTests.length; ++index) {
+                        var labtestEF = new LabTest(1);
+
+                        labtestEF.Id = data.LabTests[index].Id;
+                        labtestEF.CaseLabID = self.Id;
+                        labtestEF.CanEdit(data.LabTests[index].CanEdit);
+                        labtestEF.CanPCR((typeof data.LabTests[index].CanPCR === "undefined") ? false : data.LabTests[index].CanPCR);
+                        labtestEF.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
+                        labtestEF.EndFlow(data.LabTests[index].EndFlow);
+                        labtestEF.ProcLab(data.LabTests[index].ProcLab.toString());
+                        labtestEF.LabID(data.LabTests[index].ProcLab.toString());
+                        labtestEF.ProcLabName(data.LabTests[index].ProcLabName.toString());
+
+                        self.LabTestsEndFlow.push(labtestEF);
+                    }
+                }
+                //self.LabTests([]);
+                //if (data.LabTests != "") {
+                //    //console.log("Antes de crear objetos labtest->START");
+                //    for (index = 0; index < data.LabTests.length; ++index) {
+                //        //**** NEW: 190926
+                //        procLab = data.LabTests[index].ProcLab;
+                //        resultado = $.grep(labRecDate, function (e) { return e.labId == procLab; });
+                //        //console.log("p4a");
+                //        //self.RecDate12(resultado[0].dateRec);
+                //        //console.log("p4b");
+                        
+                //        //**** NEW: 190926 END
+
+                //        var labtest = new LabTest(1);
+                //        labtest.Id = data.LabTests[index].Id;
+                //        ///////labtest.RecDate = resultado[0].dateRec;                   //**** NEW: 190926
+                //        labtest.CaseLabID = self.Id;
+                //        labtest.CanEdit(data.LabTests[index].CanEdit);
+                //        labtest.CanModLab(data.LabTests[index].CanModLab);
+				//		labtest.CanDeleteProcess(data.LabTests[index].CanDeleteProcess);																
+                //        //console.log(data.LabTests[index].CanEdit);
+                //        labtest.CanPCR((typeof data.LabTests[index].CanPCR === "undefined" ) ? false : data.LabTests[index].CanPCR );
+                //        labtest.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
+                //        labtest.EndFlow(data.LabTests[index].EndFlow);
+                //        labtest.ProcLab(data.LabTests[index].ProcLab.toString());
+                //        labtest.LabID(data.LabTests[index].ProcLab.toString());
+                //        labtest.ProcLabName(data.LabTests[index].ProcLabName.toString());
+                //        console.log("\td1");
+                //        console.log(data.LabTests[index].ProcLabName.toString());
+                //        console.log(labtest.ProcLabName());
+                //        console.log("\td2");
+                //        labtest.ProcessLab(data.LabTests[index].ProcessLab.toString());
+                //        labtest.TestType(data.LabTests[index].TestType);
+                //        labtest.SampleNumber(1);
+                //        if (data.LabTests[index].TestDate)
+                //            labtest.TestDate(moment(data.LabTests[index].TestDate).clone().toDate());
+                //        labtest.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 2) ? 'NB' : data.LabTests[index].TestResultID);
+                //        labtest.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N') ? null : data.LabTests[index].VirusTypeID);
+                //        console.log(labtest.TestResultID());
+                //        labtest.CTVirusType(data.LabTests[index].CTVirusType);
+                //        labtest.CTRLVirusType(data.LabTests[index].CTRLVirusType);
+                //        labtest.OtherVirusTypeID(data.LabTests[index].OtherVirusTypeID);
+                //        labtest.CTOtherVirusType(data.LabTests[index].CTOtherVirusType);
+                //        labtest.CTRLOtherVirusType(data.LabTests[index].CTRLOtherVirusType);
+                //        labtest.OtherVirus(data.LabTests[index].OtherVirus);
+                //        labtest.InfA(data.LabTests[index].InfA);
+                //        labtest.VirusSubTypeID(data.LabTests[index].VirusSubTypeID);
+                //        //console.log(data.LabTests[index].CTSubType);
+                //        labtest.CTSubType(data.LabTests[index].CTSubType);
+                //        labtest.CTRLSubType(data.LabTests[index].CTRLSubType);
+                //        labtest.TestResultID_VirusSubType(data.LabTests[index].TestResultID_VirusSubType);
+                //        labtest.VirusSubTypeID_2(data.LabTests[index].VirusSubTypeID_2);
+                //        labtest.CTSubType_2(data.LabTests[index].CTSubType_2);
+                //        labtest.CTRLSubType_2(data.LabTests[index].CTRLSubType_2);
+                //        labtest.TestResultID_VirusSubType_2(data.LabTests[index].TestResultID_VirusSubType_2);
+                //        labtest.InfB(data.LabTests[index].InfB);
+                //        labtest.VirusLineageID(data.LabTests[index].VirusLineageID);
+                //        labtest.CTLineage(data.LabTests[index].CTLineage);
+                //        labtest.CTRLLineage(data.LabTests[index].CTRLLineage);
+                //        labtest.ParaInfI(data.LabTests[index].ParaInfI);
+                //        labtest.ParaInfII(data.LabTests[index].ParaInfII);
+                //        labtest.ParaInfIII(data.LabTests[index].ParaInfIII);
+                //        labtest.RSV(data.LabTests[index].RSV);
+                //        labtest.Adenovirus(data.LabTests[index].Adenovirus);
+                //        labtest.Metapneumovirus(data.LabTests[index].Metapneumovirus);
+                //        labtest.RNP(data.LabTests[index].RNP);
+                //        labtest.CTRLRNP(data.LabTests[index].CTRLRNP);
+                //        labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
+                //        if (data.LabTests[index].TestEndDate)
+                //            labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
+
+                //        self.LabTests.push(labtest);
+                //        console.log("Se hizo push en array->LabTests");
+                //    }
+                //    //console.log("Antes de crear objetos labtest->END");
+                //}
+                //console.log("Array de objetos LabTest->1");
+                //console.log(self.LabTests());
+                //console.log("Array de objetos LabTest->1a");
+
+                //self.LabTests_Sample2([]);
+                //if (data.LabTests_Sample2 != "") {
+                //    for (index = 0; index < data.LabTests_Sample2.length; ++index) {
+                //        var labtest_s2 = new LabTest(2);
+                //        labtest_s2.Id = data.LabTests_Sample2[index].Id;
+                //        labtest_s2.CaseLabID = self.Id;
+                //        labtest_s2.CanEdit(data.LabTests_Sample2[index].CanEdit);
+                //        labtest_s2.CanModLab(data.LabTests_Sample2[index].CanModLab);
+				//		labtest_s2.CanDeleteProcess(data.LabTests_Sample2[index].CanDeleteProcess);																		   
+                //        labtest_s2.CanPCR((typeof data.LabTests_Sample2[index].CanPCR === "undefined") ? false : data.LabTests_Sample2[index].CanPCR);
+                //        labtest_s2.CanIFI((typeof data.LabTests_Sample2[index].CanIFI === "undefined") ? false : data.LabTests_Sample2[index].CanIFI);
+                //        labtest_s2.ProcLab(data.LabTests_Sample2[index].ProcLab.toString());
+                //        //console.log("--ProcLab Sample2 -- " + labtest.ProcLab());
+                //        labtest_s2.LabID(data.LabTests_Sample2[index].ProcLab.toString());
+                //        labtest_s2.ProcLabName(data.LabTests_Sample2[index].ProcLabName.toString());
+                //        labtest_s2.ProcessLab(data.LabTests_Sample2[index].ProcessLab.toString());
+                //        labtest_s2.TestType(data.LabTests_Sample2[index].TestType);
+                //        labtest_s2.SampleNumber(2);
+                //        if (data.LabTests_Sample2[index].TestDate)
+                //            labtest_s2.TestDate(moment(data.LabTests_Sample2[index].TestDate).clone().toDate());
+                //        //labtest_s2.TestResultID(data.LabTests_Sample2[index].TestResultID);
+                //        //labtest_s2.VirusTypeID(data.LabTests_Sample2[index].VirusTypeID);
+                //        labtest_s2.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample2[index].TestResultID);
+                //        labtest_s2.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N') ? null : data.LabTests_Sample2[index].VirusTypeID);
+                //        labtest_s2.CTVirusType(data.LabTests_Sample2[index].CTVirusType);
+                //        labtest_s2.CTRLVirusType(data.LabTests_Sample2[index].CTRLVirusType);
+                //        labtest_s2.OtherVirusTypeID(data.LabTests_Sample2[index].OtherVirusTypeID);
+                //        labtest_s2.CTOtherVirusType(data.LabTests_Sample2[index].CTOtherVirusType);
+                //        labtest_s2.CTRLOtherVirusType(data.LabTests_Sample2[index].CTRLOtherVirusType);
+                //        labtest_s2.OtherVirus(data.LabTests_Sample2[index].OtherVirus);
+                //        labtest_s2.InfA(data.LabTests_Sample2[index].InfA);
+                //        labtest_s2.VirusSubTypeID(data.LabTests_Sample2[index].VirusSubTypeID);
+                //        labtest_s2.CTSubType(data.LabTests_Sample2[index].CTSubType);
+                //        labtest_s2.CTRLSubType(data.LabTests_Sample2[index].CTRLSubType);
+                //        labtest_s2.InfB(data.LabTests_Sample2[index].InfB);
+                //        labtest_s2.VirusLineageID(data.LabTests_Sample2[index].VirusLineageID);
+                //        labtest_s2.CTLineage(data.LabTests_Sample2[index].CTLineage);
+                //        labtest_s2.CTRLLineage(data.LabTests_Sample2[index].CTRLLineage);
+                //        labtest_s2.ParaInfI(data.LabTests_Sample2[index].ParaInfI);
+                //        labtest_s2.ParaInfII(data.LabTests_Sample2[index].ParaInfII);
+                //        labtest_s2.ParaInfIII(data.LabTests_Sample2[index].ParaInfIII);
+                //        labtest_s2.RSV(data.LabTests_Sample2[index].RSV);
+                //        labtest_s2.Adenovirus(data.LabTests_Sample2[index].Adenovirus);
+                //        labtest_s2.Metapneumovirus(data.LabTests_Sample2[index].Metapneumovirus);
+                //        labtest_s2.RNP(data.LabTests_Sample2[index].RNP);
+                //        labtest_s2.CTRLRNP(data.LabTests_Sample2[index].CTRLRNP);
+                //        labtest_s2.CTRLNegative(data.LabTests_Sample2[index].CTRLNegative);
+                //        if (data.LabTests_Sample2[index].TestEndDate)
+                //            labtest_s2.TestEndDate(moment(data.LabTests_Sample2[index].TestEndDate).clone().toDate());
+                //        self.LabTests_Sample2.push(labtest_s2);
+                //    }
+                //}
+
+                //self.LabTests_Sample3([]);
+                //if (data.LabTests_Sample3 != "") {
+                //    for (index = 0; index < data.LabTests_Sample3.length; ++index) {
+                //        var labtest_s3 = new LabTest(3);
+                //        labtest_s3.Id = data.LabTests_Sample3[index].Id;
+                //        labtest_s3.CaseLabID = self.Id;
+                //        labtest_s3.CanEdit(data.LabTests_Sample3[index].CanEdit);
+                //        labtest_s3.CanModLab(data.LabTests_Sample3[index].CanModLab);
+				//		labtest_s3.CanDeleteProcess(data.LabTests_Sample3[index].CanDeleteProcess);																		   
+                //        labtest_s3.CanPCR((typeof data.LabTests_Sample3[index].CanPCR === "undefined") ? false : data.LabTests_Sample3[index].CanPCR);
+                //        labtest_s3.CanIFI((typeof data.LabTests_Sample3[index].CanIFI === "undefined") ? false : data.LabTests_Sample3[index].CanIFI);
+                //        labtest_s3.ProcLab(data.LabTests_Sample3[index].ProcLab.toString());
+                //        //console.log("--ProcLab Sample3 -- " + labtest.ProcLab());
+                //        labtest_s3.LabID(data.LabTests_Sample3[index].ProcLab.toString());
+                //        labtest_s3.ProcLabName(data.LabTests_Sample3[index].ProcLabName.toString());
+                //        labtest_s3.ProcessLab(data.LabTests_Sample3[index].ProcessLab.toString());
+                //        labtest_s3.TestType(data.LabTests_Sample3[index].TestType);
+                //        labtest_s3.SampleNumber(3);
+                //        if (data.LabTests_Sample3[index].TestDate)
+                //            labtest_s3.TestDate(moment(data.LabTests_Sample3[index].TestDate).clone().toDate());
+                //        //labtest_s3.TestResultID(data.LabTests_Sample3[index].TestResultID);
+                //        //labtest_s3.VirusTypeID(data.LabTests_Sample3[index].VirusTypeID);
+                //        labtest_s3.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample3[index].TestResultID);
+                //        labtest_s3.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N') ? null : data.LabTests_Sample3[index].VirusTypeID);
+                //        labtest_s3.CTVirusType(data.LabTests_Sample3[index].CTVirusType);
+                //        labtest_s3.CTRLVirusType(data.LabTests_Sample3[index].CTRLVirusType);
+                //        labtest_s3.OtherVirusTypeID(data.LabTests_Sample3[index].OtherVirusTypeID);
+                //        labtest_s3.CTOtherVirusType(data.LabTests_Sample3[index].CTOtherVirusType);
+                //        labtest_s3.CTRLOtherVirusType(data.LabTests_Sample3[index].CTRLOtherVirusType);
+                //        labtest_s2.OtherVirus(data.LabTests_Sample3[index].OtherVirus);
+                //        labtest_s3.InfA(data.LabTests_Sample3[index].InfA);
+                //        labtest_s3.VirusSubTypeID(data.LabTests_Sample3[index].VirusSubTypeID);
+                //        labtest_s3.CTSubType(data.LabTests_Sample3[index].CTSubType);
+                //        labtest_s3.CTRLSubType(data.LabTests_Sample3[index].CTRLSubType);
+                //        labtest_s3.InfB(data.LabTests_Sample3[index].InfB);
+                //        labtest_s3.VirusLineageID(data.LabTests_Sample3[index].VirusLineageID);
+                //        labtest_s3.CTLineage(data.LabTests_Sample3[index].CTLineage);
+                //        labtest_s3.CTRLLineage(data.LabTests_Sample3[index].CTRLLineage);
+                //        labtest_s3.ParaInfI(data.LabTests_Sample3[index].ParaInfI);
+                //        labtest_s3.ParaInfII(data.LabTests_Sample3[index].ParaInfII);
+                //        labtest_s3.ParaInfIII(data.LabTests_Sample3[index].ParaInfIII);
+                //        labtest_s3.RSV(data.LabTests_Sample3[index].RSV);
+                //        labtest_s3.Adenovirus(data.LabTests_Sample3[index].Adenovirus);
+                //        labtest_s3.Metapneumovirus(data.LabTests_Sample3[index].Metapneumovirus);
+                //        labtest_s3.RNP(data.LabTests_Sample3[index].RNP);
+                //        labtest_s3.CTRLRNP(data.LabTests_Sample3[index].CTRLRNP);
+                //        labtest_s3.CTRLNegative(data.LabTests_Sample3[index].CTRLNegative);
+                //        if (data.LabTests_Sample3[index].TestEndDate)
+                //            labtest_s3.TestEndDate(moment(data.LabTests_Sample3[index].TestEndDate).clone().toDate());
+                //        self.LabTests_Sample3.push(labtest_s3);
+                //    }
+                //}
+
+                console.log("Data para foreach-START");
+                console.log(self.CaseLabses());
+                //console.log(self.LabTests());
                 console.log("Data para foreach-END");
 
                 $("#FinalResult").prop('disabled', true);
@@ -2408,10 +2856,9 @@ function LabViewModel(app, dataModel) {
                  alert(errorThrown);
              })
     };
-    console.log("self.GetLab->Final");
+    console.log("\tself.GetLab->Final");
 
     self.OrdenFinalResult = function () {
-
         if (self.hasGet() == false) {
             //console.log("OrdenFinalResult");
 
@@ -2981,14 +3428,14 @@ function LabViewModel(app, dataModel) {
         return (self.ForeignLabCountry())
     }, self);
 
-    self.ShowProcessed = ko.computed(function () {
-        self.NoProRen("");
-        self.NoProRenId("");
-        if (self.Processed == "true" && self.Processed_National == "false")
-            self.resetFinalResult();
-        return (self.Processed() === "true")
-    }, self);
-
+    //self.ShowProcessed = ko.computed(function () {        //**** NEW: 190926
+    //    self.NoProRen("");
+    //    self.NoProRenId("");
+    //    if (self.Processed == "true" && self.Processed_National == "false")
+    //        self.resetFinalResult();
+    //    return (self.Processed() === "true")
+    //}, self);
+      
     self.ShowProcessed2 = ko.computed(function () {
         self.NoProRen2("");
         self.NoProRenId2("");
@@ -3003,10 +3450,10 @@ function LabViewModel(app, dataModel) {
         return (self.Processed3() === "true")
     }, self);
 
-
-    self.NotShowProcessedOther = ko.computed(function () {
-        return (self.NoProRenId() === "5")
-    }, self);
+    
+    //self.NotShowProcessedOther = ko.computed(function () {       //**** NEW: 190926 
+    //    return (self.NoProRenId() === "5")
+    //}, self);
 
     self.NotShowProcessed2 = ko.computed(function () {
         //self.resetFinalResult();
@@ -3042,11 +3489,11 @@ function LabViewModel(app, dataModel) {
                         return (self.Processed_National() === "false")
                     }, self);
 
-    self.NotShowProcessed = ko.computed(function () {
-        //self.resetFinalResult();
-        //self.OrdenFinalResult();
-        return (self.Processed() === "false")
-    }, self);
+    //self.NotShowProcessed = ko.computed(function () {     //**** NEW: 190926
+    //    //self.resetFinalResult();
+    //    //self.OrdenFinalResult();
+    //    return (self.Processed() === "false")
+    //}, self);
 
     self.Save = function () {
         app.Views.Home.ValidateAll();
@@ -3333,7 +3780,7 @@ function LabViewModel(app, dataModel) {
         return true;
     };
 
-    console.log("function LabViewModel(app, dataModel)->END");
+    console.log("function LabViewModel(app, dataModel)->ENDD");
 }
 
 app.addViewModel({

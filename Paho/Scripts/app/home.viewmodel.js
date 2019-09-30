@@ -526,7 +526,7 @@
 
     self.FlowDataCaseStatus = function () {
         //console.log("FlowCaseStatus");
-        var flow_check = $.grep(app.Views.Lab.LabTests(), function (x) {         
+        var flow_check = $.grep(app.Views.Lab.LabTestsEndFlow(), function (x) {         // LabTests -> LabTestsEndFlow
             return x.EndFlow() === "TRUE";
         });
         //Esta modificación es porque es necesario modificar todos los datos aunque no este cerrado el caso
@@ -857,7 +857,7 @@
 
     self.FlowDataLabAfter = function () {
 
-        var flow_check = $.grep(app.Views.Lab.LabTests(), function (x) {         
+        var flow_check = $.grep(app.Views.Lab.LabTestsEndFlow(), function (x) {     // LabTests -> LabTestsEndFlow
             //console.log("Home - FlowDataLabAfter - EndFlow " + x.EndFlow());
             return x.EndFlow() === "TRUE";
         });
