@@ -2105,7 +2105,6 @@ namespace Paho.Controllers
 
             IQueryable<Institution> institutions = null;
 
-
             var user = UserManager.FindById(User.Identity.GetUserId());
             institutions = db.Institutions.OfType<Lab>().Where(i => i.ID == user.Institution.ID);
             var institutionsIds = institutions.Select(x => (long?)x.ID).ToArray();
@@ -2417,15 +2416,21 @@ namespace Paho.Controllers
             {
                 return Json(new
                 {
+                    //UsrInstID = user.Institution.ID,
+                    UsrInstName = user.Institution.FullName,
                     id = flucase.ID.ToString(),
-
+                    
                     CaseLabs = (from cal in db.CaseLabses
                                 where cal.FlucaseID == Id
                                 select new
                                 {
                                     Id = cal.Id,
                                     FlucaseID = cal.FlucaseID,
+
                                     LabID = cal.LabID,
+                                    ProcLab = 11,               //#### x ELIMINAR                                    
+                                    ProcLabName = 22,       //#### x ELIMINAR 
+
                                     CanEdit = institutionsIds.Contains(cal.LabID),
                                     RecDate = cal.RecDate,
                                     Identification_Test = cal.Identification_Test,

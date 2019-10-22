@@ -5,6 +5,9 @@
     string LabelRemoveResult = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelRemoveResult", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
     string LabelYes = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelYes", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
     string LabelNo = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelNo", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelSample1 = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelSample1", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelPrint = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelPrint", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    
 }
 
 
@@ -3638,79 +3641,19 @@
 
         @* Empieza muestra dos muestra 1 *@
         <!-- Label: Muestra 1/Boton Print???/Linea HR -->
-        <div class="row rowform" data-bind="visible:DisableCHI">
+        @* <div class="row rowform" data-bind="visible: DisableCHI"> *@
+        <div class="row rowform" data-bind="visible: ActiveCHI">
             <div class="col-md-12">
-                @*<div style="font-weight:bold;font-size:11px">
-                    @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSample1"))
-
+                <div style="font-weight:bold;font-size:11px">
+                    @(LabelSample1)
                     <div class="btn-group">
-                        <button id="PrintM1" type="button" class="btn btn-primary" data-bind="click:app.Views.PrintTest.Generate.bind($data,1), visible:EnableCHIPrint">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelPrint"))</button>
+                        <button id="PrintM1" type="button" class="btn btn-primary" data-bind="click:app.Views.PrintTest.Generate.bind($data,1), visible: EnableCHIPrint">@(LabelPrint)</button>
                     </div>
-
                     <br />
                     <hr style="margin-top:3px; margin-bottom:3px; border-width:1px  0  0; " />
-                </div>*@
+                </div>
             </div>
         </div>
-
-        <!-- Cabecera Lab1: Fecha Recepcion / Temperatura -->
-        @*<div class="row rowform" id="Test_1">
-            <div class="col-md-3_5">
-                <div class='input-group'>
-                    <span class="input-group-addon">
-                        @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelReceptionDate"))
-                    </span>
-                    <input id="RecDate" type='text' class="form-control " data-bind='datepicker: RecDate , datepickerOptions: { maxDate:"@Model.DatePickerConfig",  dateFormat:"@Model.DateFormatDP"}' />
-                </div>
-            </div>
-            <div class="col-md-3" >
-                <div class='input-group'>
-                    <span class="input-group-addon">
-                        @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelTemp"))
-                    </span>
-                    <input id="TempSample1" type='text' class="form-control case_letter" data-bind="value: TempSample1" />
-                </div>
-            </div>
-        </div>*@
-
-        <!-- Procesada / Motivo No procesada / Identificador Muestra -->
-        @*<div class="row rowform" id="Test_1" >
-            <div class="col-md-3_5">
-                <span>
-                    @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelProcessed"))
-                </span>
-                <label class="btn btn-default">
-                    <input type="radio" name="Processed" id="Processed" value="true" data-bind="checked: Processed"> @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelYes"))
-                </label>
-                <label class="btn btn-default">
-                    <input type="radio" name="Processed" id="Processed" value="false" checked data-bind="checked: Processed"> @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelNo"))
-                </label>
-            </div>
-
-            <div class="col-md-5"  data-bind="visible:NotShowProcessed">
-                <div class='input-group'>
-                    <span class="input-group-addon">
-                        @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelCauseNotProcessed")) 
-                    </span>
-                    <select id="NoProRenId" class="form-control" data-bind="options: CSNP,
-                            optionsText: 'Name',
-                            optionsValue: 'Id',
-                            optionsCaption: '@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabCaseLabelSelect"))...',
-                            value: NoProRenId"></select>
-                    <input id="NoReason" type='text' class="form-control case_letter" data-bind="value: NoProRen , visible:NotShowProcessedOther" />
-                </div>
-            </div>
-
-            <div class="col-md-5" data-bind="visible:ShowProcessed">
-                <div class='input-group'>
-                    <span class="input-group-addon">
-                        @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigLabIntLabelBarCode"))
-                    </span>
-                    <input id="Identification_Test" name="Identification_Test" type='text' class="form-control case_letter" data-bind="value: Identification_Test" />
-                </div>
-            </div>
-        </div>*@
-                        
 
         <div id="CaseLabes" data-bind="foreach: { data: CaseLabses }">
             <!-- Cabecera Lab1: Fecha Recepcion / Temperatura / etc -->
@@ -4111,11 +4054,11 @@
 
 
                 <!-- Boton: Añadir Resultado -->
-                <div class="row rowform" data-bind="visible:app.Views.Contact.Flow_Local_Institution_Lab()">
+                <div class="row rowform" data-bind="visible: app.Views.Contact.Flow_Local_Institution_Lab()">
                     <div class="col-md-8"></div>
                     <div class="col-md-4">
                         <div class="btn-group">                            
-                            <button id="addLabTest_1" type="button" class="btn btn-primary" data-bind="click: addLabTest.bind($data, 1)">@(LabelAddResult)</button>
+                            <button id="addLabTest_1" type="button" class="btn btn-primary" data-bind="enable: CanEdit, click: addLabTest.bind($data, 1)">@(LabelAddResult)</button>
                         </div>
                     </div>
                 </div>
