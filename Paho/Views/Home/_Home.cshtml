@@ -6,10 +6,30 @@
     string LabelYes = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelYes", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
     string LabelNo = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelNo", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
     string LabelSample1 = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelSample1", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
-    string LabelPrint = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelPrint", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
-    
-}
 
+    /*
+            <option value="">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSelect"))</option>
+    <option value="1" data-bind="visible: CanIFI">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelIF"))</option>
+    <option value="2" data-bind="visible: CanPCR">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelPCR"))</option>
+    <option value="3" data-bind="visible:app.Views.Lab.isISP()">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelCellCulture"))</option>
+    string LabelIF = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelIF", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+     * LabelSelect  LabelIF LabelPCRe   LabelCellCulture
+     *      */
+    string LabelSelect = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelSelect", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelIF = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelIF", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelPCR = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelPCR", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelCellCulture = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelCellCulture", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+
+    string LabelPrint = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigTabLabelPrint", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelSavePrevious = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigGeneralSavePrevious", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelSaveAndExit = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigGeneralSaveAndExit", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelSaveAndNew = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigGeneralSaveAndNew", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelSaveAndSend = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigGeneralSaveAndSend", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelBack = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigGeneralBack", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelNewRecord = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigGeneralNewRecord", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string LabelDelete = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigGeneralDelete", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+
+}
 
 <!-- ko with: home -->
 <div class="row">
@@ -3824,10 +3844,15 @@
                             <div class="col-md-1_5" data-bind="visible: ShowProcessedLab">
                                 <div class='input-group'>
                                     <select class="form-control" data-bind="value: TestType, enable:CanEdit">
-                                        <option value="">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSelect"))</option>
+                                              
+                                        @*<option value="">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSelect"))</option>
                                         <option value="1" data-bind="visible: CanIFI">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelIF"))</option>
                                         <option value="2" data-bind="visible: CanPCR">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelPCR"))</option>
-                                        <option value="3" data-bind="visible:app.Views.Lab.isISP()">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelCellCulture"))</option>
+                                        <option value="3" data-bind="visible:app.Views.Lab.isISP()">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelCellCulture"))</option>*@
+                                        <option value="">@LabelSelect</option>
+                                        <option value="1" data-bind="visible: CanIFI">@LabelIF</option>
+                                        <option value="2" data-bind="visible: CanPCR">@LabelPCR</option>
+                                        <option value="3" data-bind="visible:app.Views.Lab.isISP()">@LabelCellCulture</option>
                                     </select>
                                 </div>
                             </div>
@@ -4393,38 +4418,38 @@
                 <div class="btn-group">
                     @if (User.IsInRole("Admin") || User.IsInRole("Staff") || User.IsInRole("Close_case") || User.IsInRole("Modify_Epi") || User.IsInRole("Modify_Lab"))
                     {
-                        <button id="saveGeneralPrev" type="button" class="btn btn-primary" data-bind="click: SavePrev, visible: false">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigGeneralSavePrevious"))</button>
+                        <button id="saveGeneralPrev" type="button" class="btn btn-primary" data-bind="click: SavePrev, visible: false">@LabelSavePrevious</button>
                         <span></span>
-                        <button id="saveGeneral_1" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,1), visible:app.Views.Contact.Flow_Local_Institution_Epi() || app.Views.Contact.Flow_Local_Institution_Lab()">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigGeneralSaveAndExit"))</button>
+                        <button id="saveGeneral_1" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,1), visible:app.Views.Contact.Flow_Local_Institution_Epi() || app.Views.Contact.Flow_Local_Institution_Lab()">@LabelSaveAndExit</button>
                         <span></span>
                         if (ViewBag.UserInstitutionType == 1 )
                         {
-                            <button id="saveGeneral_2" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,0), visible:app.Views.Contact.Flow_Local_Institution_Epi()">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigGeneralSaveAndNew"))</button>
+                            <button id="saveGeneral_2" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,0), visible:app.Views.Contact.Flow_Local_Institution_Epi()">@LabelSaveAndNew</button>
                             <span></span>
                         }
                         if (ViewBag.UserInstitutionType == 2 )
                         {
-                            <button id="saveGeneral_lab" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,2), visible:app.Views.Contact.Flow_Local_Institution_Lab_send()">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigGeneralSaveAndSend"))</button>
+                            <button id="saveGeneral_lab" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,2), visible:app.Views.Contact.Flow_Local_Institution_Lab_send()">@LabelSaveAndSend</button>
                             <span></span>
                         }
                     }
-                    <button id="cancelGeneral" type="button" class="btn btn-primary" data-bind="click: Cancel">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigGeneralBack"))</button>
+                    <button id="cancelGeneral" type="button" class="btn btn-primary" data-bind="click: Cancel">@LabelBack</button>
                     @if (ViewBag.UserInstitutionType == 1)
                     {
                         if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                         {
                             <span></span>
-                            <button id="Reset" type="button" class="btn btn-primary" data-bind="click: AddFluCase , visible: false">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigGeneralNewRecord"))</button>
+                            <button id="Reset" type="button" class="btn btn-primary" data-bind="click: AddFluCase , visible: false">@LabelNewRecord</button>
                         }
                     }
                     <span></span>
                     @if (User.IsInRole("Admin") || User.IsInRole("Delete"))
                     {
-                        <button id="Borrar" type="button" class="btn btn-primary btn-danger" data-bind="click: Borrar">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigGeneralDelete"))</button>
+                        <button id="Borrar" type="button" class="btn btn-primary btn-danger" data-bind="click: Borrar">@LabelDelete</button>
                         <span></span>
                     }
                     <div class="btn-group" >
-                        <button id="PrintRecord" type="button" class="btn btn-primary" data-bind="click:app.Views.PrintTest.Generate.bind($data,'record'), visible:true" data-toggle="modal" data-target=".bs-example-modal-lg">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelPrint"))</button>
+                        <button id="PrintRecord" type="button" class="btn btn-primary" data-bind="click:app.Views.PrintTest.Generate.bind($data,'record'), visible:true" data-toggle="modal" data-target=".bs-example-modal-lg">@LabelPrint</button>
                     </div>
                 </div>
             </div>
