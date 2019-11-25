@@ -9,8 +9,23 @@
     string LabelBarCode = Paho.Controllers.ResourcesM.SgetMessage("msgCaselistVigLabIntLabelSampleIdentifier", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
 }
 
-
 <div class="row rowform" id="Test_1">
+    <!-- Laboratorio -->
+    <div class="col-md-3_5">
+        <div class='input-group'>
+            @*<div data-bind="visible: CanModLab()">  *@
+            <div data-bind="visible: CanEdit()">
+                <select name="DrpProcLab" id="DrpProcLab" class="form-control" data-bind="options:$parent.LabsResult,
+                                            optionsText: 'Name',
+                                            optionsValue: 'Id',
+                                            value:ProcLab"></select>
+            </div>
+            <div data-bind="visible: !CanEdit()">
+                <label data-bind="text: ProcLabName "></label>
+            </div>
+        </div>
+    </div>
+    <!-- Reception Date -->
     <div class="col-md-3_5">
         <div class='input-group'>
             <span class="input-group-addon">
@@ -19,6 +34,7 @@
             <input id="RecDate" type='text' class="form-control " data-bind='enable: CanEdit, datepicker: RecDate , datepickerOptions: { maxDate:"@Model.DatePickerConfig",  dateFormat:"@Model.DateFormatDP"}' />
         </div>
     </div>
+    <!-- Temperature -->
     <div class="col-md-3">
         <div class='input-group'>
             <span class="input-group-addon">
@@ -31,17 +47,19 @@
 </div>
 
 <div class="row rowform" id="Test_1">
+    <!-- Processed -->
     <div class="col-md-3_5">
         <span>
             @LabelProcessed
         </span>
         <label class="btn btn-default">
-            <input type="radio" name="Processed" id="Processed" value="true" data-bind="checked: Processed, enable: CanEdit"> @LabelYes
+            <input type="radio" value="true" data-bind="checked: Processed, enable: CanEdit"> @LabelYes
         </label>
         <label class="btn btn-default">
-            <input type="radio" name="Processed" id="Processed" value="false" checked data-bind="checked: Processed, enable: CanEdit"> @LabelNo
+            <input type="radio" value="false" data-bind="checked: Processed, enable: CanEdit"> @LabelNo
         </label>
     </div>
+    <!-- Unprocessed Motive / Description Other -->
     <div class="col-md-5" data-bind="visible:NotShowProcessed">
         <div class='input-group'>
             <span class="input-group-addon">
@@ -55,7 +73,8 @@
             </select>
             <input id="NoReason" type='text' class="form-control case_letter" data-bind="value: NoProRen, visible:NotShowProcessedOther, enable: CanEdit" />
         </div>
-    </div>
+    </div>    
+    <!-- Test Identification -->
     <div class="col-md-5" data-bind="visible: ShowProcessed()">
         <div class='input-group'>
             <span class="input-group-addon">

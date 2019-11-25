@@ -3754,7 +3754,7 @@
                 <!-- Label: Laboratorio / Procesada / FIP / FFP / Resultado -->
                 <div class="row rowform">
                     <div class="row rowform">
-                        <div class="col-md-3">
+                        @*<div class="col-md-3">
                             <span class="input-group-addon">
                                 @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelLab"))
                             </span>
@@ -3763,7 +3763,7 @@
                             <span class="input-group-addon">
                                 @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelProcessed"))
                             </span>
-                        </div>
+                        </div>*@
                         <div class="col-md-2">
                             <span class="input-group-addon">
                                 @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelProcessStartDate"))
@@ -3796,32 +3796,30 @@
                         </div>
                         <!-- Laboratorio / Procesado / FIT / FTT / Tipo Test / Resultado Test -->
                         <div class="row rowform">
-                            <div class="col-md-3">
+
+                            @*<div class="col-md-3">
                                 <div class='input-group'>
-                                    @*<div data-bind="visible: CanEdit() && CanModLab()">*@
                                     <div data-bind="visible: CanModLab()">
                                         <select name="DrpProcLab" id="DrpProcLab" class="form-control" data-bind="options:$parent.LabsResult,
                                             optionsText: 'Name',
                                             optionsValue: 'Id',
-                                            value:ProcLab">
-                                        </select>
+                                            value:ProcLab"></select>
                                     </div>
-                                    @*<div data-bind="visible: !CanEdit() && CanModLab()">*@
                                     <div data-bind="visible: !CanModLab()">
                                         <label data-bind="text: ProcLabName "></label>
                                     </div>
-                                    @*<input type="button" value="Borrar" data-bind="enable: CanEdit,visible:CanEdit, click: $parent.removeLabTest.bind($data,1)">*@
                                 </div>
-                            </div>
-
-                            <div class="col-md-2">
+                            </div>*@
+ 
+                            <!-- Procesada: Si/No -->
+                            @*<div class="col-md-2">
                                 <label class="btn btn-default">
                                     <input type="radio" value="true" data-bind="checked: ProcessLab, enable:CanEdit"> @(LabelYes)
                                 </label>
                                 <label class="btn btn-default">
                                     <input type="radio" value="false" data-bind="checked: ProcessLab, enable:CanEdit"> @(LabelNo)
                                 </label>
-                            </div>
+                            </div>*@
                             <!-- div class="row" data-bind="visible: NotShowProcessedLab">
                                 <div class='input-group'>
                                     <span class="input-group-addon">
@@ -3844,7 +3842,6 @@
                             <div class="col-md-1_5" data-bind="visible: ShowProcessedLab">
                                 <div class='input-group'>
                                     <select class="form-control" data-bind="value: TestType, enable:CanEdit">
-                                              
                                         @*<option value="">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSelect"))</option>
                                         <option value="1" data-bind="visible: CanIFI">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelIF"))</option>
                                         <option value="2" data-bind="visible: CanPCR">@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelPCR"))</option>
@@ -3856,6 +3853,7 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="col-md-1_5" data-bind="visible:EnableTestResult">
                                 <div class='input-group' data-bind="enable:CanEdit">
                                     <select class="form-control" data-bind="options: CTR,

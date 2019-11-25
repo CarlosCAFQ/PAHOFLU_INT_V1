@@ -2428,8 +2428,12 @@ namespace Paho.Controllers
                                     FlucaseID = cal.FlucaseID,
 
                                     LabID = cal.LabID,
-                                    ProcLab = 11,               //#### x ELIMINAR                                    
-                                    ProcLabName = 22,       //#### x ELIMINAR 
+                                    ProcLab = cal.LabID.ToString(),
+                                    //var CanPCRLab = db.Institutions.Where(i => i.ID == user.Institution.ID).First()?.PCR;           
+                                    //ProcLabName = db.Institutions.Where(i => i.ID == Int32.Parse(cal.LabID.ToString())).First().FullName,
+                                    //ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).First().FullName,
+                                    ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).Any() ? db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).FirstOrDefault().FullName : "HolaAAA",
+                                    //ProcLabName = "Mi laboratorio xxx",
 
                                     CanEdit = institutionsIds.Contains(cal.LabID),
                                     RecDate = cal.RecDate,
@@ -2636,7 +2640,7 @@ namespace Paho.Controllers
                               TestEndDate = caselabtest.TestEndDate,
                               //CanEdit = institutionsIds.Contains(caselabtest.LabID),
                               CanEdit = User.IsInRole("Modify_Lab") ? true : institutionsIds.Contains(caselabtest.LabID),
-                              CanModLab = User.IsInRole("Modify_Lab"),
+                              CanModLab = User.IsInRole("Modify_Lab"),      // Ya no es necesario es reemplazado por CanEdit????
                               CanPCR = db.Institutions.OfType<Lab>().Where(i => i.ID == caselabtest.LabID).First()?.PCR,
                               CanIFI = db.Institutions.OfType<Lab>().Where(i => i.ID == caselabtest.LabID).First()?.IFI,
                               EndFlow = institutionActualFlow.Any() ? ((caselabtest.TestResultID == "N") ? db.InstitutionConfEndFlowByVirus.Where(j => j.id_InstCnf == institutionActualFlow.FirstOrDefault().ID && j.id_Cat_TestType == caselabtest.TestType && j.value_Cat_TestResult == caselabtest.TestResultID).Any().ToString().ToUpper() : db.InstitutionConfEndFlowByVirus.Where(j => j.id_InstCnf == institutionActualFlow.FirstOrDefault().ID && j.id_Cat_TestType == caselabtest.TestType && j.value_Cat_TestResult == caselabtest.TestResultID && j.id_Cat_VirusType == caselabtest.VirusTypeID).Any().ToString().ToUpper()) : "UNKNOWN",
@@ -2691,7 +2695,7 @@ namespace Paho.Controllers
                               TestEndDate = caselabtest.TestEndDate,
                               //CanEdit = institutionsIds.Contains(caselabtest.LabID),
                               CanEdit = User.IsInRole("Modify_Lab") ? true : institutionsIds.Contains(caselabtest.LabID),
-                              CanModLab = institutionsIds.Contains(caselabtest.LabID),
+                              CanModLab = institutionsIds.Contains(caselabtest.LabID),      // Ya no es necesario es reemplazado por CanEdit????
                               CanPCR = db.Institutions.OfType<Lab>().Where(i => i.ID == caselabtest.LabID).First()?.PCR,
                               CanIFI = db.Institutions.OfType<Lab>().Where(i => i.ID == caselabtest.LabID).First()?.IFI,
                               EndFlow = institutionActualFlow.Any() ? ((caselabtest.TestResultID == "N") ? db.InstitutionConfEndFlowByVirus.Where(j => j.id_InstCnf == institutionActualFlow.FirstOrDefault().ID && j.id_Cat_TestType == caselabtest.TestType && j.value_Cat_TestResult == caselabtest.TestResultID).Any().ToString().ToUpper() : db.InstitutionConfEndFlowByVirus.Where(j => j.id_InstCnf == institutionActualFlow.FirstOrDefault().ID && j.id_Cat_TestType == caselabtest.TestType && j.value_Cat_TestResult == caselabtest.TestResultID && j.id_Cat_VirusType == caselabtest.VirusTypeID).Any().ToString().ToUpper()) : "UNKNOWN",

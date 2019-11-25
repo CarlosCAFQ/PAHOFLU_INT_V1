@@ -1,5 +1,4 @@
-﻿
-// Clase LabTest
+﻿// Clase LabTest
 function LabTest(SampleNumber, oCaseLab) {
     //console.log("function LabTest(SampleNumber, oCaseLab)->START");
     var self_LT = this;
@@ -23,9 +22,9 @@ function LabTest(SampleNumber, oCaseLab) {
     self_LT.LabDummy = ko.observable("");
     self_LT.LabID = ko.observable("");
     self_LT.ProcLab = ko.observable("");
-    self_LT.ProcLabName = ko.observable("");    
+    self_LT.ProcLabName = ko.observable("");
     self_LT.CanEdit = ko.observable(true);
-    self_LT.CanModLab = ko.observable(true);
+    self_LT.CanModLab = ko.observable(true);                        // Ya no es utlizado????
     self_LT.CanDeleteProcess = ko.observable(true);
     self_LT.CanPCR = ko.observable(app.Views.Lab.CanPCRLab());
     self_LT.CanIFI = ko.observable(app.Views.Lab.CanIFILab());
@@ -622,6 +621,7 @@ function CaseLabses(SampleNumber) {
     self_CL.UsrInstID = ko.observable($('#IIDL').val());               // ID de la institucion del usuario
     self_CL.Id = "";
     self_CL.FlucaseID = "";
+    //self_CL.CanModLab = ko.observable(true);
     self_CL.CanEdit = ko.observable(true);
 
     self_CL.LabID = ko.observable();
@@ -757,6 +757,8 @@ function CaseLabses(SampleNumber) {
 
     self_CL.addLabTest = function (sample_number, data) {
         console.log("addLabTest->START");
+        console.log(data);
+        console.log("---");
         var erroMsg = self_CL.validatebeforeadd(1, 2);
         if (erroMsg) {
             alert(erroMsg);
@@ -2475,21 +2477,23 @@ function LabViewModel(app, dataModel) {
                                 }
                             }// END for
                         }
-                        console.log("E1");
-                        console.log(self.UsrInstName());
-                        console.log(caselab.LabTests());
-                        console.log(caselab.LabTests()[0].ProcLabName());
-                        console.log(caselab.LabTests()[0].ProcLab());
-                        console.log(caselab.LabTests()[1].ProcLabName());
-                        console.log(caselab.LabTests()[1].ProcLab());
-                        console.log("E1a");
+                        //console.log("E1");
+                        ////console.log(self.UsrInstName());
+                        ////console.log(caselab.LabTests());
+                        //console.log(caselab.LabTests()[0].ProcLabName());
+                        ////console.log(caselab.LabTests()[0].ProcLab());
+                        //console.log(caselab.LabTests()[0].ProcessLab());
+                        //console.log(caselab.LabTests()[1].ProcLabName());
+                        ////console.log(caselab.LabTests()[1].ProcLab());
+                        //console.log(caselab.LabTests()[1].ProcessLab());
+                        //console.log("E1a");
                         //****************
                         self.CaseLabses.push(caselab);
                     }
                 }
                 else
                 {
-                    console.log("p1a");
+                    console.log("Sin test->START");
                     var caselab = new CaseLabses(1);
 
                     caselab.FlucaseID = self.Id;
@@ -2502,15 +2506,16 @@ function LabViewModel(app, dataModel) {
                     //console.log("p2a");
                     self.CaseLabses.push(caselab);
                     //console.log("Se hizo push en array cuando no llegaron datos->CaseLabses");
+                    console.log("Sin test->END");
                 }
                 console.log("Array de objetos CaseLabses y LabTests->1S");
-                console.log(self.CaseLabses());
-                console.log(self.CaseLabses()[0].LabTests);
-                console.log(self.CaseLabses()[0].LabTests());
-                //console.log(self.CaseLabses().LabTests());        //ERROR
-
-                //console.log(self.CaseLabses.LabTests());          //ERROR
-                console.log(self.CaseLabses.LabTests);
+                console.log(self.CaseLabses());                             // Array de cabeceras
+                //console.log(self.CaseLabses()[0].LabTests());             // Array de test de la cabecera 1
+                //console.log(self.CaseLabses()[0].Identification_Test());
+                //console.log(self.CaseLabses()[0].Processed());
+                //console.log(self.CaseLabses()[1].LabTests());             // Array de test de la cabecera 2
+                //console.log(self.CaseLabses()[1].Identification_Test());
+                //console.log(self.CaseLabses()[1].Processed());
                 console.log("Array de objetos CaseLabses y LabTests->1E");
 
                 //self.LabTestsEndFlow([]);
@@ -2717,10 +2722,10 @@ function LabViewModel(app, dataModel) {
                 //    }
                 //}
 
-                console.log("Data para foreach-START");
-                console.log(self.CaseLabses());
-                //console.log(self.LabTests());
-                console.log("Data para foreach-END");
+                //console.log("Data para foreach-START");
+                //console.log(self.CaseLabses());
+                ////console.log(self.LabTests());
+                //console.log("Data para foreach-END");
 
                 $("#FinalResult").prop('disabled', true);
                 $("#FinalResultVirusTypeID").prop('disabled', true);
