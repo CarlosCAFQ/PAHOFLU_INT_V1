@@ -377,8 +377,14 @@
     };
 
     self.ValidateAll = function (option_Save) {
+        console.log("h.vm.js-HomeViewModel-self.ValidateAll->START");
+        console.log("#ITy valor->" + $("#ITy").val());
+
         if ($("#ITy").val() == "2") {
-            app.Views.Lab.validate(function () {
+            //CaseLabses(SampleNumber)
+            console.log("------------C1");
+            app.Views.Lab.validate(function () {                    // Cuando graba user LAB $("#ITy").val(): "2"
+                console.log("------------C2");
                 self.SaveAll(option_Save);
             });
         } else {
@@ -387,9 +393,11 @@
                     app.Views.Risk.validate(function () {
                         app.Views.Hospital.validate(function () {
                             if ($("#ITy").val() != "2") {
+                                console.log("------------D");
                                 self.SaveAll(option_Save);
                             } else {
                                 app.Views.Lab.validate(function () {
+                                    console.log("------------EE");
                                     self.SaveAll(option_Save);
                                 });
                             }
@@ -398,6 +406,7 @@
                 });
             });
         };
+        console.log("h.vm.js-HomeViewModel-self.ValidateAll->END");
     };
 
     self.ReloadInstitutions = function () {        

@@ -4416,37 +4416,45 @@
                 <div class="btn-group">
                     @if (User.IsInRole("Admin") || User.IsInRole("Staff") || User.IsInRole("Close_case") || User.IsInRole("Modify_Epi") || User.IsInRole("Modify_Lab"))
                     {
+                        <!--  -->
                         <button id="saveGeneralPrev" type="button" class="btn btn-primary" data-bind="click: SavePrev, visible: false">@LabelSavePrevious</button>
                         <span></span>
+                        <!-- Guardar y Salir -->
                         <button id="saveGeneral_1" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,1), visible:app.Views.Contact.Flow_Local_Institution_Epi() || app.Views.Contact.Flow_Local_Institution_Lab()">@LabelSaveAndExit</button>
                         <span></span>
-                        if (ViewBag.UserInstitutionType == 1 )
+                        if (ViewBag.UserInstitutionType == 1)
                         {
+                            <!-- Guardar y Nuevo -->
                             <button id="saveGeneral_2" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,0), visible:app.Views.Contact.Flow_Local_Institution_Epi()">@LabelSaveAndNew</button>
                             <span></span>
                         }
-                        if (ViewBag.UserInstitutionType == 2 )
+                        if (ViewBag.UserInstitutionType == 2)
                         {
+                            <!-- Guardar y Enviar -->
                             <button id="saveGeneral_lab" type="button" class="btn btn-primary" data-bind="click: Save.bind($data,2), visible:app.Views.Contact.Flow_Local_Institution_Lab_send()">@LabelSaveAndSend</button>
                             <span></span>
                         }
                     }
+                    <!-- Regresar -->
                     <button id="cancelGeneral" type="button" class="btn btn-primary" data-bind="click: Cancel">@LabelBack</button>
                     @if (ViewBag.UserInstitutionType == 1)
                     {
                         if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                         {
                             <span></span>
+                            <!--  -->
                             <button id="Reset" type="button" class="btn btn-primary" data-bind="click: AddFluCase , visible: false">@LabelNewRecord</button>
                         }
                     }
                     <span></span>
                     @if (User.IsInRole("Admin") || User.IsInRole("Delete"))
                     {
+                        <!--  -->
                         <button id="Borrar" type="button" class="btn btn-primary btn-danger" data-bind="click: Borrar">@LabelDelete</button>
                         <span></span>
                     }
                     <div class="btn-group" >
+                        <!-- Imprimir -->
                         <button id="PrintRecord" type="button" class="btn btn-primary" data-bind="click:app.Views.PrintTest.Generate.bind($data,'record'), visible:true" data-toggle="modal" data-target=".bs-example-modal-lg">@LabelPrint</button>
                     </div>
                 </div>

@@ -903,6 +903,10 @@ function ContactViewModel(app, dataModel) {
     };
 
     self.Save = function (option_Save, object_Save) {
+        console.log("c.vm.js-ContactViewModel-self.Save->START");
+        console.log("option_Save->" + option_Save);
+        console.log(object_Save);
+        console.log("------------");
         if (option_Save == 2) {
             if (confirm(msgValidationSaveAndSend))
             {
@@ -913,9 +917,9 @@ function ContactViewModel(app, dataModel) {
             }
         }
         else {
-            app.Views.Home.ValidateAll(option_Save);
+            app.Views.Home.ValidateAll(option_Save);        // Cuando graba user LAB option_Save: 1
         }
-        
+        console.log("c.vm.js-ContactViewModel-self.Save->END");
     };
 
     self.SavePrev = function () {
