@@ -611,7 +611,7 @@ function LabTest(SampleNumber, oCaseLab) {
 };
 
 // Clase CaseLabses
-function CaseLabses(SampleNumber) {
+function CaseLab(SampleNumber) {
     //console.log("function CaseLabses(SampleNumber)->START->" + SampleNumber.toString()); 
 
     var self_CL = this;
@@ -651,6 +651,7 @@ function CaseLabses(SampleNumber) {
     //self.LabsResultExternal = ko.observableArray(app.Views.Home.labsExternal());
     //self.SubTypeByLabRes = ko.observableArray([]);
     self_CL.ArrayValidate = ko.observableArray([]);
+    self_CL.msgError = "";
     ///
 
     // date_receive = (SampleNumber == 1) ? (jQuery.type(app.Views.Lab.RecDate12()) === 'date' ? app.Views.Lab.RecDate12() : parseDate($("#RecDate12").val(), date_format_)) :
@@ -998,137 +999,171 @@ function CaseLabses(SampleNumber) {
         return msg;
     };
     
-    self_CL.validate = function (nextStep) {
-        console.log("self.validate->STARTTT");
+    self_CL.validate = function (nextStep, oLabView) {
+        console.log("l.vm.js-CaseLab->self_CL.validate->START");
+        //console.log("----1b1");
+        //console.log(nextStep);
+        //console.log("----1b2");
+        //console.log(nextStep());
+        //console.log("----1b3");
+        //console.log(oLabView);
+        //console.log("----1b4");
+        //console.log(oLabView.EndLabDate());
+        //console.log(oLabView.FinalResult());
+        //console.log("----1b5");
+
         var msg = "";
         rec_date = jQuery.type(self_CL.RecDate()) === 'date' ? self_CL.RecDate() : parseDate($("#RecDate").val(), date_format_);
-        //****rec_date_national = jQuery.type(self_CL.RecDate_National()) === 'date' ? self_CL.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
-        date_close_date_lab = jQuery.type(self.EndLabDate()) === 'date' ? self.EndLabDate() : parseDate($("#EndLabDate").val(), date_format_);
+        //rec_date_national = jQuery.type(self_CL.RecDate_National()) === 'date' ? self_CL.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
+        ///////date_close_date_lab = jQuery.type(self_CL.EndLabDate()) === 'date' ? self_CL.EndLabDate() : parseDate($("#EndLabDate").val(), date_format_);
+        date_close_date_lab = jQuery.type(oLabView.EndLabDate()) === 'date' ? oLabView.EndLabDate() : parseDate($("#EndLabDate").val(), date_format_);
         //var date_ShipDate = new Date();
         date_ShipDate = jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate($("#ShipDate").val(), date_format_);
 
         //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && $("#RecDate").val() !="") {
-        if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed() == "true") {
+        if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self_CL.Processed() == "true") {
             console.log("11");
             if ($("#RecDate").val() == "") {
-                msg += "\n" + msgValidateRecDateRequired;
-                //"Fecha de recepción es requerida";
+                msg += "\n" + msgValidateRecDateRequired;           //"Fecha de recepción es requerida";                
                 console.log("11a");
             }
 
             if ($("#RecDate").val() != "" && !moment(moment(rec_date).format(date_format_moment), [date_format_moment], true).isValid()) {
-                msg += "\n" + msgValidateRecDateInvalid;
-                //"Fecha de recepción es inválida ";
+                msg += "\n" + msgValidateRecDateInvalid;            //"Fecha de recepción es inválida ";                
                 console.log("11b");
             }
 
-            if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
-                if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(rec_date), 'days'))
+            if (self_CL.UsrCountry() == 11 || self_CL.UsrCountry() == 119) {
+                if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(rec_date), 'days')) {
+                    console.log("11c");
                     msg += "\n" + msgValidateRecDateShipDateIC;
+                }                    
             } else {
                 if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(date_ShipDate), 'days')) {
-                    msg += "\n" + msgValidateRecDateShipDate;
-                    //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
-                    console.log("11c");
+                    msg += "\n" + msgValidateRecDateShipDate;       //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";                    
+                    console.log("11d");
                 }
             }
 
-            if (self.Processed() == "true") {
+            if (self_CL.Processed() == "true") {
                 console.log("22");
-                if (self.LabTests().length <= 0) {
+                if (self_CL.LabTests().length <= 0) {
+                    msg += "\n" + msgValidateInsertResult;          //"Inserte al menos un resultado";
+                    console.log("22a");
+                }
+
+                // Verificación de procesos uno de la muestra 1
+                var errRes = self_CL.validatebeforeadd(1, 1);
+                if (errRes != "") {
+                    console.log("22b");
+                    msg += errRes;
+                }
+            }
+
+            console.log("333");
+            var labtests_check = $.grep(self_CL.LabTests(), function (v) {
+                return v.TestType() === "2" || v.TestType() === "1";
+            });
+            if (labtests_check.length > 0) {
+                if ($("#EndLabDate").val() == "") {
+                    msg += "\n" + msgValidateFinalResultDate;               //"Fecha del resultado final es requerida";   
+                    console.log("33a");
+                }
+                     
+
+                if ($("#EndLabDate").val() != "") {
+                    if (!moment(moment(date_close_date_lab).format(date_format_moment), [date_format_moment], true).isValid()) {
+                        msg += "\n" + msgValidateFinalResultDateInvalid;    //"Fecha del resultado final es inválida";     
+                        console.log("33b");
+                    }
+                                      
+
+                    if ($("#RecDate").val() != "" && moment(rec_date).isAfter(moment(date_close_date_lab), 'days')) {
+                        msg += "\n" + msgValidateFinalResultDateRecDate;    //"'Fecha del resultado final' no puede ser anterior a la 'Fecha de recepción'";           
+                        console.log("33c");
+                    }                                
+
+                    //if (!self_CL.FinalResult() || self_CL.FinalResult() == "") {
+                    if (!oLabView.FinalResult() || oLabView.FinalResult() == "") {
+                        msg += "\n" + msgValidateFinalResult;               //"Selecione un resultado final";       
+                        console.log("33d");
+                    }
+                }
+            }
+
+            self_CL.ArrayValidate(self_CL.LabTests().concat(self_CL.LabTests_Sample2()).concat(self_CL.LabTests_Sample3()));
+            for (index = 0; index < self_CL.ArrayValidate().length; ++index) {
+
+                if (self_CL.ArrayValidate()[index].TestResultID() === "P"  // Resultado general Positivo
+                    && self_CL.ArrayValidate()[index].VirusTypeID() === "1" // Virus seleccionado 
+                    && self_CL.ArrayValidate()[index].TestType() === "2"   // Tipo de técnica es PCR
+                    && self_CL.ArrayValidate()[index].TestResultID_VirusSubType() != "P" && self_CL.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
+                    && self_CL.UsrCountry() == 7) {
+                    msg += "\n" + msgValidateProcessResult_Subtype;
+                    console.log("33e");
+                }
+            }
+        }
+
+        /* YA NO SE NECISITA ???
+        if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self_CL.Processed_National() == "true") {
+            console.log("33");
+            if ($("#RecDate_National").val() == "") {
+                msg += "\n" + msgValidateRecDateRequired;           //"Fecha de recepción es requerida";                
+                console.log("33a");
+            }
+
+            if ($("#RecDate_National").val() != "" && !moment(moment(rec_date_national).format(date_format_moment), [date_format_moment], true).isValid()) {
+                msg += "\n" + msgValidateRecDateInvalid;
+                console.log("33b");
+            }
+
+            if (date_ShipDate != null && rec_date_national != null && moment(rec_date_national).isBefore(moment(date_ShipDate), 'days')) {
+                msg += "\n" + msgValidateRecDateShipDate;           //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";                
+                console.log("33c");
+            }
+
+            if (self_CL.Processed_National() == "true") {
+
+                if (self_CL.LabTests().length <= 0) {
                     msg += "\n" + msgValidateInsertResult;
                     //"Inserte al menos un resultado";
                 }
 
                 // Verificación de procesos uno de la muestra 1
-                var errRes = self.validatebeforeadd(1, 1);
-                if (errRes != "") {
-                    msg += errRes;
-                }
+                //var errRes = self.validatebeforeadd(1, 1);
+                //if (errRes != "") {
+                //    msg += errRes;
+                //}
             }
+        }
+        */
 
-            var labtests_check = $.grep(self.LabTests(), function (v) {
-                return v.TestType() === "2" || v.TestType() === "1";
-            });
-            if (labtests_check.length > 0) {
-                if ($("#EndLabDate").val() == "")
-                    msg += "\n" + msgValidateFinalResultDate;
-                //"Fecha del resultado final es requerida";
-
-                if ($("#EndLabDate").val() != "") {
-                    if (!moment(moment(date_close_date_lab).format(date_format_moment), [date_format_moment], true).isValid())
-                        msg += "\n" + msgValidateFinalResultDateInvalid;
-                    //"Fecha del resultado final es inválida";
-
-                    if ($("#RecDate").val() != "" && moment(rec_date).isAfter(moment(date_close_date_lab), 'days'))
-                        msg += "\n" + msgValidateFinalResultDateRecDate;
-                    //"'Fecha del resultado final' no puede ser anterior a la 'Fecha de recepción'";
-
-                    if (!self.FinalResult() || self.FinalResult() == "") {
-                        msg += "\n" + msgValidateFinalResult;
-                        //"Selecione un resultado final";
-                    }
-                }
-            }
-
-            self.ArrayValidate(self.LabTests().concat(self.LabTests_Sample2()).concat(self.LabTests_Sample3()));
-            for (index = 0; index < self.ArrayValidate().length; ++index) {
-
-                if (self.ArrayValidate()[index].TestResultID() === "P"  // Resultado general Positivo
-                    && self.ArrayValidate()[index].VirusTypeID() === "1" // Virus seleccionado 
-                    && self.ArrayValidate()[index].TestType() === "2"   // Tipo de técnica es PCR
-                    && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P" && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
-                    && self.UsrCountry() == 7)
-                    msg += "\n" + msgValidateProcessResult_Subtype;
-            }
-
+        console.log("444");
+        console.log("->" + msg + "<-");
+        console.log("44a");
+        if (self_CL.Processed() == "false" && self_CL.NoProRenId() == "") {
+            msg += "\n" + msgValidateProcessedReason;           //"Indique la razón porque no fue procesada la muestra";
+            console.log("44b");
         }
 
-        //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed_National() == "true") {
-        //    console.log("33");
-        //    if ($("#RecDate_National").val() == "") {
-        //        msg += "\n" + msgValidateRecDateRequired;
-        //        //"Fecha de recepción es requerida";
-        //        console.log("33a");
-        //    }
-
-        //    if ($("#RecDate_National").val() != "" && !moment(moment(rec_date_national).format(date_format_moment), [date_format_moment], true).isValid()) {
-        //        msg += "\n" + msgValidateRecDateInvalid;
-        //        console.log("33b");
-        //    }
-
-        //    if (date_ShipDate != null && rec_date_national != null && moment(rec_date_national).isBefore(moment(date_ShipDate), 'days')) {
-        //        msg += "\n" + msgValidateRecDateShipDate;
-        //        //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
-        //        console.log("33c");
-        //    }
-
-        //    if (self.Processed_National() == "true") {
-
-        //        if (self.LabTests().length <= 0) {
-        //            msg += "\n" + msgValidateInsertResult;
-        //            //"Inserte al menos un resultado";
-        //        }
-
-        //        // Verificación de procesos uno de la muestra 1
-        //        //var errRes = self.validatebeforeadd(1, 1);
-        //        //if (errRes != "") {
-        //        //    msg += errRes;
-        //        //}
-        //    }
-        //}
-
-        if (self.Processed() == "false" && self.NoProRenId() == "") {
+        /* YA NO SE NECISTA ???
+        if (self_CL.Processed_National() == "false" && self_CL.NoProRenId_National() == "") {
             msg += "\n" + msgValidateProcessedReason;
             //"Indique la razón porque no fue procesada la muestra";
         }
+        */
 
-        //if (self.Processed_National() == "false" && self.NoProRenId_National() == "") {
-        //    msg += "\n" + msgValidateProcessedReason;
-        //    //"Indique la razón porque no fue procesada la muestra";
-        //}
-
-        if (msg !== "") { alert(msgValidationTitleLab + msg); $('#tabs').tabs({ active: 4 }); return false; }
+        console.log("44c");
+        self_CL.msgError = msg;
+        if (msg !== "")
+        {
+            console.log("44d");
+            alert(msgValidationTitleLab + msg);
+            $('#tabs').tabs({ active: 4 });
+            console.log("l.vm.js-CaseLab->self_CL.validate->END_1");
+            return false;
+        }
 
         //if (self.UsrCountry == 7) {
         //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 4 }); return false; }
@@ -1136,10 +1171,13 @@ function CaseLabses(SampleNumber) {
         //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 5 }); return false; }
         //}
 
-        if (nextStep != null) nextStep();
+        if (nextStep != null)
+            nextStep();
+
+        console.log("44e");
+        console.log("l.vm.js-CaseLab->self_CL.validate->END");
         return true;
     };
-
 
     self_CL.removeLabTest = function (sample_number, data) {
         if (sample_number == 1) {
@@ -2104,291 +2142,28 @@ function LabViewModel(app, dataModel) {
     };
     
     self.validate = function (nextStep) {
-        console.log("LabViewModel->self.validate->START");
-
-
-        //for (var i = 0; i < self.CaseLabses().length; i++) {
-
-        //}
-
-        for (var oHead in self.CaseLabses().LabTests) {
-            console.log(oHead);
-        }
-
+        console.log("l.vm.js-LabViewModel->self.validate->START");
 
         var msg = "";
-        rec_date = jQuery.type(self_CL.RecDate()) === 'date' ? self_CL.RecDate() : parseDate($("#RecDate").val(), date_format_);
-        //****rec_date_national = jQuery.type(self_CL.RecDate_National()) === 'date' ? self_CL.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
-        date_close_date_lab = jQuery.type(self.EndLabDate()) === 'date' ? self.EndLabDate() : parseDate($("#EndLabDate").val(), date_format_);
-        //var date_ShipDate = new Date();
-        date_ShipDate = jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate($("#ShipDate").val(), date_format_);
+        self.CaseLabses().forEach(function (oCaseLab, indice, array) {
+            if (oCaseLab.validate(nextStep, self) == false){
+                msg += "\n" + oCaseLab.msgError;
+            }               
+        });
 
-        //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && $("#RecDate").val() !="") {
-        if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed() == "true") {
-            console.log("11");
-            if ($("#RecDate").val() == "") {
-                msg += "\n" + msgValidateRecDateRequired;
-                //"Fecha de recepción es requerida";
-                console.log("11a");
-            }
-
-            if ($("#RecDate").val() != "" && !moment(moment(rec_date).format(date_format_moment), [date_format_moment], true).isValid()) {
-                msg += "\n" + msgValidateRecDateInvalid;
-                //"Fecha de recepción es inválida ";
-                console.log("11b");
-            }
-
-            if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
-                if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(rec_date), 'days'))
-                    msg += "\n" + msgValidateRecDateShipDateIC;
-            } else {
-                if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(date_ShipDate), 'days')) {
-                    msg += "\n" + msgValidateRecDateShipDate;
-                    //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
-                    console.log("11c");
-                }
-            }
-
-            if (self.Processed() == "true") {
-                console.log("22");
-                if (self.LabTests().length <= 0) {
-                    msg += "\n" + msgValidateInsertResult;
-                    //"Inserte al menos un resultado";
-                }
-
-                // Verificación de procesos uno de la muestra 1
-                var errRes = self.validatebeforeadd(1, 1);
-                if (errRes != "") {
-                    msg += errRes;
-                }
-            }
-
-            var labtests_check = $.grep(self.LabTests(), function (v) {
-                return v.TestType() === "2" || v.TestType() === "1";
-            });
-            if (labtests_check.length > 0) {
-                if ($("#EndLabDate").val() == "")
-                    msg += "\n" + msgValidateFinalResultDate;
-                //"Fecha del resultado final es requerida";
-
-                if ($("#EndLabDate").val() != "") {
-                    if (!moment(moment(date_close_date_lab).format(date_format_moment), [date_format_moment], true).isValid())
-                        msg += "\n" + msgValidateFinalResultDateInvalid;
-                    //"Fecha del resultado final es inválida";
-
-                    if ($("#RecDate").val() != "" && moment(rec_date).isAfter(moment(date_close_date_lab), 'days'))
-                        msg += "\n" + msgValidateFinalResultDateRecDate;
-                    //"'Fecha del resultado final' no puede ser anterior a la 'Fecha de recepción'";
-
-                    if (!self.FinalResult() || self.FinalResult() == "") {
-                        msg += "\n" + msgValidateFinalResult;
-                        //"Selecione un resultado final";
-                    }
-                }
-            }
-
-            self.ArrayValidate(self.LabTests().concat(self.LabTests_Sample2()).concat(self.LabTests_Sample3()));
-            for (index = 0; index < self.ArrayValidate().length; ++index) {
-
-                if (self.ArrayValidate()[index].TestResultID() === "P"  // Resultado general Positivo
-                    && self.ArrayValidate()[index].VirusTypeID() === "1" // Virus seleccionado 
-                    && self.ArrayValidate()[index].TestType() === "2"   // Tipo de técnica es PCR
-                    && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P" && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
-                    && self.UsrCountry() == 7)
-                    msg += "\n" + msgValidateProcessResult_Subtype;
-            }
-
+        var bResu = true;
+        if (msg !== "")
+        {
+            //console.log("Error2->" + msg);
+            alert(msgValidationTitleLab + msg);
+            $('#tabs').tabs({ active: 4 });
+            bResu = false;
         }
 
-        //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed_National() == "true") {
-        //    console.log("33");
-        //    if ($("#RecDate_National").val() == "") {
-        //        msg += "\n" + msgValidateRecDateRequired;
-        //        //"Fecha de recepción es requerida";
-        //        console.log("33a");
-        //    }
-
-        //    if ($("#RecDate_National").val() != "" && !moment(moment(rec_date_national).format(date_format_moment), [date_format_moment], true).isValid()) {
-        //        msg += "\n" + msgValidateRecDateInvalid;
-        //        console.log("33b");
-        //    }
-
-        //    if (date_ShipDate != null && rec_date_national != null && moment(rec_date_national).isBefore(moment(date_ShipDate), 'days')) {
-        //        msg += "\n" + msgValidateRecDateShipDate;
-        //        //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
-        //        console.log("33c");
-        //    }
-
-        //    if (self.Processed_National() == "true") {
-
-        //        if (self.LabTests().length <= 0) {
-        //            msg += "\n" + msgValidateInsertResult;
-        //            //"Inserte al menos un resultado";
-        //        }
-
-        //        // Verificación de procesos uno de la muestra 1
-        //        //var errRes = self.validatebeforeadd(1, 1);
-        //        //if (errRes != "") {
-        //        //    msg += errRes;
-        //        //}
-        //    }
-        //}
-
-        if (self.Processed() == "false" && self.NoProRenId() == "") {
-            msg += "\n" + msgValidateProcessedReason;
-            //"Indique la razón porque no fue procesada la muestra";
-        }
-
-        //if (self.Processed_National() == "false" && self.NoProRenId_National() == "") {
-        //    msg += "\n" + msgValidateProcessedReason;
-        //    //"Indique la razón porque no fue procesada la muestra";
-        //}
-
-        if (msg !== "") { alert(msgValidationTitleLab + msg); $('#tabs').tabs({ active: 4 }); return false; }
-
-        //if (self.UsrCountry == 7) {
-        //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 4 }); return false; }
-        //} else {
-        //    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 5 }); return false; }
-        //}
-
-        if (nextStep != null) nextStep();
-
-        console.log("LabViewModel->self.validate->END");
-        return true;
+        console.log("l.vm.js-LabViewModel->self.validate->END->ERROR?->" + bResu);
+        return bResu;
     };
-
-
-
-    //self.validate = function (nextStep) {
-    //    console.log("lab.viewmodel.js-self.validate->START")
-    //    var msg = "";
-
-    //    //rec_date = jQuery.type(self.RecDate()) === 'date' ? self.RecDate() : parseDate($("#RecDate").val(), date_format_);
-    //    //rec_date_national = jQuery.type(self.RecDate_National()) === 'date' ? self.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
-    //    //date_close_date_lab = jQuery.type(self.EndLabDate()) === 'date' ? self.EndLabDate() : parseDate($("#EndLabDate").val(), date_format_);
-    //    ////var date_ShipDate = new Date();
-    //    //date_ShipDate = jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate($("#ShipDate").val(), date_format_);
-
-    //    ////if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && $("#RecDate").val() !="") {
-    //    //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed() == "true") {
-
-    //    //    if ($("#RecDate").val() == "")
-    //    //        msg += "\n" + msgValidateRecDateRequired;
-    //    //    //"Fecha de recepción es requerida";
-    //    //    if ($("#RecDate").val() != "" && !moment(moment(rec_date).format(date_format_moment), [date_format_moment], true).isValid())
-    //    //        msg += "\n" + msgValidateRecDateInvalid;
-    //    //    //"Fecha de recepción es inválida ";
-
-    //    //    if (self.UsrCountry() == 11 || self.UsrCountry() == 119) {
-    //    //        if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(rec_date), 'days'))
-    //    //            msg += "\n" + msgValidateRecDateShipDateIC;
-    //    //    } else {
-    //    //        if (date_ShipDate != null && rec_date != null && moment(rec_date).isBefore(moment(date_ShipDate), 'days'))
-    //    //            msg += "\n" + msgValidateRecDateShipDate;
-    //    //        //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
-    //    //    }
-
-    //    //    if (self.Processed() == "true") {
-    //    //        if (self.LabTests().length <= 0) {
-    //    //            msg += "\n" + msgValidateInsertResult;
-    //    //            //"Inserte al menos un resultado";
-    //    //        }
-
-    //    //        // Verificación de procesos uno de la muestra 1
-    //    //        var errRes = self.validatebeforeadd(1, 1);
-    //    //        if (errRes != "") {
-    //    //            msg += errRes;
-    //    //        }
-    //    //    }
-
-    //    //    var labtests_check = $.grep(self.LabTests(), function (v) {
-    //    //        return v.TestType() === "2" || v.TestType() === "1";
-    //    //    });
-    //    //    if (labtests_check.length > 0) {
-    //    //        if ($("#EndLabDate").val() == "")
-    //    //            msg += "\n" + msgValidateFinalResultDate;
-    //    //        //"Fecha del resultado final es requerida";
-
-    //    //        if ($("#EndLabDate").val() != "") {
-    //    //            if (!moment(moment(date_close_date_lab).format(date_format_moment), [date_format_moment], true).isValid())
-    //    //                msg += "\n" + msgValidateFinalResultDateInvalid;
-    //    //            //"Fecha del resultado final es inválida";
-
-    //    //            if ($("#RecDate").val() != "" && moment(rec_date).isAfter(moment(date_close_date_lab), 'days'))
-    //    //                msg += "\n" + msgValidateFinalResultDateRecDate;
-    //    //            //"'Fecha del resultado final' no puede ser anterior a la 'Fecha de recepción'";
-
-    //    //            if (!self.FinalResult() || self.FinalResult() == "") {
-    //    //                msg += "\n" + msgValidateFinalResult;
-    //    //                //"Selecione un resultado final";
-    //    //            }
-    //    //        }
-    //    //    }
-
-    //    //    self.ArrayValidate(self.LabTests().concat(self.LabTests_Sample2()).concat(self.LabTests_Sample3()));
-    //    //    for (index = 0; index < self.ArrayValidate().length; ++index) {
-
-    //    //        if (self.ArrayValidate()[index].TestResultID() === "P"  // Resultado general Positivo
-    //    //            && self.ArrayValidate()[index].VirusTypeID() === "1" // Virus seleccionado 
-    //    //            && self.ArrayValidate()[index].TestType() === "2"   // Tipo de técnica es PCR
-    //    //            && self.ArrayValidate()[index].TestResultID_VirusSubType() != "P" && self.ArrayValidate()[index].TestResultID_VirusSubType_2() != "P"
-    //    //            && self.UsrCountry() == 7)
-    //    //            msg += "\n" + msgValidateProcessResult_Subtype;
-    //    //    }
-
-    //    //}
-
-    //    //if (app.Views.Hospital.IsSample() === "true" && $("#ITy").val() != 1 && self.Processed_National() == "true") {
-    //    //    if ($("#RecDate_National").val() == "")
-    //    //        msg += "\n" + msgValidateRecDateRequired;
-    //    //    //"Fecha de recepción es requerida";
-    //    //    if ($("#RecDate_National").val() != "" && !moment(moment(rec_date_national).format(date_format_moment), [date_format_moment], true).isValid())
-    //    //        msg += "\n" + msgValidateRecDateInvalid;
-
-    //    //    if (date_ShipDate != null && rec_date_national != null && moment(rec_date_national).isBefore(moment(date_ShipDate), 'days'))
-    //    //        msg += "\n" + msgValidateRecDateShipDate;
-    //    //    //"'Fecha de recepcion' no puede ser anterior a la 'Fecha de envío'";
-
-    //    //    if (self.Processed_National() == "true") {
-    //    //        if (self.LabTests().length <= 0) {
-    //    //            msg += "\n" + msgValidateInsertResult;
-    //    //            //"Inserte al menos un resultado";
-    //    //        }
-
-    //    //        // Verificación de procesos uno de la muestra 1
-    //    //        //var errRes = self.validatebeforeadd(1, 1);
-    //    //        //if (errRes != "") {
-    //    //        //    msg += errRes;
-    //    //        //}
-    //    //    }
-    //    //}
-
-    //    //if (self.Processed() == "false" && self.NoProRenId() == "") {
-    //    //    msg += "\n" + msgValidateProcessedReason;
-    //    //    //"Indique la razón porque no fue procesada la muestra";
-    //    //}
-
-    //    //if (self.Processed_National() == "false" && self.NoProRenId_National() == "") {
-    //    //    msg += "\n" + msgValidateProcessedReason;
-    //    //    //"Indique la razón porque no fue procesada la muestra";
-    //    //}
-
-    //    //if (msg !== "") { alert(msgValidationTitleLab + msg); $('#tabs').tabs({ active: 4 }); return false; }
-
-    //    ////if (self.UsrCountry == 7) {
-    //    ////    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 4 }); return false; }
-    //    ////} else {
-    //    ////    if (msg !== "") { alert('LABORATORIO:' + msg); $('#tabs').tabs({ active: 5 }); return false; }
-    //    ////}
-
-    //    //if (nextStep != null)
-    //    //    nextStep();
-
-    //    console.log("lab.viewmodel.js-self.validate->END")
-    //    return true;
-    //};
-    
+        
     //self.validatebeforeadd = function (nextStep, SaveVerif) {
     //    var msg = "";
     //    self.ArrayValidate((nextStep == 1) ? self.LabTests() : (nextStep == 2) ? self.LabTests_Sample2() : self.LabTests_Sample3());
@@ -2691,7 +2466,7 @@ function LabViewModel(app, dataModel) {
                 if (data.CaseLabs != "") {
                     //console.log("Nro cabeceras->" + data.CaseLabs.length.toString());
                     for (indexCL = 0; indexCL < data.CaseLabs.length; ++indexCL) {
-                        var caselab = new CaseLabses(1);                       // Crea un objeto de la clase CaseLabses, enviandole el parametro numero de muestra(1)
+                        var caselab = new CaseLab(1);                       // Crea un objeto de la clase CaseLabses, enviandole el parametro numero de muestra(1)
 
                         caselab.Id = data.CaseLabs[indexCL].Id;               // Llenando las propiedades
                         caselab.FlucaseID = data.CaseLabs[indexCL].FlucaseID;
@@ -2806,7 +2581,7 @@ function LabViewModel(app, dataModel) {
                 else
                 {
                     console.log("Sin test->START");
-                    var caselab = new CaseLabses(1);
+                    var caselab = new CaseLab(1);
 
                     caselab.FlucaseID = self.Id;
                     

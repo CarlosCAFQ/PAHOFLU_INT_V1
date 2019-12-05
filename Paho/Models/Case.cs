@@ -665,6 +665,35 @@ namespace Paho.Models
     }
     // Termina catalogos generales
 
+    public class CatCloseParameters			                    //**** NEW: 1911
+    {
+        public int Id { get; set; }
+        [Required]
+        public int? Surv { get; set; }
+        //[Required]
+        public int? IsSample { get; set; }
+        public int? Processed { get; set; }
+        public int? LabEndClosing { get; set; }
+        public int? HospExDate { get; set; }
+        public int? DiagEg { get; set; }
+
+        //[NotMapped]
+        [ForeignKey("Surv")]
+        public virtual CatSurv SurvReg { get; set; }                    // Para vista Index
+        [NotMapped]
+        public List<CatSurv> SurvRegCollection { get; set; }            // Para form Create y Edit
+        [NotMapped]
+        public string IsSampleText { get; set; }
+        [NotMapped]
+        public string ProcessedText { get; set; }
+        [NotMapped]
+        public string LabEndClosingText { get; set; }
+        [NotMapped]
+        public string HospExDateText { get; set; }
+        [NotMapped]
+        public string DiagEgText { get; set; }
+    }
+
     public class Area
     {
         public int ID { get; set; }
@@ -972,6 +1001,41 @@ namespace Paho.Models
 
         [ForeignKey("id_InstCnf")]
         public virtual InstitutionConfiguration InstitutionConfiguration { get; set; }
+    }
+
+    public class CatVirusFlow                           //**** NEW: 1911
+    {
+        public int ID { get; set; }
+        public int? id_Cat_TestType { get; set; }
+        public string value_Cat_TestResult { get; set; }
+        public int? id_Cat_VirusType { get; set; }
+        public int? id_Cat_Subtype { get; set; }
+        public int? VirusLinaje_ID { get; set; }
+
+        [ForeignKey("id_Cat_TestType")]
+        public virtual CatTestType CatTestTypes { get; set; }                   // Para Index
+        [NotMapped]
+        public List<CatTestType> CatTestTypeCollection { get; set; }            // Para form Create y Edit
+
+        [ForeignKey("value_Cat_TestResult")]
+        public virtual CatTestResult CatTestResults { get; set; }
+        [NotMapped]
+        public List<CatTestResult> CatTestResultCollection { get; set; }
+
+        [ForeignKey("id_Cat_VirusType")]
+        public virtual CatVirusType CatVirusTypes { get; set; }
+        [NotMapped]
+        public List<CatVirusType> CatVirusTypeCollection { get; set; }
+
+        [ForeignKey("id_Cat_Subtype")]
+        public virtual CatVirusSubType CatVirusSubTypes { get; set; }
+        [NotMapped]
+        public List<CatVirusSubType> CatVirusSubTypeCollection { get; set; }
+
+        [ForeignKey("VirusLinaje_ID")]
+        public virtual CatVirusLinaje CatVirusLinaje { get; set; }
+        [NotMapped]
+        public List<CatVirusLinaje> CatVirusLinajeCollection { get; set; }
     }
 
     public class EndFlowByVirus
@@ -1376,7 +1440,7 @@ namespace Paho.Models
         public int? MuestraID15 { get; set; }
     }
 
-    public class CaseLabs			//**** NEW
+    public class CaseLabs			                    //**** NEW: 1911
     {
         public int Id { get; set; }
         public int? FlucaseID { get; set; }
@@ -1464,6 +1528,14 @@ namespace Paho.Models
 
         [ForeignKey("TestResultID")]
         public virtual CatTestResult CatTestResult { get; set; }
+    }
+
+    public class CatSurv			//**** NEW
+    {
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public string ENG { get; set; }
+        public int? Orden { get; set; }
     }
 
     public class CatPopulationInstitution : CaseBase
@@ -1702,6 +1774,14 @@ namespace Paho.Models
         No = 0
     }
 
+    public enum BooleanTypeNA                       //**** NEW: 1911
+    {
+        Si = 1,
+        No = 0,
+        [Description("No Aplica")]
+        NA = 9
+    }
+
     public enum Gender
     {
         Male = 1,
@@ -1837,12 +1917,12 @@ namespace Paho.Models
         public DbSet<State> States { get; set; }
         public DbSet<CatParishPostOfficeJM> CatParishPostOfficeJM { get; set; }
         public DbSet<Neighborhood> Neighborhoods { get; set; }
-		public DbSet<Hamlet> Hamlets { get; set; }                          //#### CAFQ: 181018
+		public DbSet<Hamlet> Hamlets { get; set; }
         public DbSet<Colony> Colonies { get; set; }
         public DbSet<Institution> Institutions { get; set; }
         public DbSet<InstitutionConfiguration> InstitutionsConfiguration { get; set; }
         public DbSet<InstitutionConfEndFlowByVirus> InstitutionConfEndFlowByVirus { get; set; }
-        public DbSet<InstitutionLocationType> InstitutionLocationType { get; set; }     //#### CAFQ: 180911
+        public DbSet<InstitutionLocationType> InstitutionLocationType { get; set; }
         public DbSet<CatDiag> CIE10 { get; set; }
         public DbSet<CatServicios> Salones { get; set; }
         public DbSet<FluCase> FluCases { get; set; }
@@ -1873,13 +1953,14 @@ namespace Paho.Models
         public DbSet<CatPopulationInstitutionDetail> CatPopulationInstitutionsDetails { get; set; }
         public DbSet<CatStatusCase> CatStatusCase { get; set; }
         public DbSet<CatHospitalizedIn> CatHospitalizedIn { get; set; }
-
+        public DbSet<CatSurv> CatSurv { get; set; }                                 //**** NEW: 1911
+        public DbSet<CatCloseParameters> CatCloseParameters { get; set; }           //**** NEW: 1911
+        public DbSet<CaseLabs> CaseLabses { get; set; }                             //**** NEW: 1911
+        public DbSet<CatVirusFlow> CatViruFlows { get; set; }                       //**** NEW: 1911
         public DbSet<ConfAlertCaseDefinition> ConfAlertCaseDefinition { get; set; }
-
-        public DbSet<CaseLabs> CaseLabses { get; set; }                         //**** NEW
         public DbSet<CaseLabTest> CaseLabTests { get; set; }
         public DbSet<CaseSummary> CaseSummaries { get; set; }
-        public DbSet<CaseSummaryJM> CaseSummariesJM { get; set; }       //#### CAFQ: Summary Jamaica
+        public DbSet<CaseSummaryJM> CaseSummariesJM { get; set; } 
         public DbSet<Report> Reports { get; set; }
         public DbSet<ReportCountry> ReportsCountries { get; set; }
         public DbSet<ImportLog> ImportedFileList { get; set; }

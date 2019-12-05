@@ -320,6 +320,8 @@
     };
 
     self.SaveAll = function (option_Save) {
+        console.log("h.vm.js->HomeViewModel->self.SaveAll->START");
+
         $("#save").attr("disabled", true);
         $("#saveGEO").attr("disabled", true);
         $("#saveRisk").attr("disabled", true);
@@ -331,6 +333,7 @@
         $("#o_S").val(option_Save);
 
         if ($("#ITy").val() == "2") {
+            console.log("$('#ITy').val() == '2'->Aqui1");
             app.Views.Lab.SaveLab(function () {
                 alert(viewValidateSavedInfo + app.Views.Lab.Id);
                 if (option_Save == 1 || option_Save ==2)
@@ -373,7 +376,7 @@
                 });
             });
         }
-         
+        console.log("h.vm.js->HomeViewModel->self.SaveAll->END");         
     };
 
     self.ValidateAll = function (option_Save) {

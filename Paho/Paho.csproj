@@ -285,7 +285,9 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AreasController.cs" />
     <Compile Include="Controllers\AssignFinalResult.cs" />
+    <Compile Include="Controllers\CatCloseParametersController.cs" />
     <Compile Include="Controllers\CatSampleReasonsNoProcessedController.cs" />
+    <Compile Include="Controllers\CatVirusFlowController.cs" />
     <Compile Include="Controllers\CatVirusLinajesController.cs" />
     <Compile Include="Controllers\ColonyController.cs" />
     <Compile Include="Controllers\HamletController.cs" />
@@ -2447,6 +2449,13 @@
     <Content Include="Views\Colony\Edit.cshtml" />
     <Content Include="Views\Colony\Delete.cshtml" />
     <Content Include="Views\Home\_LabHead.cshtml" />
+    <Content Include="Views\CatVirusFlow\Index.cshtml" />
+    <Content Include="Views\CatVirusFlow\Create.cshtml" />
+    <Content Include="Views\CatCloseParameters\Index.cshtml" />
+    <Content Include="Views\CatCloseParameters\Create.cshtml" />
+    <Content Include="Views\CatCloseParameters\Edit.cshtml" />
+    <Content Include="Views\CatCloseParameters\Delete.cshtml" />
+    <Content Include="Views\CatVirusFlow\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
