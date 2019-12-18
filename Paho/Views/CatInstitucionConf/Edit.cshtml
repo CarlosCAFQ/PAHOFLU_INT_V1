@@ -1,5 +1,11 @@
 ﻿@model Paho.Models.InstitutionConfiguration
 
+@{
+    string labelSelect = Paho.Controllers.ResourcesM.SgetMessage("msgGeneralSelect", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+
+}
+
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -37,6 +43,22 @@
             </div>
         </div>
 
+        <div class="form-group vertical-align" id="div-father">
+            <label class="col-md-1_5 text_right">Flujo Virus:</label>
+            <div class="col-md-7"> 
+                @*@Html.DropDownList("CatVirusFlowSelected", 
+                                    (MultiSelectList)ViewBag.CatVirusFlowCollection, 
+                                    htmlAttributes: new { @class = "form-control", @multiple = "multiple" }
+                                    )*@
+                @*@Html.DropDownList("ProtocolDisciplines",
+                                    new MultiSelectList(Model.Disciplines, "DisciplineId", "Discipline", Model.ProtocolDisciplines.Select(pd => pd.DisciplineId)),
+                                    new { @class = "form-control", multiple = "multiple", size = "8" }
+                )*@    
+                @*@Html.ListBox("VirusFlowSelected", (MultiSelectList)ViewBag.CatVirusFlowCollection)*@
+                @Html.ListBoxFor(m => m.VirusFlowSelected, Model.VirusFlowCollection, new { @class = "form-control" })
+            </div>
+        </div>
+
         <div class="form-group vertical-align">
             @Html.LabelFor(model => model.Conclusion, ((string)Paho.Controllers.ResourcesM.SgetMessage("viewHome_msgConclusion", ViewBag.UsrCtry, ViewBag.UsrCtryLang)) + ":", htmlAttributes: new { @class = "col-md-1_5 text_right" })
             <div class="col-md-7">
@@ -68,6 +90,14 @@
     @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/bundles/catalog-institution-conf")
 }
+
+<script type="text/javascript">
+        $(function () {
+            $('#VirusFlowSelected').multiselect({
+                //includeSelectAllOption: true
+            });
+        });
+</script>
 
 <script type="text/javascript">
     //***************************************

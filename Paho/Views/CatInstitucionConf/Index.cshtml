@@ -22,6 +22,9 @@
 <table class="table">
     <tr>
         <th>
+            ID
+        </th>
+        <th>
             @Html.ActionLink((string)Paho.Controllers.ResourcesM.SgetMessage("msgInstitutionFrom", ViewBag.UsrCtry, ViewBag.UsrCtryLang), "Index", "CatInstitucionConf", new { sortOrder = ViewBag.SpaSortParm, currentFilter = ViewBag.CurrentFilter }, null)
         </th>
         <th>
@@ -43,6 +46,9 @@
     @foreach (var item in Model)
     {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.InstitutionFrom.FullName)
             </td>

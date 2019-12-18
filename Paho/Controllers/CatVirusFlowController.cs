@@ -137,7 +137,7 @@ namespace Paho.Controllers
         // POST: CatVirusFlow/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id_Cat_TestType, value_Cat_TestResult, id_Cat_VirusType, id_Cat_Subtype, VirusLinaje_ID")] CatVirusFlow catalog)
+        public ActionResult Create([Bind(Include = "TestType_ID, TestResult_ID, VirusType_ID, VirusSubtype_ID, VirusLinaje_ID")] CatVirusFlow catalog)
         {
             try
             {
@@ -192,8 +192,8 @@ namespace Paho.Controllers
             }
 
             var catalog = db.CatViruFlows.Find(id);
-            //"id_Cat_TestType, value_Cat_TestResult, id_Cat_VirusType, id_Cat_Subtype, VirusLinaje_ID"
-            if (TryUpdateModel(catalog, "", new string[] { "id_Cat_TestType", "value_Cat_TestResult", "id_Cat_VirusType", "id_Cat_Subtype", "VirusLinaje_ID" }))
+
+            if (TryUpdateModel(catalog, "", new string[] { "TestType_ID", "TestResult_ID", "VirusType_ID", "VirusSubtype_ID", "VirusLinaje_ID" }))
             {
                 try
                 {
@@ -211,24 +211,63 @@ namespace Paho.Controllers
         }
 
         // GET: CatVirusFlow/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
+            }
+
+            //****
+            var catalogo = db.CatViruFlows.Find(id);
+            if (catalogo == null)
+            {
+                return HttpNotFound();
+            }
+
+            ////****
+            //string NAText = Enum.GetName(typeof(BooleanTypeNA), 9);
+
+            //string text = (catalogo.IsSample == null) ? NAText : Enum.GetName(typeof(BooleanTypeNA), catalogo.IsSample);
+            //catalogo.IsSampleText = text;
+
+            //text = (catalogo.Processed == null) ? NAText : Enum.GetName(typeof(BooleanTypeNA), catalogo.Processed);
+            //catalogo.ProcessedText = text;
+
+            //text = (catalogo.LabEndClosing == null) ? NAText : Enum.GetName(typeof(BooleanTypeNA), catalogo.LabEndClosing);
+            //catalogo.LabEndClosingText = text;
+
+            //text = (catalogo.HospExDate == null) ? NAText : Enum.GetName(typeof(BooleanTypeNA), catalogo.HospExDate);
+            //catalogo.HospExDateText = text;
+
+            //text = (catalogo.DiagEg == null) ? NAText : Enum.GetName(typeof(BooleanTypeNA), catalogo.DiagEg);
+            //catalogo.DiagEgText = text;
+
+            return View(catalogo);
         }
 
         // POST: CatVirusFlow/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int? id)
         {
             try
             {
                 // TODO: Add delete logic here
+                var catalog = db.CatViruFlows.Find(id);
+                db.CatViruFlows.Remove(catalog);
+                db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
             catch
             {
-                return View();
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
             }
         }
     }

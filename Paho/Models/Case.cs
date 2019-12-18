@@ -968,6 +968,17 @@ namespace Paho.Models
         public virtual Institution InstitutionTo { get; set; }
         [ForeignKey("InstitutionParentID")]
         public virtual Institution InstitutionParent { get; set; }
+
+        [NotMapped]
+        //public List<SelectListItem> VirusFlowCollection { get; set; }
+        public MultiSelectList VirusFlowCollection { get; set; }
+
+        [NotMapped]
+        public int[] VirusFlowSelected { get; set; }
+
+        //[NotMapped]
+        //[ForeignKey("ID")]
+        //public List<InstitutionConfFlowByVirus> InstConfFlowVirus { get; set; }
     }
 
     public class InstitutionForeignConf
@@ -985,6 +996,14 @@ namespace Paho.Models
         public virtual Institution InstitutionLocal { get; set; }
         //[ForeignKey("InstitutionLocalCountryID")]
         //public virtual Country CountryLocalLab { get; set; }
+    }
+
+    public class InstitutionConfFlowByVirus
+    {
+        public long? ID { get; set; }
+        public long? InstConf_ID { get; set; }
+        public int? VirusFlow_ID { get; set; }
+
     }
 
     public class InstitutionConfEndFlowByVirus
@@ -1006,28 +1025,28 @@ namespace Paho.Models
     public class CatVirusFlow                           //**** NEW: 1911
     {
         public int ID { get; set; }
-        public int? id_Cat_TestType { get; set; }
-        public string value_Cat_TestResult { get; set; }
-        public int? id_Cat_VirusType { get; set; }
-        public int? id_Cat_Subtype { get; set; }
+        public int? TestType_ID { get; set; }
+        public string TestResult_ID { get; set; }
+        public int? VirusType_ID { get; set; }
+        public int? VirusSubtype_ID { get; set; }
         public int? VirusLinaje_ID { get; set; }
 
-        [ForeignKey("id_Cat_TestType")]
+        [ForeignKey("TestType_ID")]
         public virtual CatTestType CatTestTypes { get; set; }                   // Para Index
         [NotMapped]
         public List<CatTestType> CatTestTypeCollection { get; set; }            // Para form Create y Edit
 
-        [ForeignKey("value_Cat_TestResult")]
+        [ForeignKey("TestResult_ID")]
         public virtual CatTestResult CatTestResults { get; set; }
         [NotMapped]
         public List<CatTestResult> CatTestResultCollection { get; set; }
 
-        [ForeignKey("id_Cat_VirusType")]
+        [ForeignKey("VirusType_ID")]
         public virtual CatVirusType CatVirusTypes { get; set; }
         [NotMapped]
         public List<CatVirusType> CatVirusTypeCollection { get; set; }
 
-        [ForeignKey("id_Cat_Subtype")]
+        [ForeignKey("VirusSubtype_ID")]
         public virtual CatVirusSubType CatVirusSubTypes { get; set; }
         [NotMapped]
         public List<CatVirusSubType> CatVirusSubTypeCollection { get; set; }
@@ -1921,6 +1940,7 @@ namespace Paho.Models
         public DbSet<Colony> Colonies { get; set; }
         public DbSet<Institution> Institutions { get; set; }
         public DbSet<InstitutionConfiguration> InstitutionsConfiguration { get; set; }
+        public DbSet<InstitutionConfFlowByVirus> InstitutionConfFlowByVirus { get; set; }
         public DbSet<InstitutionConfEndFlowByVirus> InstitutionConfEndFlowByVirus { get; set; }
         public DbSet<InstitutionLocationType> InstitutionLocationType { get; set; }
         public DbSet<CatDiag> CIE10 { get; set; }

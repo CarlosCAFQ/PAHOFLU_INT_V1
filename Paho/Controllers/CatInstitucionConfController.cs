@@ -3,6 +3,7 @@ using PagedList;
 using Paho.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
@@ -102,13 +103,32 @@ namespace Paho.Controllers
         // GET: CatInstitucionConf/Create
         public ActionResult Create()
         {
+            //****
+            InstitutionConfiguration oInCoModel = new InstitutionConfiguration();
+
+            var oList = (from regis in db.CatViruFlows as IQueryable<CatVirusFlow>
+                         select new
+                         {
+                             ID = regis.ID.ToString(),
+                             Valor = regis.CatTestTypes.description + " - " + regis.CatTestResults.description +
+                                     (regis.CatVirusTypes.ID <= 0 ? "" : " - " + regis.CatVirusTypes.SPA) + (regis.VirusSubtype_ID == null ? "" : " - " + regis.CatVirusSubTypes.SPA) +
+                                     (regis.VirusLinaje_ID == null ? "" : " - " + regis.CatVirusLinaje.SPA)
+                         });
+
+            MultiSelectList oListMS;
+            oListMS = new MultiSelectList(oList.ToList(), "ID", "Valor");
+            oInCoModel.VirusFlowCollection = oListMS;
+
+            //****
             PopulateDepartmentsDropDownList();
-            return View();
+
+            //****
+            return View(oInCoModel);
         }
 
         // POST: CatInstitucionConf/Create
         [HttpPost]
-        public ActionResult Create([Bind(Include = "InstitutionFromID, InstitutionToID, InstitutionParentID, Priority, Conclusion, OpenAlways")] InstitutionConfiguration catalog)
+        public ActionResult Create([Bind(Include = "InstitutionFromID, InstitutionToID, InstitutionParentID, Priority, Conclusion, OpenAlways, VirusFlowSelected")] InstitutionConfiguration catalog)
         {
             try
             {
@@ -116,6 +136,9 @@ namespace Paho.Controllers
                 {
                     db.InstitutionsConfiguration.Add(catalog);
                     db.SaveChanges();
+
+                    InstitutionConfFlowByVirusSaveUpdate(null, catalog.VirusFlowSelected, catalog, 1);
+
                     return RedirectToAction("Index");
                 }
             }
@@ -141,15 +164,53 @@ namespace Paho.Controllers
             }
 
             PopulateDepartmentsDropDownList(catalogo.InstitutionFromID, catalogo.InstitutionToID, catalogo.InstitutionParentID);
+            //return View(catalogo);
+            //***
+            InstitutionConfiguration oInCoModel = new InstitutionConfiguration();
 
-            return View(catalogo);
+            var oList = (from regis in db.CatViruFlows as IQueryable<CatVirusFlow>
+                         select new
+                         {
+                             ID = regis.ID.ToString(),
+                             Valor = regis.CatTestTypes.description + " - " + regis.CatTestResults.description + 
+                                     (regis.CatVirusTypes.ID <= 0 ? "" : " - " + regis.CatVirusTypes.SPA) + (regis.VirusSubtype_ID == null ? "" : " - " + regis.CatVirusSubTypes.SPA) +
+                                     (regis.VirusLinaje_ID == null ? "" : " - " + regis.CatVirusLinaje.SPA)
+                         });
+
+            MultiSelectList oListMS;
+            var aSele = db.InstitutionConfFlowByVirus.Where(m => m.InstConf_ID == id).ToList();
+
+            if (aSele != null)
+            {
+                int[] aSelected = new int[aSele.Count];
+
+                for (int i = 0; i < aSele.Count; i++)
+                {
+                    aSelected[i] = (int)aSele[i].VirusFlow_ID;
+                }
+
+                oListMS = new MultiSelectList(oList.ToList(), "ID", "Valor", aSelected);
+            }
+            else
+            {
+                oListMS = new MultiSelectList(oList.ToList(), "ID", "Valor");
+            }
+
+            oInCoModel.VirusFlowCollection = oListMS;
+            oInCoModel.Priority = catalogo.Priority;
+            oInCoModel.Conclusion = catalogo.Conclusion;
+            oInCoModel.OpenAlways = catalogo.OpenAlways;
+
+            return View(oInCoModel);
         }
 
         // POST: CatInstitucionConf/Edit/5
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        //public ActionResult EditPost(int? id)
+        public ActionResult EditPost(InstitutionConfiguration oInstConf)
         {
+            int? id = (Int32)oInstConf.ID;
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -161,6 +222,7 @@ namespace Paho.Controllers
                 try
                 {
                     db.SaveChanges();
+                    InstitutionConfFlowByVirusSaveUpdate(id, oInstConf.VirusFlowSelected, oInstConf, 2);
 
                     return RedirectToAction("Index");
                 }
@@ -197,13 +259,19 @@ namespace Paho.Controllers
         // POST: CatAgeGroup/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id)
+        //public ActionResult Delete(int id)
+        public ActionResult Delete(InstitutionConfiguration oInstConf)
         {
+            long? id = 0;
+
             try
             {
+                id = oInstConf.ID;
+                InstitutionConfFlowByVirusSaveUpdate(id, null, oInstConf, 3);
+
                 var catalog = db.InstitutionsConfiguration.Find(id);
                 db.InstitutionsConfiguration.Remove(catalog);
-                db.SaveChanges();
+                db.SaveChanges();               
             }
             catch (RetryLimitExceededException/* dex */)
             {
@@ -234,6 +302,118 @@ namespace Paho.Controllers
             ViewBag.InstitutionFromID = new SelectList(instQuery, "ID", "Name", selectedFrom);
             ViewBag.InstitutionToID = new SelectList(instQuery, "ID", "Name", selectedTo);
             ViewBag.InstitutionParentID = new SelectList(instQuery, "ID", "Name", selectedParent);
+
+            //**** Virus - Flow
+            //CatVirusFlow oCatVF = new CatVirusFlow();
+
+            //var oList = db.CatViruFlows.ToList();
+            //var oList = db.CatViruFlows.ToList();
+
+            //var oList = (from regis in db.CatViruFlows as IQueryable<CatVirusFlow>
+            //            select new { ID = regis.ID, Name = regis.CatTestTypes.description + " - "  + regis.CatTestResults.description + " - " + 
+            //                        regis.CatVirusTypes.SPA + (regis.VirusSubtype_ID == null ? "" : " - " +  regis.CatVirusSubTypes.SPA) + 
+            //                        (regis.VirusLinaje_ID == null ? "" : " - " + regis.CatVirusLinaje.SPA) }).ToList();
+            //oList.Insert(0, new { ID =0, Name = "-- Seleccione --"});
+
+
+            //ViewBag.CatVirusFlowCollection = new SelectList(oList, "ID", "Name", null);
+            //ViewBag.CatVirusFlowCollection = new SelectList(oList, "ID", "Name", "-- Seleccione --");
+
+            //ViewBag.CatVirusFlowCollection = new SelectList(oList, "ID", "Name", new [2]);
+
         }
+
+        private void InstitutionConfFlowByVirusSaveUpdate(long? IdInstConf, int[] IdVirusFlow, InstitutionConfiguration catalog, int operacion)
+        {
+            try
+            {
+                if (operacion == 2 || operacion == 3)               // Edit, Delete
+                {
+                    //**** Eliminando de InstitutionConfEndFlowByVirus
+                    var instConfEFV = db.InstitutionConfEndFlowByVirus.Where(j => j.id_InstCnf == IdInstConf).ToList();
+                    if (instConfEFV != null)
+                    {
+                        foreach (var item in instConfEFV)
+                        {
+                            db.Entry(item).State = EntityState.Deleted;
+                            db.InstitutionConfEndFlowByVirus.Remove(item);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    // Eliminando de: InstitutionConfFlowByVirus
+                    var instConfFV = db.InstitutionConfFlowByVirus.Where(j => j.InstConf_ID == IdInstConf).ToList();
+                    if (instConfFV != null)
+                    {
+                        foreach (var item in instConfFV)
+                        {
+                            db.Entry(item).State = EntityState.Deleted;
+                            db.InstitutionConfFlowByVirus.Remove(item);
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+                if (operacion == 1 || operacion == 2)       // Create, Edit
+                {
+                    if (operacion == 1)                     // Create
+                    {
+                        //var instconf = db.InstitutionsConfiguration.OrderBy(x => x.ID).LastOrDefault();
+                        var instconf = db.InstitutionsConfiguration.OrderByDescending(x => x.ID).FirstOrDefault();
+                        if (instconf != null)
+                        {
+                            IdInstConf = instconf.ID;
+                        }
+                    }
+
+                    foreach (var item in IdVirusFlow)
+                    {
+                        InstitutionConfFlowByVirus oElement = new InstitutionConfFlowByVirus();
+
+                        oElement.InstConf_ID = IdInstConf;
+                        oElement.VirusFlow_ID = item;
+                        db.Entry(oElement).State = EntityState.Added;
+                        db.SaveChanges();
+                        oElement = null;
+                    }
+
+                    InstitutionConfFlowByENDVirusSaveUpdate(IdInstConf, catalog);
+                }                    
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message); 
+            }            
+        }
+
+        private void InstitutionConfFlowByENDVirusSaveUpdate(long? IdInstConf, InstitutionConfiguration catalog)
+        {
+            int[] IdVirusFlow = catalog.VirusFlowSelected;
+
+            foreach (var item in IdVirusFlow)
+            {
+                var regCVF = db.CatViruFlows.Where(x => x.ID == item).FirstOrDefault();
+                if (regCVF != null)
+                {
+                    InstitutionConfEndFlowByVirus oElement = new InstitutionConfEndFlowByVirus();
+
+                    oElement.id_InstCnf = (long)IdInstConf;
+                    oElement.id_Lab = (long)catalog.InstitutionToID;
+                    oElement.id_priority_flow = catalog.Priority;
+
+                    oElement.id_Cat_TestType = regCVF.TestType_ID;
+                    oElement.value_Cat_TestResult = regCVF.TestResult_ID;
+                    oElement.id_Cat_VirusType = regCVF.VirusType_ID ; 
+                    oElement.id_Cat_Subtype = regCVF.VirusSubtype_ID;
+                    //oElement.id_InstCnfFlowByVirus = item;
+
+                    db.Entry(oElement).State = EntityState.Added;
+                    db.SaveChanges();
+
+                    oElement = null;
+                }
+            } // END foreach
+        }
+
     }
 }

@@ -74,10 +74,17 @@
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @*@Html.ActionLink("Details", "Details", new { id=item.ID }) |*@
             @Html.ActionLink("Delete", "Delete", new { id=item.ID })
         </td>
     </tr>
 }
 
 </table>
+
+<script type="text/javascript">
+    //***************************************
+    $('a#MaintenanceM').addClass("active");
+    //***************************************
+</script>
+

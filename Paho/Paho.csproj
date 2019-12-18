@@ -351,6 +351,7 @@
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap-datetimepicker.min.css" />
+    <Content Include="Content\bootstrap-multiselect.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -2111,6 +2112,7 @@
     <Content Include="Scripts\app\summaryJM.viewmodel.js" />
     <Content Include="Scripts\app\ticket.viewmodel.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
+    <Content Include="Scripts\bootstrap-multiselect.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
     <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
@@ -2456,6 +2458,7 @@
     <Content Include="Views\CatCloseParameters\Edit.cshtml" />
     <Content Include="Views\CatCloseParameters\Delete.cshtml" />
     <Content Include="Views\CatVirusFlow\Edit.cshtml" />
+    <Content Include="Views\CatVirusFlow\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
