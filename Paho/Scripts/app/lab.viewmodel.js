@@ -1180,17 +1180,22 @@ function CaseLab(SampleNumber) {
     };
 
     self_CL.removeLabTest = function (sample_number, data) {
+        console.log("LAB->self_CL.removeLabTest->START");
+
         if (sample_number == 1) {
             self_CL.LabTests.remove(data);
-        //} else if (sample_number == 2) {
-        //    self_CL.LabTests_Sample2.remove(data);
-        //} else if (sample_number == 3) {
-        //    self_CL.LabTests_Sample3.remove(data);
-        //} else if (sample_number == 999) {
-        //    self_CL.LabTestsExternal.remove(data);
+        } else if (sample_number == 2) {
+            self_CL.LabTests_Sample2.remove(data);
+        } else if (sample_number == 3) {
+            self_CL.LabTests_Sample3.remove(data);
+        } else if (sample_number == 999) {
+            self_CL.LabTestsExternal.remove(data);
         }
 
-        ///self_CL.OrdenFinalResult();
+        //self_CL.OrdenFinalResult();
+        app.Views.Lab.OrdenFinalResult();
+
+        console.log("LAB->self_CL.removeLabTest->END");
     };
 
     self_CL.removeTestbyLab = function (LabId, SampleNumber) {
@@ -1784,7 +1789,7 @@ function LabViewModel(app, dataModel) {
     }, self);
 
     self.resetFinalResult = function () {
-        //console.log("resetFinalResult");
+        console.log("LAB->P->resetFinalResult->START");
         self.FinalResult("");
         self.FinalResultVirusTypeID("");
         self.FinalResultVirusSubTypeID("");
@@ -1800,7 +1805,7 @@ function LabViewModel(app, dataModel) {
         self.GeneticGroup("");
         self.GeneticGroup_2("");
         self.GeneticGroup_3("");
-        //console.log("self.resetFinalResult");
+        console.log("LAB->P->resetFinalResult->END");
     };
 
     self.EnableTestNational = function () {
@@ -1822,9 +1827,10 @@ function LabViewModel(app, dataModel) {
     self.CaseLabses = ko.observableArray();                   //**** NEW: 190926
     self.LabTestsEndFlow = ko.observableArray([]);              //**** NEW: 190926
 
-    self.LabTests_Sample2 = ko.observableArray([]);
-    self.LabTests_Sample3 = ko.observableArray([]);
-    self.LabTestsExternal = ko.observableArray([]);
+    //self.LabTests_Sample2 = ko.observableArray([]);
+    //self.LabTests_Sample3 = ko.observableArray([]);
+    self.LabTestsExternal = ko.observableArray([]);             // Debe estar en CaseLabTest
+
     self.LabsResult = ko.observableArray([]);
     self.LabsResultExternal = ko.observableArray(app.Views.Home.labsExternal());
     self.SubTypeByLabRes = ko.observableArray([]);
@@ -2142,7 +2148,7 @@ function LabViewModel(app, dataModel) {
     };
     
     self.validate = function (nextStep) {
-        console.log("l.vm.js-LabViewModel->self.validate->START");
+        console.log("LAB->LabViewModel->self.validate->START");
 
         var msg = "";
         self.CaseLabses().forEach(function (oCaseLab, indice, array) {
@@ -2160,7 +2166,7 @@ function LabViewModel(app, dataModel) {
             bResu = false;
         }
 
-        console.log("l.vm.js-LabViewModel->self.validate->END->ERROR?->" + bResu);
+        console.log("LAB->LabViewModel->self.validate->END->ERROR?->" + bResu);
         return bResu;
     };
         
@@ -2907,8 +2913,10 @@ function LabViewModel(app, dataModel) {
     //console.log("\tself.GetLab->Final");
 
     self.OrdenFinalResult = function () {
+        console.log("LAB->P->OrdenFinalResult->START");
+
         if (self.hasGet() == false) {
-            //console.log("OrdenFinalResult");
+            console.log("LAB->P->OFR 1");
 
             // Declare variable Array Dummy  -- Nueva versión de ordenamiento
             self.OrderDummyIFINegative = ko.observableArray([]);
@@ -2950,6 +2958,8 @@ function LabViewModel(app, dataModel) {
             // termina nueva forma de ordenar
 
             self.resetFinalResult();                    // Limpia campos resultado final
+            //console.log("Salida forzada");
+            //return true
             //console.log("f1a1");
             //////self.OrderArrayFinalResult(self.LabTests().concat(self.LabTests_Sample2()).concat(self.LabTests_Sample3()));
             ////console.log(self.CaseLabses);
@@ -3437,6 +3447,8 @@ function LabViewModel(app, dataModel) {
             $("#FinalResultVirusLineageID_3").prop('disabled', true);
             
         }
+
+        console.log("LAB->P->OrdenFinalResult->END");
     };
 
     //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -3559,9 +3571,9 @@ function LabViewModel(app, dataModel) {
     //}, self);
 
     self.Save = function () {
-        console.log("self.Save->START");
+        console.log("LAB->LabViewModel->self.Save->START");
         app.Views.Home.ValidateAll();
-        console.log("self.Save->END");
+        console.log("LAB->LabViewModel->self.Save->END");
     };
 
     self.Cancel = function () {
@@ -3573,221 +3585,428 @@ function LabViewModel(app, dataModel) {
     };
 
     self.SaveLab = function (nextStep) {
-        console.log("self.SaveLab->START");
+        console.log("LAB->self.SaveLab->START");
 
         var postCaseLabs = [];
         var postData = [];
-        console.log("r1");
-        console.log(self.CaseLabses);
-        console.log(self.CaseLabses());
+        //console.log("r1");
+        //console.log(self.CaseLabses);
+        console.log(self.CaseLabses());     // Array de objetos CaseLab
         console.log("r1a");
-        return false;
-        console.log("r1b");
 
-        rec_date = jQuery.type(self.RecDate()) === 'date' ? self.RecDate() : parseDate($("#RecDate").val(), date_format_);
-        rec_date2 = jQuery.type(self.RecDate2()) === 'date' ? self.RecDate2() : parseDate($("#RecDate2").val(), date_format_);
-        rec_date3 = jQuery.type(self.RecDate3()) === 'date' ? self.RecDate3() : parseDate($("#RecDate3").val(), date_format_);
-        rec_date_National = jQuery.type(self.RecDate_National()) === 'date' ? self.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
-        date_close_date_lab = jQuery.type(self.EndLabDate()) === 'date' ? self.EndLabDate() : parseDate($("#EndLabDate").val(), date_format_);
 
-        rec_date_NPHL = jQuery.type(self.Rec_Date_NPHL()) === 'date' ? self.Rec_Date_NPHL() : parseDate($("#Rec_Date_NPHL").val(), date_format_);
-        ship_date_NPHL = jQuery.type(self.Ship_Date_NPHL()) === 'date' ? self.Ship_Date_NPHL() : parseDate($("#Ship_Date_NPHL").val(), date_format_);
-        rec_date_NPHL_2 = jQuery.type(self.Rec_Date_NPHL_2()) === 'date' ? self.Rec_Date_NPHL_2() : parseDate($("#Rec_Date_NPHL_2").val(), date_format_);
-        ship_date_NPHL_2 = jQuery.type(self.Ship_Date_NPHL_2()) === 'date' ? self.Ship_Date_NPHL_2() : parseDate($("#Ship_Date_NPHL_2").val(), date_format_);
-        rec_date_NPHL_3 = jQuery.type(self.Rec_Date_NPHL_3()) === 'date' ? self.Rec_Date_NPHL_3() : parseDate($("#Rec_Date_NPHL_3").val(), date_format_);
-        ship_date_NPHL_3 = jQuery.type(self.Ship_Date_NPHL_3()) === 'date' ? self.Ship_Date_NPHL_3() : parseDate($("#Ship_Date_NPHL_3").val(), date_format_);
+
+        ////////////rec_date = jQuery.type(self.RecDate()) === 'date' ? self.RecDate() : parseDate($("#RecDate").val(), date_format_);
+        ////////////rec_date2 = jQuery.type(self.RecDate2()) === 'date' ? self.RecDate2() : parseDate($("#RecDate2").val(), date_format_);
+        ////////////rec_date3 = jQuery.type(self.RecDate3()) === 'date' ? self.RecDate3() : parseDate($("#RecDate3").val(), date_format_);
+        ////////////rec_date_National = jQuery.type(self.RecDate_National()) === 'date' ? self.RecDate_National() : parseDate($("#RecDate_National").val(), date_format_);
+        ////////////date_close_date_lab = jQuery.type(self.EndLabDate()) === 'date' ? self.EndLabDate() : parseDate($("#EndLabDate").val(), date_format_);
+
+        ////////////rec_date_NPHL = jQuery.type(self.Rec_Date_NPHL()) === 'date' ? self.Rec_Date_NPHL() : parseDate($("#Rec_Date_NPHL").val(), date_format_);
+        ////////////ship_date_NPHL = jQuery.type(self.Ship_Date_NPHL()) === 'date' ? self.Ship_Date_NPHL() : parseDate($("#Ship_Date_NPHL").val(), date_format_);
+        ////////////rec_date_NPHL_2 = jQuery.type(self.Rec_Date_NPHL_2()) === 'date' ? self.Rec_Date_NPHL_2() : parseDate($("#Rec_Date_NPHL_2").val(), date_format_);
+        ////////////ship_date_NPHL_2 = jQuery.type(self.Ship_Date_NPHL_2()) === 'date' ? self.Ship_Date_NPHL_2() : parseDate($("#Ship_Date_NPHL_2").val(), date_format_);
+        ////////////rec_date_NPHL_3 = jQuery.type(self.Rec_Date_NPHL_3()) === 'date' ? self.Rec_Date_NPHL_3() : parseDate($("#Rec_Date_NPHL_3").val(), date_format_);
+        ////////////ship_date_NPHL_3 = jQuery.type(self.Ship_Date_NPHL_3()) === 'date' ? self.Ship_Date_NPHL_3() : parseDate($("#Ship_Date_NPHL_3").val(), date_format_);
 
         //alert($("#o_S").val());
+        // Cabecera de laborarotio
+        ////for (var index = 0; index < self.CaseLabses().length; ++index) {
+        ////    date_1 = self.CaseLabses()[index].RecDate12();
+        ////    var date_RecDate = new Date();
+        ////    date_RecDate = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
 
-        for (var index = 0; index < self.LabTests().length; ++index) {
-            date_1 = self.LabTests()[index].TestDate();
-            date_2 = self.LabTests()[index].TestEndDate();
-            var date_test_start = new Date();
-            var date_test_final = new Date();
-            date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
-            date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+        ////    postCaseLabs.push({
+        ////        Id: self.CaseLabses()[index].Id,
+        ////        FlucaseID: self.CaseLabses()[index].FlucaseID,
+        ////        LabID: self.CaseLabses()[index].LabID(),
+        ////        RecDate: moment(date_RecDate).format(date_format_ISO),
+        ////        Identification_Test: self.CaseLabses()[index].Identification_Test12(),
+        ////        Processed: self.CaseLabses()[index].Processed12(),
+        ////        TempSample: self.CaseLabses()[index].TempSample12(),
+        ////        NoProRenId: self.CaseLabses()[index].NoProRenId12(),
+        ////        NoProRen: self.CaseLabses()[index].NoProRen12()
+        ////    })
+        ////}
 
-            var newLabID = (self.LabTests()[index].LabID() === "" || typeof self.LabTests()[index].LabID() === "undefined") ?
-                self.LabTests()[index].ProcLab() : self.LabTests()[index].LabID();
+        console.log("r1b");
+        for (var indexCL = 0; indexCL < self.CaseLabses().length; ++indexCL) {
+            var oCaseLab = self.CaseLabses()[indexCL];       // Objeto CaseLab
+            console.log(oCaseLab);
+            //console.log(oCaseLab.LabTests())                 // Array de objetos LabTest
+            //console.log(oCaseLab.LabTests().length)          // # de objetos Labtest
 
-            postData.push({
-                ID: self.LabTests()[index].Id,
-                CaseLabID: self.Id,
-                LabID: newLabID,
-                Processed: self.LabTests()[index].ProcessLab(),
-                SampleNumber: self.LabTests()[index].SampleNumber(),
-                VirusTypeID: self.LabTests()[index].TestResultID() == 'NA' ? 1 : self.LabTests()[index].TestResultID() == 'NB' ? 2 : self.LabTests()[index].VirusTypeID(),
-                CTVirusType: self.LabTests()[index].CTVirusType(),
-                CTRLVirusType: self.LabTests()[index].CTRLVirusType(),
-                OtherVirusTypeID: self.LabTests()[index].OtherVirusTypeID(),
-                CTOtherVirusType: self.LabTests()[index].CTOtherVirusType(),
-                CTRLOtherVirusType: self.LabTests()[index].CTRLOtherVirusType(),
-                OtherVirus: self.LabTests()[index].OtherVirus(),
-                InfA: self.LabTests()[index].InfA(),
-                VirusSubTypeID: self.LabTests()[index].VirusSubTypeID(),
-                CTSubType: self.LabTests()[index].CTSubType(),
-                CTRLSubType: self.LabTests()[index].CTRLSubType(),
-                TestResultID_VirusSubType: self.LabTests()[index].TestResultID_VirusSubType(),
-                VirusSubTypeID_2: self.LabTests()[index].VirusSubTypeID_2(),
-                CTSubType_2: self.LabTests()[index].CTSubType_2(),
-                CTRLSubType_2: self.LabTests()[index].CTRLSubType_2(),
-                TestResultID_VirusSubType_2: self.LabTests()[index].TestResultID_VirusSubType_2(),
-                InfB: self.LabTests()[index].InfB(),
-                VirusLineageID: self.LabTests()[index].VirusLineageID(),
-                CTLineage: self.LabTests()[index].CTLineage(),
-                CTRLLineage: self.LabTests()[index].CTRLLineage(),
-                ParaInfI: self.LabTests()[index].ParaInfI(),
-                ParaInfII: self.LabTests()[index].ParaInfII(),
-                ParaInfIII: self.LabTests()[index].ParaInfIII(),
-                RSV: self.LabTests()[index].RSV(),
-                Adenovirus: self.LabTests()[index].Adenovirus(),
-                Metapneumovirus: self.LabTests()[index].Metapneumovirus(),
-                RNP: self.LabTests()[index].RNP(),
-                CTRLRNP: self.LabTests()[index].CTRLRNP(),
-                CTRLNegative: self.LabTests()[index].CTRLNegative(),
-                TestResultID: self.LabTests()[index].TestResultID() == 'NA' || self.LabTests()[index].TestResultID() == 'NB' ? 'N' : self.LabTests()[index].TestResultID(),
-                TestType: self.LabTests()[index].TestType(),
-                TestDate: moment(date_test_start).format(date_format_ISO),
-                TestEndDate: moment(date_test_final).format(date_format_ISO)
-            });
+            //**** Cabecera de lab
+            date_1 = oCaseLab.RecDate();
+            var date_RecDate = new Date();
+            date_RecDate = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+
+            postCaseLabs.push({
+                Id: oCaseLab.Id,
+                FlucaseID: oCaseLab.FlucaseID,
+                LabID: oCaseLab.LabID(),
+                RecDate: moment(date_RecDate).format(date_format_ISO),
+                Identification_Test: oCaseLab.Identification_Test(),
+                Processed: oCaseLab.Processed(),
+                TempSample: oCaseLab.TempSample(),
+                NoProRenId: oCaseLab.NoProRenId(),
+                NoProRen: oCaseLab.NoProRen()
+            })
+
+            //**** Tests de la cabecera de lab  
+            // Muestra 1 uno
+            for (var index = 0; index < oCaseLab.LabTests().length; ++index) {
+                date_1 = oCaseLab.LabTests()[index].TestDate();
+                date_2 = oCaseLab.LabTests()[index].TestEndDate();
+                var date_test_start = new Date();
+                var date_test_final = new Date();
+                date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+                date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+
+                var newLabID = (oCaseLab.LabTests()[index].LabID() === "" || typeof oCaseLab.LabTests()[index].LabID() === "undefined") ?
+                                                                oCaseLab.LabTests()[index].ProcLab() : oCaseLab.LabTests()[index].LabID();
+
+                postData.push({
+                    ID: oCaseLab.LabTests()[index].Id,
+                    CaseLabID: oCaseLab.Id,
+                    LabID: newLabID,
+                    Processed: oCaseLab.LabTests()[index].ProcessLab(),
+                    SampleNumber: oCaseLab.LabTests()[index].SampleNumber(),
+                    VirusTypeID: oCaseLab.LabTests()[index].TestResultID() == 'NA' ? 1 : oCaseLab.LabTests()[index].TestResultID() == 'NB' ? 2 : oCaseLab.LabTests()[index].VirusTypeID(),
+                    CTVirusType: oCaseLab.LabTests()[index].CTVirusType(),
+                    CTRLVirusType: oCaseLab.LabTests()[index].CTRLVirusType(),
+                    OtherVirusTypeID: oCaseLab.LabTests()[index].OtherVirusTypeID(),
+                    CTOtherVirusType: oCaseLab.LabTests()[index].CTOtherVirusType(),
+                    CTRLOtherVirusType: oCaseLab.LabTests()[index].CTRLOtherVirusType(),
+                    OtherVirus: oCaseLab.LabTests()[index].OtherVirus(),
+                    InfA: oCaseLab.LabTests()[index].InfA(),
+                    VirusSubTypeID: oCaseLab.LabTests()[index].VirusSubTypeID(),
+                    CTSubType: oCaseLab.LabTests()[index].CTSubType(),
+                    CTRLSubType: oCaseLab.LabTests()[index].CTRLSubType(),
+                    TestResultID_VirusSubType: oCaseLab.LabTests()[index].TestResultID_VirusSubType(),
+                    VirusSubTypeID_2: oCaseLab.LabTests()[index].VirusSubTypeID_2(),
+                    CTSubType_2: oCaseLab.LabTests()[index].CTSubType_2(),
+                    CTRLSubType_2: oCaseLab.LabTests()[index].CTRLSubType_2(),
+                    TestResultID_VirusSubType_2: oCaseLab.LabTests()[index].TestResultID_VirusSubType_2(),
+                    InfB: oCaseLab.LabTests()[index].InfB(),
+                    VirusLineageID: oCaseLab.LabTests()[index].VirusLineageID(),
+                    CTLineage: oCaseLab.LabTests()[index].CTLineage(),
+                    CTRLLineage: oCaseLab.LabTests()[index].CTRLLineage(),
+                    ParaInfI: oCaseLab.LabTests()[index].ParaInfI(),
+                    ParaInfII: oCaseLab.LabTests()[index].ParaInfII(),
+                    ParaInfIII: oCaseLab.LabTests()[index].ParaInfIII(),
+                    RSV: oCaseLab.LabTests()[index].RSV(),
+                    Adenovirus: oCaseLab.LabTests()[index].Adenovirus(),
+                    Metapneumovirus: oCaseLab.LabTests()[index].Metapneumovirus(),
+                    RNP: oCaseLab.LabTests()[index].RNP(),
+                    CTRLRNP: oCaseLab.LabTests()[index].CTRLRNP(),
+                    CTRLNegative: oCaseLab.LabTests()[index].CTRLNegative(),
+                    TestResultID: oCaseLab.LabTests()[index].TestResultID() == 'NA' || oCaseLab.LabTests()[index].TestResultID() == 'NB' ? 'N' : oCaseLab.LabTests()[index].TestResultID(),
+                    TestType: oCaseLab.LabTests()[index].TestType(),
+                    TestDate: moment(date_test_start).format(date_format_ISO),
+                    TestEndDate: moment(date_test_final).format(date_format_ISO)
+                });
+            }
+
+            // Muestra 2 dos
+            for (var index = 0; index < oCaseLab.LabTests_Sample2().length; ++index) {
+                date_1 = oCaseLab.LabTests_Sample2()[index].TestDate();
+                date_2 = oCaseLab.LabTests_Sample2()[index].TestEndDate();
+                var date_test_start = new Date();
+                var date_test_final = new Date();
+                date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+                date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+
+                var newLabID = (oCaseLab.LabTests_Sample2()[index].LabID() === "" || typeof oCaseLab.LabTests_Sample2()[index].LabID() === "undefined") ?
+                                                                oCaseLab.LabTests_Sample2()[index].ProcLab() : oCaseLab.LabTests_Sample2()[index].LabID();
+
+                postData.push({
+                    ID: oCaseLab.LabTests_Sample2()[index].Id,
+                    CaseLabID: oCaseLab.Id,
+                    LabID: newLabID,
+                    Processed: oCaseLab.LabTests_Sample2()[index].ProcessLab(),
+                    SampleNumber: oCaseLab.LabTests_Sample2()[index].SampleNumber(),
+                    //VirusTypeID: self.LabTests_Sample2()[index].VirusTypeID(),
+                    VirusTypeID: oCaseLab.LabTests_Sample2()[index].TestResultID() == 'NA' ? 1 : oCaseLab.LabTests_Sample2()[index].TestResultID() == 'NB' ? 2 : oCaseLab.LabTests_Sample2()[index].VirusTypeID(),
+                    CTVirusType: oCaseLab.LabTests_Sample2()[index].CTVirusType(),
+                    CTRLVirusType: oCaseLab.LabTests_Sample2()[index].CTRLVirusType(),
+                    OtherVirusTypeID: oCaseLab.LabTests_Sample2()[index].OtherVirusTypeID(),
+                    CTOtherVirusType: oCaseLab.LabTests_Sample2()[index].CTOtherVirusType(),
+                    CTRLOtherVirusType: oCaseLab.LabTests_Sample2()[index].CTRLOtherVirusType(),
+                    OtherVirus: oCaseLab.LabTests_Sample2()[index].OtherVirus(),
+                    InfA: oCaseLab.LabTests_Sample2()[index].InfA(),
+                    VirusSubTypeID: oCaseLab.LabTests_Sample2()[index].VirusSubTypeID(),
+                    CTSubType: oCaseLab.LabTests_Sample2()[index].CTSubType(),
+                    CTRLSubType: oCaseLab.LabTests_Sample2()[index].CTRLSubType(),
+                    InfB: oCaseLab.LabTests_Sample2()[index].InfB(),
+                    VirusLineageID: oCaseLab.LabTests_Sample2()[index].VirusLineageID(),
+                    CTLineage: oCaseLab.LabTests_Sample2()[index].CTLineage(),
+                    CTRLLineage: oCaseLab.LabTests_Sample2()[index].CTRLLineage(),
+                    ParaInfI: oCaseLab.LabTests_Sample2()[index].ParaInfI(),
+                    ParaInfII: oCaseLab.LabTests_Sample2()[index].ParaInfII(),
+                    ParaInfIII: oCaseLab.LabTests_Sample2()[index].ParaInfIII(),
+                    RSV: oCaseLab.LabTests_Sample2()[index].RSV(),
+                    Adenovirus: oCaseLab.LabTests_Sample2()[index].Adenovirus(),
+                    Metapneumovirus: oCaseLab.LabTests_Sample2()[index].Metapneumovirus(),
+                    RNP: oCaseLab.LabTests_Sample2()[index].RNP(),
+                    CTRLRNP: oCaseLab.LabTests_Sample2()[index].CTRLRNP(),
+                    CTRLNegative: oCaseLab.LabTests_Sample2()[index].CTRLNegative(),
+                    //TestResultID: self.LabTests_Sample2()[index].TestResultID(),
+                    TestResultID: oCaseLab.LabTests_Sample2()[index].TestResultID() == 'NA' || oCaseLab.LabTests_Sample2()[index].TestResultID() == 'NB' ? 'N' : oCaseLab.LabTests_Sample2()[index].TestResultID(),
+                    TestType: oCaseLab.LabTests_Sample2()[index].TestType(),
+                    TestDate: moment(date_test_start).format(date_format_ISO),
+                    TestEndDate: moment(date_test_final).format(date_format_ISO)
+                });
+            }
+
+            // Muestra 3 tres
+            for (var index = 0; index < oCaseLab.LabTests_Sample3().length; ++index) {
+                date_1 = oCaseLab.LabTests_Sample3()[index].TestDate();
+                date_2 = oCaseLab.LabTests_Sample3()[index].TestEndDate();
+                var date_test_start = new Date();
+                var date_test_final = new Date();
+                date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+                date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+
+                var newLabID = (oCaseLab.LabTests_Sample3()[index].LabID() === "" || typeof oCaseLab.LabTests_Sample3()[index].LabID() === "undefined") ?
+                                                                oCaseLab.LabTests_Sample3()[index].ProcLab() : oCaseLab.LabTests_Sample3()[index].LabID();
+
+                postData.push({
+                    ID: oCaseLab.LabTests_Sample3()[index].Id,
+                    CaseLabID: oCaseLab.Id,
+                    LabID: newLabID,
+                    Processed: oCaseLab.LabTests_Sample3()[index].ProcessLab(),
+                    SampleNumber: oCaseLab.LabTests_Sample3()[index].SampleNumber(),
+                    //VirusTypeID: self.LabTests_Sample3()[index].VirusTypeID(),
+                    VirusTypeID: oCaseLab.LabTests_Sample3()[index].TestResultID() == 'NA' ? 1 : oCaseLab.LabTests_Sample3()[index].TestResultID() == 'NB' ? 2 : oCaseLab.LabTests_Sample3()[index].VirusTypeID(),
+                    CTVirusType: oCaseLab.LabTests_Sample3()[index].CTVirusType(),
+                    CTRLVirusType: oCaseLab.LabTests_Sample3()[index].CTRLVirusType(),
+                    OtherVirusTypeID: oCaseLab.LabTests_Sample3()[index].OtherVirusTypeID(),
+                    CTOtherVirusType: oCaseLab.LabTests_Sample3()[index].CTOtherVirusType(),
+                    CTRLOtherVirusType: oCaseLab.LabTests_Sample3()[index].CTRLOtherVirusType(),
+                    OtherVirus: oCaseLab.LabTests_Sample3()[index].OtherVirus(),
+                    InfA: oCaseLab.LabTests_Sample3()[index].InfA(),
+                    VirusSubTypeID: oCaseLab.LabTests_Sample3()[index].VirusSubTypeID(),
+                    CTSubType: oCaseLab.LabTests_Sample3()[index].CTSubType(),
+                    CTRLSubType: oCaseLab.LabTests_Sample3()[index].CTRLSubType(),
+                    InfB: oCaseLab.LabTests_Sample3()[index].InfB(),
+                    VirusLineageID: oCaseLab.LabTests_Sample3()[index].VirusLineageID(),
+                    CTLineage: oCaseLab.LabTests_Sample3()[index].CTLineage(),
+                    CTRLLineage: oCaseLab.LabTests_Sample3()[index].CTRLLineage(),
+                    ParaInfI: oCaseLab.LabTests_Sample3()[index].ParaInfI(),
+                    ParaInfII: oCaseLab.LabTests_Sample3()[index].ParaInfII(),
+                    ParaInfIII: oCaseLab.LabTests_Sample3()[index].ParaInfIII(),
+                    RSV: oCaseLab.LabTests_Sample3()[index].RSV(),
+                    Adenovirus: oCaseLab.LabTests_Sample3()[index].Adenovirus(),
+                    Metapneumovirus: oCaseLab.LabTests_Sample3()[index].Metapneumovirus(),
+                    RNP: oCaseLab.LabTests_Sample3()[index].RNP(),
+                    CTRLRNP: oCaseLab.LabTests_Sample3()[index].CTRLRNP(),
+                    CTRLNegative: oCaseLab.LabTests_Sample3()[index].CTRLNegative(),
+                    //TestResultID: self.LabTests_Sample3()[index].TestResultID(),
+                    TestResultID: oCaseLab.LabTests_Sample3()[index].TestResultID() == 'NA' || oCaseLab.LabTests_Sample3()[index].TestResultID() == 'NB' ? 'N' : oCaseLab.LabTests_Sample3()[index].TestResultID(),
+                    TestType: oCaseLab.LabTests_Sample3()[index].TestType(),
+                    TestDate: moment(date_test_start).format(date_format_ISO),
+                    TestEndDate: moment(date_test_final).format(date_format_ISO)
+                });
+            }
         }
-        //console.log(postData);
+        console.log("r1c");
+
+        // Muestra 1 uno 
+        ////for (var index = 0; index < self.LabTests().length; ++index) {
+        ////    date_1 = self.LabTests()[index].TestDate();
+        ////    date_2 = self.LabTests()[index].TestEndDate();
+        ////    var date_test_start = new Date();
+        ////    var date_test_final = new Date();
+        ////    date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+        ////    date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+
+        ////    var newLabID = (self.LabTests()[index].LabID() === "" || typeof self.LabTests()[index].LabID() === "undefined") ?
+        ////        self.LabTests()[index].ProcLab() : self.LabTests()[index].LabID();
+
+        ////    postData.push({
+        ////        ID: self.LabTests()[index].Id,
+        ////        CaseLabID: self.Id,
+        ////        LabID: newLabID,
+        ////        Processed: self.LabTests()[index].ProcessLab(),
+        ////        SampleNumber: self.LabTests()[index].SampleNumber(),
+        ////        VirusTypeID: self.LabTests()[index].TestResultID() == 'NA' ? 1 : self.LabTests()[index].TestResultID() == 'NB' ? 2 : self.LabTests()[index].VirusTypeID(),
+        ////        CTVirusType: self.LabTests()[index].CTVirusType(),
+        ////        CTRLVirusType: self.LabTests()[index].CTRLVirusType(),
+        ////        OtherVirusTypeID: self.LabTests()[index].OtherVirusTypeID(),
+        ////        CTOtherVirusType: self.LabTests()[index].CTOtherVirusType(),
+        ////        CTRLOtherVirusType: self.LabTests()[index].CTRLOtherVirusType(),
+        ////        OtherVirus: self.LabTests()[index].OtherVirus(),
+        ////        InfA: self.LabTests()[index].InfA(),
+        ////        VirusSubTypeID: self.LabTests()[index].VirusSubTypeID(),
+        ////        CTSubType: self.LabTests()[index].CTSubType(),
+        ////        CTRLSubType: self.LabTests()[index].CTRLSubType(),
+        ////        TestResultID_VirusSubType: self.LabTests()[index].TestResultID_VirusSubType(),
+        ////        VirusSubTypeID_2: self.LabTests()[index].VirusSubTypeID_2(),
+        ////        CTSubType_2: self.LabTests()[index].CTSubType_2(),
+        ////        CTRLSubType_2: self.LabTests()[index].CTRLSubType_2(),
+        ////        TestResultID_VirusSubType_2: self.LabTests()[index].TestResultID_VirusSubType_2(),
+        ////        InfB: self.LabTests()[index].InfB(),
+        ////        VirusLineageID: self.LabTests()[index].VirusLineageID(),
+        ////        CTLineage: self.LabTests()[index].CTLineage(),
+        ////        CTRLLineage: self.LabTests()[index].CTRLLineage(),
+        ////        ParaInfI: self.LabTests()[index].ParaInfI(),
+        ////        ParaInfII: self.LabTests()[index].ParaInfII(),
+        ////        ParaInfIII: self.LabTests()[index].ParaInfIII(),
+        ////        RSV: self.LabTests()[index].RSV(),
+        ////        Adenovirus: self.LabTests()[index].Adenovirus(),
+        ////        Metapneumovirus: self.LabTests()[index].Metapneumovirus(),
+        ////        RNP: self.LabTests()[index].RNP(),
+        ////        CTRLRNP: self.LabTests()[index].CTRLRNP(),
+        ////        CTRLNegative: self.LabTests()[index].CTRLNegative(),
+        ////        TestResultID: self.LabTests()[index].TestResultID() == 'NA' || self.LabTests()[index].TestResultID() == 'NB' ? 'N' : self.LabTests()[index].TestResultID(),
+        ////        TestType: self.LabTests()[index].TestType(),
+        ////        TestDate: moment(date_test_start).format(date_format_ISO),
+        ////        TestEndDate: moment(date_test_final).format(date_format_ISO)
+        ////    });
+        ////}
+
         // Muestra numero 2 dos
-        for (var index = 0; index < self.LabTests_Sample2().length; ++index) {
-            date_1 = self.LabTests_Sample2()[index].TestDate();
-            date_2 = self.LabTests_Sample2()[index].TestEndDate();
-            var date_test_start = new Date();
-            var date_test_final = new Date();
-            date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
-            date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+        ////for (var index = 0; index < self.LabTests_Sample2().length; ++index) {
+        ////    date_1 = self.LabTests_Sample2()[index].TestDate();
+        ////    date_2 = self.LabTests_Sample2()[index].TestEndDate();
+        ////    var date_test_start = new Date();
+        ////    var date_test_final = new Date();
+        ////    date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+        ////    date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
 
-            var newLabID = (self.LabTests_Sample2()[index].LabID() === "" || typeof self.LabTests_Sample2()[index].LabID() === "undefined") ?
-                self.LabTests_Sample2()[index].ProcLab() : self.LabTests_Sample2()[index].LabID();
+        ////    var newLabID = (self.LabTests_Sample2()[index].LabID() === "" || typeof self.LabTests_Sample2()[index].LabID() === "undefined") ?
+        ////        self.LabTests_Sample2()[index].ProcLab() : self.LabTests_Sample2()[index].LabID();
 
-            postData.push({
-                ID: self.LabTests_Sample2()[index].Id,
-                CaseLabID: self.Id,
-                LabID: newLabID,
-                Processed: self.LabTests_Sample2()[index].ProcessLab(),
-                SampleNumber: self.LabTests_Sample2()[index].SampleNumber(),
-                //VirusTypeID: self.LabTests_Sample2()[index].VirusTypeID(),
-                VirusTypeID: self.LabTests_Sample2()[index].TestResultID() == 'NA' ? 1 : self.LabTests_Sample2()[index].TestResultID() == 'NB' ? 2 : self.LabTests_Sample2()[index].VirusTypeID(),
-                CTVirusType: self.LabTests_Sample2()[index].CTVirusType(),
-                CTRLVirusType: self.LabTests_Sample2()[index].CTRLVirusType(),
-                OtherVirusTypeID: self.LabTests_Sample2()[index].OtherVirusTypeID(),
-                CTOtherVirusType: self.LabTests_Sample2()[index].CTOtherVirusType(),
-                CTRLOtherVirusType: self.LabTests_Sample2()[index].CTRLOtherVirusType(),
-                OtherVirus: self.LabTests_Sample2()[index].OtherVirus(),
-                InfA: self.LabTests_Sample2()[index].InfA(),
-                VirusSubTypeID: self.LabTests_Sample2()[index].VirusSubTypeID(),
-                CTSubType: self.LabTests_Sample2()[index].CTSubType(),
-                CTRLSubType: self.LabTests_Sample2()[index].CTRLSubType(),
-                InfB: self.LabTests_Sample2()[index].InfB(),
-                VirusLineageID: self.LabTests_Sample2()[index].VirusLineageID(),
-                CTLineage: self.LabTests_Sample2()[index].CTLineage(),
-                CTRLLineage: self.LabTests_Sample2()[index].CTRLLineage(),
-                ParaInfI: self.LabTests_Sample2()[index].ParaInfI(),
-                ParaInfII: self.LabTests_Sample2()[index].ParaInfII(),
-                ParaInfIII: self.LabTests_Sample2()[index].ParaInfIII(),
-                RSV: self.LabTests_Sample2()[index].RSV(),
-                Adenovirus: self.LabTests_Sample2()[index].Adenovirus(),
-                Metapneumovirus: self.LabTests_Sample2()[index].Metapneumovirus(),
-                RNP: self.LabTests_Sample2()[index].RNP(),
-                CTRLRNP: self.LabTests_Sample2()[index].CTRLRNP(),
-                CTRLNegative: self.LabTests_Sample2()[index].CTRLNegative(),
-                //TestResultID: self.LabTests_Sample2()[index].TestResultID(),
-                TestResultID: self.LabTests_Sample2()[index].TestResultID() == 'NA' || self.LabTests_Sample2()[index].TestResultID() == 'NB' ? 'N' : self.LabTests_Sample2()[index].TestResultID(),  
-                TestType: self.LabTests_Sample2()[index].TestType(),
-                TestDate: moment(date_test_start).format(date_format_ISO),
-                TestEndDate: moment(date_test_final).format(date_format_ISO)
-            });
-        }
+        ////    postData.push({
+        ////        ID: self.LabTests_Sample2()[index].Id,
+        ////        CaseLabID: self.Id,
+        ////        LabID: newLabID,
+        ////        Processed: self.LabTests_Sample2()[index].ProcessLab(),
+        ////        SampleNumber: self.LabTests_Sample2()[index].SampleNumber(),
+        ////        //VirusTypeID: self.LabTests_Sample2()[index].VirusTypeID(),
+        ////        VirusTypeID: self.LabTests_Sample2()[index].TestResultID() == 'NA' ? 1 : self.LabTests_Sample2()[index].TestResultID() == 'NB' ? 2 : self.LabTests_Sample2()[index].VirusTypeID(),
+        ////        CTVirusType: self.LabTests_Sample2()[index].CTVirusType(),
+        ////        CTRLVirusType: self.LabTests_Sample2()[index].CTRLVirusType(),
+        ////        OtherVirusTypeID: self.LabTests_Sample2()[index].OtherVirusTypeID(),
+        ////        CTOtherVirusType: self.LabTests_Sample2()[index].CTOtherVirusType(),
+        ////        CTRLOtherVirusType: self.LabTests_Sample2()[index].CTRLOtherVirusType(),
+        ////        OtherVirus: self.LabTests_Sample2()[index].OtherVirus(),
+        ////        InfA: self.LabTests_Sample2()[index].InfA(),
+        ////        VirusSubTypeID: self.LabTests_Sample2()[index].VirusSubTypeID(),
+        ////        CTSubType: self.LabTests_Sample2()[index].CTSubType(),
+        ////        CTRLSubType: self.LabTests_Sample2()[index].CTRLSubType(),
+        ////        InfB: self.LabTests_Sample2()[index].InfB(),
+        ////        VirusLineageID: self.LabTests_Sample2()[index].VirusLineageID(),
+        ////        CTLineage: self.LabTests_Sample2()[index].CTLineage(),
+        ////        CTRLLineage: self.LabTests_Sample2()[index].CTRLLineage(),
+        ////        ParaInfI: self.LabTests_Sample2()[index].ParaInfI(),
+        ////        ParaInfII: self.LabTests_Sample2()[index].ParaInfII(),
+        ////        ParaInfIII: self.LabTests_Sample2()[index].ParaInfIII(),
+        ////        RSV: self.LabTests_Sample2()[index].RSV(),
+        ////        Adenovirus: self.LabTests_Sample2()[index].Adenovirus(),
+        ////        Metapneumovirus: self.LabTests_Sample2()[index].Metapneumovirus(),
+        ////        RNP: self.LabTests_Sample2()[index].RNP(),
+        ////        CTRLRNP: self.LabTests_Sample2()[index].CTRLRNP(),
+        ////        CTRLNegative: self.LabTests_Sample2()[index].CTRLNegative(),
+        ////        //TestResultID: self.LabTests_Sample2()[index].TestResultID(),
+        ////        TestResultID: self.LabTests_Sample2()[index].TestResultID() == 'NA' || self.LabTests_Sample2()[index].TestResultID() == 'NB' ? 'N' : self.LabTests_Sample2()[index].TestResultID(),  
+        ////        TestType: self.LabTests_Sample2()[index].TestType(),
+        ////        TestDate: moment(date_test_start).format(date_format_ISO),
+        ////        TestEndDate: moment(date_test_final).format(date_format_ISO)
+        ////    });
+        ////}
 
         // Muestra 3 tres
-        for (var index = 0; index < self.LabTests_Sample3().length; ++index) {
-            date_1 = self.LabTests_Sample3()[index].TestDate();
-            date_2 = self.LabTests_Sample3()[index].TestEndDate();
-            var date_test_start = new Date();
-            var date_test_final = new Date();
-            date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
-            date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
+        ////for (var index = 0; index < self.LabTests_Sample3().length; ++index) {
+        ////    date_1 = self.LabTests_Sample3()[index].TestDate();
+        ////    date_2 = self.LabTests_Sample3()[index].TestEndDate();
+        ////    var date_test_start = new Date();
+        ////    var date_test_final = new Date();
+        ////    date_test_start = jQuery.type(date_1) === 'date' ? date_1 : parseDate(date_1, date_format_);
+        ////    date_test_final = jQuery.type(date_2) === 'date' ? date_2 : parseDate(date_2, date_format_);
 
-            var newLabID = (self.LabTests_Sample3()[index].LabID() === "" || typeof self.LabTests_Sample3()[index].LabID() === "undefined") ?
-                self.LabTests_Sample3()[index].ProcLab() : self.LabTests_Sample3()[index].LabID();
+        ////    var newLabID = (self.LabTests_Sample3()[index].LabID() === "" || typeof self.LabTests_Sample3()[index].LabID() === "undefined") ?
+        ////        self.LabTests_Sample3()[index].ProcLab() : self.LabTests_Sample3()[index].LabID();
 
-            postData.push({
-                ID: self.LabTests_Sample3()[index].Id,
-                CaseLabID: self.Id,
-                LabID: newLabID,
-                Processed: self.LabTests_Sample3()[index].ProcessLab(),
-                SampleNumber: self.LabTests_Sample3()[index].SampleNumber(),
-                //VirusTypeID: self.LabTests_Sample3()[index].VirusTypeID(),
-                VirusTypeID: self.LabTests_Sample3()[index].TestResultID() == 'NA' ? 1 : self.LabTests_Sample3()[index].TestResultID() == 'NB' ? 2 : self.LabTests_Sample3()[index].VirusTypeID(),
-                CTVirusType: self.LabTests_Sample3()[index].CTVirusType(),
-                CTRLVirusType: self.LabTests_Sample3()[index].CTRLVirusType(),
-                OtherVirusTypeID: self.LabTests_Sample3()[index].OtherVirusTypeID(),
-                CTOtherVirusType: self.LabTests_Sample3()[index].CTOtherVirusType(),
-                CTRLOtherVirusType: self.LabTests_Sample3()[index].CTRLOtherVirusType(),
-                OtherVirus: self.LabTests_Sample3()[index].OtherVirus(),
-                InfA: self.LabTests_Sample3()[index].InfA(),
-                VirusSubTypeID: self.LabTests_Sample3()[index].VirusSubTypeID(),
-                CTSubType: self.LabTests_Sample3()[index].CTSubType(),
-                CTRLSubType: self.LabTests_Sample3()[index].CTRLSubType(),
-                InfB: self.LabTests_Sample3()[index].InfB(),
-                VirusLineageID: self.LabTests_Sample3()[index].VirusLineageID(),
-                CTLineage: self.LabTests_Sample3()[index].CTLineage(),
-                CTRLLineage: self.LabTests_Sample3()[index].CTRLLineage(),
-                ParaInfI: self.LabTests_Sample3()[index].ParaInfI(),
-                ParaInfII: self.LabTests_Sample3()[index].ParaInfII(),
-                ParaInfIII: self.LabTests_Sample3()[index].ParaInfIII(),
-                RSV: self.LabTests_Sample3()[index].RSV(),
-                Adenovirus: self.LabTests_Sample3()[index].Adenovirus(),
-                Metapneumovirus: self.LabTests_Sample3()[index].Metapneumovirus(),
-                RNP: self.LabTests_Sample3()[index].RNP(),
-                CTRLRNP: self.LabTests_Sample3()[index].CTRLRNP(),
-                CTRLNegative: self.LabTests_Sample3()[index].CTRLNegative(),
-                //TestResultID: self.LabTests_Sample3()[index].TestResultID(),
-                TestResultID: self.LabTests_Sample3()[index].TestResultID() == 'NA' || self.LabTests_Sample3()[index].TestResultID() == 'NB' ? 'N' : self.LabTests_Sample3()[index].TestResultID(),
-                TestType: self.LabTests_Sample3()[index].TestType(),
-                TestDate: moment(date_test_start).format(date_format_ISO),
-                TestEndDate: moment(date_test_final).format(date_format_ISO)
-            });
-        }
+        ////    postData.push({
+        ////        ID: self.LabTests_Sample3()[index].Id,
+        ////        CaseLabID: self.Id,
+        ////        LabID: newLabID,
+        ////        Processed: self.LabTests_Sample3()[index].ProcessLab(),
+        ////        SampleNumber: self.LabTests_Sample3()[index].SampleNumber(),
+        ////        //VirusTypeID: self.LabTests_Sample3()[index].VirusTypeID(),
+        ////        VirusTypeID: self.LabTests_Sample3()[index].TestResultID() == 'NA' ? 1 : self.LabTests_Sample3()[index].TestResultID() == 'NB' ? 2 : self.LabTests_Sample3()[index].VirusTypeID(),
+        ////        CTVirusType: self.LabTests_Sample3()[index].CTVirusType(),
+        ////        CTRLVirusType: self.LabTests_Sample3()[index].CTRLVirusType(),
+        ////        OtherVirusTypeID: self.LabTests_Sample3()[index].OtherVirusTypeID(),
+        ////        CTOtherVirusType: self.LabTests_Sample3()[index].CTOtherVirusType(),
+        ////        CTRLOtherVirusType: self.LabTests_Sample3()[index].CTRLOtherVirusType(),
+        ////        OtherVirus: self.LabTests_Sample3()[index].OtherVirus(),
+        ////        InfA: self.LabTests_Sample3()[index].InfA(),
+        ////        VirusSubTypeID: self.LabTests_Sample3()[index].VirusSubTypeID(),
+        ////        CTSubType: self.LabTests_Sample3()[index].CTSubType(),
+        ////        CTRLSubType: self.LabTests_Sample3()[index].CTRLSubType(),
+        ////        InfB: self.LabTests_Sample3()[index].InfB(),
+        ////        VirusLineageID: self.LabTests_Sample3()[index].VirusLineageID(),
+        ////        CTLineage: self.LabTests_Sample3()[index].CTLineage(),
+        ////        CTRLLineage: self.LabTests_Sample3()[index].CTRLLineage(),
+        ////        ParaInfI: self.LabTests_Sample3()[index].ParaInfI(),
+        ////        ParaInfII: self.LabTests_Sample3()[index].ParaInfII(),
+        ////        ParaInfIII: self.LabTests_Sample3()[index].ParaInfIII(),
+        ////        RSV: self.LabTests_Sample3()[index].RSV(),
+        ////        Adenovirus: self.LabTests_Sample3()[index].Adenovirus(),
+        ////        Metapneumovirus: self.LabTests_Sample3()[index].Metapneumovirus(),
+        ////        RNP: self.LabTests_Sample3()[index].RNP(),
+        ////        CTRLRNP: self.LabTests_Sample3()[index].CTRLRNP(),
+        ////        CTRLNegative: self.LabTests_Sample3()[index].CTRLNegative(),
+        ////        //TestResultID: self.LabTests_Sample3()[index].TestResultID(),
+        ////        TestResultID: self.LabTests_Sample3()[index].TestResultID() == 'NA' || self.LabTests_Sample3()[index].TestResultID() == 'NB' ? 'N' : self.LabTests_Sample3()[index].TestResultID(),
+        ////        TestType: self.LabTests_Sample3()[index].TestType(),
+        ////        TestDate: moment(date_test_start).format(date_format_ISO),
+        ////        TestEndDate: moment(date_test_final).format(date_format_ISO)
+        ////    });
+        ////}
 
+        console.log("An1");
+        console.log(postCaseLabs);
+        console.log(postData);
+        console.log("An2");
         //return false
-        //alert(self.Comments);
+
         $.ajax({
             url: app.dataModel.saveLabUrl,
             type: "POST",
             data: JSON.stringify({
                 id: self.Id,
-                RecDate: $("#RecDate").val() == "" ? null : moment(rec_date).format(date_format_ISO),
-                Identification_Test: self.Identification_Test() ? self.Identification_Test().toLocaleUpperCase() : "",
-                Processed: self.Processed() === "true" ? true : self.Processed() === "false" ? false : null,
-                NoProRen: self.NoProRen() ? self.NoProRen().toLocaleUpperCase() : "",
-                NoProRenId: self.NoProRenId(),
-                TempSample1: self.TempSample1(),
 
-                RecDate2: $("#RecDate2").val() == "" ? null : moment(rec_date2).format(date_format_ISO),
-                Identification_Test2: self.Identification_Test2() ? self.Identification_Test2().toLocaleUpperCase() : "",
-                Processed2: self.Processed2() === "true" ? true : self.Processed2() === "false" ? false : null,
-                NoProRen2: self.NoProRen2() ? self.NoProRen2().toLocaleUpperCase() : "",
-                NoProRenId2: self.NoProRenId2(),
-                TempSample2: self.TempSample2(),
+                ////RecDate: $("#RecDate").val() == "" ? null : moment(rec_date).format(date_format_ISO),
+                ////Identification_Test: self.Identification_Test() ? self.Identification_Test().toLocaleUpperCase() : "",
+                ////Processed: self.Processed() === "true" ? true : self.Processed() === "false" ? false : null,
+                ////NoProRen: self.NoProRen() ? self.NoProRen().toLocaleUpperCase() : "",
+                ////NoProRenId: self.NoProRenId(),
+                ////TempSample1: self.TempSample1(),
 
-                RecDate3: $("#RecDate3").val() == "" ? null : moment(rec_date3).format(date_format_ISO),
-                Identification_Test3: self.Identification_Test3() ? self.Identification_Test3().toLocaleUpperCase() : "",
-                Processed3: self.Processed3() === "true" ? true : self.Processed3() === "false" ? false : null,
-                NoProRen3: self.NoProRen3() ? self.NoProRen3().toLocaleUpperCase() : "",
-                NoProRenId3: self.NoProRenId3(),
-                TempSample3: self.TempSample3(),
+                //RecDate2: $("#RecDate2").val() == "" ? null : moment(rec_date2).format(date_format_ISO),
+                //Identification_Test2: self.Identification_Test2() ? self.Identification_Test2().toLocaleUpperCase() : "",
+                //Processed2: self.Processed2() === "true" ? true : self.Processed2() === "false" ? false : null,
+                //NoProRen2: self.NoProRen2() ? self.NoProRen2().toLocaleUpperCase() : "",
+                //NoProRenId2: self.NoProRenId2(),
+                //TempSample2: self.TempSample2(),
 
-                RecDate_National: $("#RecDate_National").val() == "" ? null : moment(rec_date_National).format(date_format_ISO),
-                Identification_Test_National: self.Identification_Test_National() ? self.Identification_Test_National().toLocaleUpperCase() : "",
-                Processed_National: self.Processed_National() === "true" ? true : self.Processed_National() === "false" ? false : null,
-                NoProRen_National: self.NoProRen_National() ? self.NoProRen_National().toLocaleUpperCase() : "",
-                NoProRenId_National: self.NoProRenId_National(),
-                TempSample_National: self.TempSample_National(),
+                //RecDate3: $("#RecDate3").val() == "" ? null : moment(rec_date3).format(date_format_ISO),
+                //Identification_Test3: self.Identification_Test3() ? self.Identification_Test3().toLocaleUpperCase() : "",
+                //Processed3: self.Processed3() === "true" ? true : self.Processed3() === "false" ? false : null,
+                //NoProRen3: self.NoProRen3() ? self.NoProRen3().toLocaleUpperCase() : "",
+                //NoProRenId3: self.NoProRenId3(),
+                //TempSample3: self.TempSample3(),
+
+                //RecDate_National: $("#RecDate_National").val() == "" ? null : moment(rec_date_National).format(date_format_ISO),
+                //Identification_Test_National: self.Identification_Test_National() ? self.Identification_Test_National().toLocaleUpperCase() : "",
+                //Processed_National: self.Processed_National() === "true" ? true : self.Processed_National() === "false" ? false : null,
+                //NoProRen_National: self.NoProRen_National() ? self.NoProRen_National().toLocaleUpperCase() : "",
+                //NoProRenId_National: self.NoProRenId_National(),
+                //TempSample_National: self.TempSample_National(),
 
                 EndLabDate: $("#EndLabDate").val() == "" ? null : moment(date_close_date_lab).format(date_format_ISO),
                 FResult: self.FResult(),          
@@ -3811,37 +4030,38 @@ function LabViewModel(app, dataModel) {
 
                 DataStatement: $("#o_S").val(),
                 LabTests: postData,
+                CaseLabs: postCaseLabs,
 
                 // Laboratorio intermedio
-                Rec_Date_NPHL: $("#Rec_Date_NPHL").val() == "" ? null : moment(rec_date_NPHL).format(date_format_ISO),
-                Identification_Test_NPHL: self.Identification_Test_NPHL() ? self.Identification_Test_NPHL().toLocaleUpperCase() : "",
-                Observation_NPHL: self.Observation_NPHL() ? self.Observation_NPHL().toLocaleUpperCase() : "",
-                Temp_NPHL: self.Temp_NPHL(),
-                Ship_Date_NPHL: $("#Ship_Date_NPHL").val() == "" ? null : moment(ship_date_NPHL).format(date_format_ISO),
-                NPHL_Processed: self.NPHL_Processed(),
-                NPHL_NoProRenId: self.NPHL_NoProRenId(),
-                NPHL_NoProRen: self.NPHL_NoProRen(),
-                NPHL_Conclusion: self.NPHL_Conclusion(),
+                //Rec_Date_NPHL: $("#Rec_Date_NPHL").val() == "" ? null : moment(rec_date_NPHL).format(date_format_ISO),
+                //Identification_Test_NPHL: self.Identification_Test_NPHL() ? self.Identification_Test_NPHL().toLocaleUpperCase() : "",
+                //Observation_NPHL: self.Observation_NPHL() ? self.Observation_NPHL().toLocaleUpperCase() : "",
+                //Temp_NPHL: self.Temp_NPHL(),
+                //Ship_Date_NPHL: $("#Ship_Date_NPHL").val() == "" ? null : moment(ship_date_NPHL).format(date_format_ISO),
+                //NPHL_Processed: self.NPHL_Processed(),
+                //NPHL_NoProRenId: self.NPHL_NoProRenId(),
+                //NPHL_NoProRen: self.NPHL_NoProRen(),
+                //NPHL_Conclusion: self.NPHL_Conclusion(),
                 
-                Rec_Date_NPHL_2: $("#Rec_Date_NPHL_2").val() == "" ? null : moment(rec_date_NPHL_2).format(date_format_ISO),
-                Identification_Test_NPHL_2: self.Identification_Test_NPHL_2() ? self.Identification_Test_NPHL_2().toLocaleUpperCase() : "",
-                Temp_NPHL_2: self.Temp_NPHL_2(),
-                Ship_Date_NPHL_2: $("#Ship_Date_NPHL_2").val() == "" ? null : moment(ship_date_NPHL_2).format(date_format_ISO),
-                Observation_NPHL_2: self.Observation_NPHL_2() ? self.Observation_NPHL_2().toLocaleUpperCase() : "",
-                NPHL_Processed_2: self.NPHL_Processed_2(),
-                NPHL_NoProRenId_2: self.NPHL_NoProRenId_2(),
-                NPHL_NoProRen_2: self.NPHL_NoProRen_2(),
-                NPHL_Conclusion_2: self.NPHL_Conclusion_2(),
+                //Rec_Date_NPHL_2: $("#Rec_Date_NPHL_2").val() == "" ? null : moment(rec_date_NPHL_2).format(date_format_ISO),
+                //Identification_Test_NPHL_2: self.Identification_Test_NPHL_2() ? self.Identification_Test_NPHL_2().toLocaleUpperCase() : "",
+                //Temp_NPHL_2: self.Temp_NPHL_2(),
+                //Ship_Date_NPHL_2: $("#Ship_Date_NPHL_2").val() == "" ? null : moment(ship_date_NPHL_2).format(date_format_ISO),
+                //Observation_NPHL_2: self.Observation_NPHL_2() ? self.Observation_NPHL_2().toLocaleUpperCase() : "",
+                //NPHL_Processed_2: self.NPHL_Processed_2(),
+                //NPHL_NoProRenId_2: self.NPHL_NoProRenId_2(),
+                //NPHL_NoProRen_2: self.NPHL_NoProRen_2(),
+                //NPHL_Conclusion_2: self.NPHL_Conclusion_2(),
 
-                Rec_Date_NPHL_3: $("#Rec_Date_NPHL_3").val() == "" ? null : moment(rec_date_NPHL_3).format(date_format_ISO),
-                Identification_Test_NPHL_3: self.Identification_Test_NPHL_3() ? self.Identification_Test_NPHL_3().toLocaleUpperCase() : "",
-                Temp_NPHL_3: self.Temp_NPHL_3(),
-                Ship_Date_NPHL_3: $("#Ship_Date_NPHL_3").val() == "" ? null : moment(ship_date_NPHL_3).format(date_format_ISO),
-                Observation_NPHL_3: self.Observation_NPHL_3() ? self.Observation_NPHL_3().toLocaleUpperCase() : "",
-                NPHL_Processed_3: self.NPHL_Processed_3(),
-                NPHL_NoProRenId_3: self.NPHL_NoProRenId_3(),
-                NPHL_NoProRen_3: self.NPHL_NoProRen_3(),
-                NPHL_Conclusion_3: self.NPHL_Conclusion_3(),
+                //Rec_Date_NPHL_3: $("#Rec_Date_NPHL_3").val() == "" ? null : moment(rec_date_NPHL_3).format(date_format_ISO),
+                //Identification_Test_NPHL_3: self.Identification_Test_NPHL_3() ? self.Identification_Test_NPHL_3().toLocaleUpperCase() : "",
+                //Temp_NPHL_3: self.Temp_NPHL_3(),
+                //Ship_Date_NPHL_3: $("#Ship_Date_NPHL_3").val() == "" ? null : moment(ship_date_NPHL_3).format(date_format_ISO),
+                //Observation_NPHL_3: self.Observation_NPHL_3() ? self.Observation_NPHL_3().toLocaleUpperCase() : "",
+                //NPHL_Processed_3: self.NPHL_Processed_3(),
+                //NPHL_NoProRenId_3: self.NPHL_NoProRenId_3(),
+                //NPHL_NoProRen_3: self.NPHL_NoProRen_3(),
+                //NPHL_Conclusion_3: self.NPHL_Conclusion_3(),
 
             }),
             async: false,
@@ -3853,7 +4073,7 @@ function LabViewModel(app, dataModel) {
             }
         });
 
-        console.log("self.SaveLab->END");
+        console.log("LAB->self.SaveLab->END");
         return true;
     };
 

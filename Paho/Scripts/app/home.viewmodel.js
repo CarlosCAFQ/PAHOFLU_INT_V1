@@ -320,7 +320,7 @@
     };
 
     self.SaveAll = function (option_Save) {
-        console.log("h.vm.js->HomeViewModel->self.SaveAll->START");
+        console.log("HOME->HomeViewModel->self.SaveAll->START");
 
         $("#save").attr("disabled", true);
         $("#saveGEO").attr("disabled", true);
@@ -333,7 +333,7 @@
         $("#o_S").val(option_Save);
 
         if ($("#ITy").val() == "2") {
-            console.log("$('#ITy').val() == '2'->Aqui1");
+            console.log("Llama a->app.Views.Lab.SaveLab");
             app.Views.Lab.SaveLab(function () {
                 alert(viewValidateSavedInfo + app.Views.Lab.Id);
                 if (option_Save == 1 || option_Save ==2)
@@ -376,18 +376,18 @@
                 });
             });
         }
-        console.log("h.vm.js->HomeViewModel->self.SaveAll->END");         
+        console.log("HOME->HomeViewModel->self.SaveAll->END");         
     };
 
     self.ValidateAll = function (option_Save) {
-        console.log("h.vm.js-HomeViewModel-self.ValidateAll->START");
-        console.log("#ITy valor->" + $("#ITy").val());
+        console.log("HOME-HomeViewModel-self.ValidateAll->START");
+        //console.log("#ITy valor->" + $("#ITy").val());
 
         if ($("#ITy").val() == "2") {
             //CaseLabses(SampleNumber)
-            console.log("------------C1");
+            console.log("------------C1x");
             app.Views.Lab.validate(function () {                    // Cuando graba user LAB $("#ITy").val(): "2"
-                console.log("------------C2");
+                console.log("------------C2x");
                 self.SaveAll(option_Save);
             });
         } else {
@@ -409,7 +409,7 @@
                 });
             });
         };
-        console.log("h.vm.js-HomeViewModel-self.ValidateAll->END");
+        console.log("HOME-HomeViewModel-self.ValidateAll->END");
     };
 
     self.ReloadInstitutions = function () {        

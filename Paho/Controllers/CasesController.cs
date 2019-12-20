@@ -36,6 +36,48 @@ namespace Paho.Controllers
             db.SaveChanges();
         }
 
+        public void CaseLabRecord(int? FlucaseID, int? LabID, List<CaseLabs> CaseLabs)
+        {
+            foreach (var cl in CaseLabs)
+            {
+                //CaseLabs caselab;
+                //caselab = new CaseLabs();
+                var result = db.CaseLabses.SingleOrDefault(b => b.Id == cl.Id);
+                if (result != null)
+                {
+                    result.LabID = cl.LabID;
+
+                    result.RecDate = cl.RecDate;
+                    result.Identification_Test = cl.Identification_Test;
+                    result.Processed = cl.Processed;
+                    result.TempSample = cl.TempSample;
+                    result.NoProRenId = cl.NoProRenId;
+                    result.NoProRen = cl.NoProRen;
+
+                    db.SaveChanges();
+                    result = null;
+                }
+                else
+                {
+                    CaseLabs caselab = new CaseLabs();
+
+                    caselab.FlucaseID = cl.FlucaseID;
+                    caselab.LabID = cl.LabID;
+                    caselab.RecDate = cl.RecDate;
+                    caselab.Identification_Test = cl.Identification_Test;
+                    caselab.Processed = cl.Processed;
+                    caselab.TempSample = cl.TempSample;
+                    caselab.NoProRenId = cl.NoProRenId;
+                    caselab.NoProRen = cl.NoProRen;
+
+                    db.Entry(caselab).State = EntityState.Added;
+                    db.SaveChanges();
+                    caselab = null;
+                }
+            }
+        }
+
+
         public ActionResult GetCountries()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -2822,26 +2864,30 @@ namespace Paho.Controllers
         [HttpPost]
         public JsonResult SaveLab(
                 int id,
-                DateTime? RecDate,
-                string Identification_Test,
-                bool? Processed,
-                DateTime? RecDate2,
-                string Identification_Test2,
-                bool? Processed2,
-                DateTime? RecDate3,
-                string Identification_Test3,
-                bool? Processed3,
+
+                ////DateTime? RecDate,
+                ////string Identification_Test,
+                ////bool? Processed,
+                ////int? NoProRenId,
+                ////string NoProRen,
+                ////Decimal? TempSample1,
+
+                ////DateTime? RecDate2,
+                ////string Identification_Test2,
+                ////bool? Processed2,
+                ////int? NoProRenId2,
+                ////string NoProRen2,
+                ////Decimal? TempSample2,
+
+                ////DateTime? RecDate3,
+                ////string Identification_Test3,
+                ////bool? Processed3,
+                ////int? NoProRenId3,
+                ////string NoProRen3,
+                ////Decimal? TempSample3,
+
                 DateTime? EndLabDate,
                 string FResult,
-                int? NoProRenId,
-                string NoProRen,
-                Decimal? TempSample1,
-                int? NoProRenId2,
-                string NoProRen2,
-                Decimal? TempSample2,
-                int? NoProRenId3,
-                string NoProRen3,
-                Decimal? TempSample3,
                 string Comments,
                 string FinalResult,
                 int? FinalResultVirusTypeID,
@@ -2859,22 +2905,25 @@ namespace Paho.Controllers
                 string GeneticGroup_2,
                 string GeneticGroup_3,
                 int? DataStatement,
+
                 // Lab nacional solo para HN
-                DateTime? RecDate_National,
-                Decimal? TempSample_National,
-                string Identification_Test_National,
-                bool? Processed_National,
-                int? NoProRenId_National,
-                string NoProRen_National,
+                //DateTime? RecDate_National,
+                //Decimal? TempSample_National,
+                //string Identification_Test_National,
+                //bool? Processed_National,
+                //int? NoProRenId_National,
+                //string NoProRen_National,
+
                 //AM Laboratorio intermedio
-                DateTime? Rec_Date_NPHL,
-                Decimal? Temp_NPHL,
-                string Identification_Test_NPHL,
-                string Observation_NPHL,
-                DateTime? Ship_Date_NPHL,
-                bool? NPHL_Processed,
-                int? NPHL_NoProRenId,
-                string NPHL_NoProRen,
+                //DateTime? Rec_Date_NPHL,
+                //Decimal? Temp_NPHL,
+                //string Identification_Test_NPHL,
+                //string Observation_NPHL,
+                //DateTime? Ship_Date_NPHL,
+                //bool? NPHL_Processed,
+                //int? NPHL_NoProRenId,
+                //string NPHL_NoProRen,
+
                 DateTime? Rec_Date_NPHL_2,
                 Decimal? Temp_NPHL_2,
                 string Identification_Test_NPHL_2,
@@ -2883,6 +2932,7 @@ namespace Paho.Controllers
                 bool? NPHL_Processed_2,
                 int? NPHL_NoProRenId_2,
                 string NPHL_NoProRen_2,
+
                 DateTime? Rec_Date_NPHL_3,
                 Decimal? Temp_NPHL_3,
                 string Identification_Test_NPHL_3,
@@ -2891,7 +2941,8 @@ namespace Paho.Controllers
                 bool? NPHL_Processed_3,
                 int? NPHL_NoProRenId_3,
                 string NPHL_NoProRen_3,
-                List<LabTestViewModel> LabTests
+                List<LabTestViewModel> LabTests,
+                List<CaseLabs> CaseLabs
             )
         {
             FluCase flucase;
@@ -2915,26 +2966,111 @@ namespace Paho.Controllers
             IFI_Count = flucase.CaseLabTests.Where(e => e.FluCaseID == id && e.TestType == 1 && e.Processed != null).Count();
             PCR_Count = flucase.CaseLabTests.Where(e => e.FluCaseID == id && e.TestType == 2 && e.Processed != null).Count();
 
+            DateTime? RecDate = null;
+            string Identification_Test = null;
+            bool? Processed = null;
+            int? NoProRenId = null;
+            string NoProRen = null;
+            Decimal? TempSample = null;
+            //string Observation = null;            // FALTAN CAMPOS EN FLUCASE y CABECERA_LABORATORIO
+            //DateTime? Ship_Date = null;
+
+            DateTime? RecDate2 = null;
+            string Identification_Test2 = null;
+            bool? Processed2 = null;
+            int? NoProRenId2 = null;
+            string NoProRen2 = null;
+            Decimal? TempSample2 = null;
+            //string Observation2 = null;
+            //DateTime? Ship_Date2 = null;
+
+            DateTime? RecDate3 = null;
+            string Identification_Test3 = null;
+            bool? Processed3 = null;
+            int? NoProRenId3 = null;
+            string NoProRen3 = null;
+            Decimal? TempSample3 = null;
+            //string Observation3 = null;
+            //DateTime? Ship_Date3 = null;
+
+            DateTime? RecDate_National = null;                  // Llenarlo con datos del NIC
+            string Identification_Test_National = null;
+            bool? Processed_National = null;
+            int? NoProRenId_National = null;
+            string NoProRen_National = null;
+            Decimal? TempSample_National = null;
+            //string Observation_National = null;
+            //DateTime? Ship_Date_National = null;
+
+            int x1 = 1;
+            foreach (var cl in CaseLabs)
+            {
+                if (x1 == 1)
+                {
+                    RecDate = cl.RecDate;
+                    Identification_Test = cl.Identification_Test;
+                    Processed = cl.Processed;
+                    TempSample = cl.TempSample;
+                    NoProRenId = cl.NoProRenId;
+                    NoProRen = cl.NoProRen;
+                }
+                else if (x1 == 2)
+                {
+                    RecDate2 = cl.RecDate;
+                    Identification_Test2 = cl.Identification_Test;
+                    Processed2 = cl.Processed;
+                    TempSample2 = cl.TempSample;
+                    NoProRenId2 = cl.NoProRenId;
+                    NoProRen2 = cl.NoProRen;
+                }
+                else if (x1 == 3)
+                {
+                    RecDate3 = cl.RecDate;
+                    Identification_Test3 = cl.Identification_Test;
+                    Processed3 = cl.Processed;
+                    TempSample3 = cl.TempSample;
+                    NoProRenId3 = cl.NoProRenId;
+                    NoProRen3 = cl.NoProRen;
+                }
+                ////else if (x1 == 4)
+                ////{
+                ////}
+                ////else if (x1 == 5)
+                ////{
+                ////}
+
+                ////if (LAB == NIC)
+                ////{
+                ////    RecDate_National = null;                  // Llenarlo con datos del NIC
+                ////    Identification_Test_National = null;
+                ////    Processed_National = null;
+                ////    NoProRenId_National = null;
+                ////    NoProRen_National = null;
+                ////    TempSample_National = null;
+                ////    //string Observation_National = null;
+                ////    //DateTime? Ship_Date_National = null;
+                ////}
+
+                ++x1;
+            }
+
             flucase.RecDate = RecDate;
             flucase.Identification_Test = Identification_Test;
             flucase.Processed = Processed;
+            flucase.NoProRen = NoProRen;
+            flucase.NoProRenId = NoProRenId;
+            flucase.TempSample1 = TempSample;
+
             flucase.RecDate2 = RecDate2;
             flucase.Identification_Test2 = Identification_Test2;
             flucase.Processed2 = Processed2;
-            flucase.RecDate3 = RecDate3;
-            flucase.Identification_Test3 = Identification_Test3;
-            flucase.Processed3 = Processed3;
-            flucase.EndLabDate = EndLabDate;
-            flucase.FResult = FResult;
-            flucase.NoProRen = NoProRen;
-
-            flucase.NoProRenId = NoProRenId;
-            flucase.TempSample1 = TempSample1;
-
             flucase.NoProRen2 = NoProRen2;
             flucase.NoProRenId2 = NoProRenId2;
             flucase.TempSample2 = TempSample2;
 
+            flucase.RecDate3 = RecDate3;
+            flucase.Identification_Test3 = Identification_Test3;
+            flucase.Processed3 = Processed3;
             flucase.NoProRen3 = NoProRen3;
             flucase.NoProRenId3 = NoProRenId3;
             flucase.TempSample3 = TempSample3;
@@ -2947,34 +3083,36 @@ namespace Paho.Controllers
             flucase.NoProRen_National = NoProRen_National;
             flucase.NoProRenId_National = NoProRenId_National;
 
-
             // Laboratorio de intermedio
-            flucase.Rec_Date_NPHL = Rec_Date_NPHL;
-            flucase.Identification_Test_NPHL = Identification_Test_NPHL;
-            flucase.Temp_NPHL = Temp_NPHL;
-            flucase.Observation_NPHL = Observation_NPHL;
-            flucase.Ship_Date_NPHL = Ship_Date_NPHL;
-            flucase.NPHL_Processed = NPHL_Processed;
-            flucase.NPHL_NoProRenId = NPHL_NoProRenId;
-            flucase.NPHL_NoProRen = NPHL_NoProRen;
+            //flucase.Rec_Date_NPHL = Rec_Date_NPHL;
+            //flucase.Identification_Test_NPHL = Identification_Test_NPHL;
+            //flucase.Temp_NPHL = Temp_NPHL;
+            //flucase.Observation_NPHL = Observation_NPHL;
+            //flucase.Ship_Date_NPHL = Ship_Date_NPHL;
+            //flucase.NPHL_Processed = NPHL_Processed;
+            //flucase.NPHL_NoProRenId = NPHL_NoProRenId;
+            //flucase.NPHL_NoProRen = NPHL_NoProRen;
 
-            flucase.Rec_Date_NPHL_2 = Rec_Date_NPHL_2;
-            flucase.Temp_NPHL_2 = Temp_NPHL_2;
-            flucase.Identification_Test_NPHL_2 = Identification_Test_NPHL_2;
-            flucase.Observation_NPHL_2 = Observation_NPHL_2;
-            flucase.Ship_Date_NPHL_2 = Ship_Date_NPHL_2;
-            flucase.NPHL_Processed_2 = NPHL_Processed_2;
-            flucase.NPHL_NoProRenId_2 = NPHL_NoProRenId_2;
-            flucase.NPHL_NoProRen_2 = NPHL_NoProRen_2;
+            //flucase.Rec_Date_NPHL_2 = Rec_Date_NPHL_2;
+            //flucase.Temp_NPHL_2 = Temp_NPHL_2;
+            //flucase.Identification_Test_NPHL_2 = Identification_Test_NPHL_2;
+            //flucase.Observation_NPHL_2 = Observation_NPHL_2;
+            //flucase.Ship_Date_NPHL_2 = Ship_Date_NPHL_2;
+            //flucase.NPHL_Processed_2 = NPHL_Processed_2;
+            //flucase.NPHL_NoProRenId_2 = NPHL_NoProRenId_2;
+            //flucase.NPHL_NoProRen_2 = NPHL_NoProRen_2;
 
-            flucase.Rec_Date_NPHL_3 = Rec_Date_NPHL_3;
-            flucase.Temp_NPHL_3 = Temp_NPHL_3;
-            flucase.Identification_Test_NPHL_3 = Identification_Test_NPHL_3;
-            flucase.Observation_NPHL_3 = Observation_NPHL_3;
-            flucase.Ship_Date_NPHL_3 = Ship_Date_NPHL_3;
-            flucase.NPHL_Processed_3 = NPHL_Processed_3;
-            flucase.NPHL_NoProRenId_3 = NPHL_NoProRenId_3;
-            flucase.NPHL_NoProRen_3 = NPHL_NoProRen_3;
+            //flucase.Rec_Date_NPHL_3 = Rec_Date_NPHL_3;
+            //flucase.Temp_NPHL_3 = Temp_NPHL_3;
+            //flucase.Identification_Test_NPHL_3 = Identification_Test_NPHL_3;
+            //flucase.Observation_NPHL_3 = Observation_NPHL_3;
+            //flucase.Ship_Date_NPHL_3 = Ship_Date_NPHL_3;
+            //flucase.NPHL_Processed_3 = NPHL_Processed_3;
+            //flucase.NPHL_NoProRenId_3 = NPHL_NoProRenId_3;
+            //flucase.NPHL_NoProRen_3 = NPHL_NoProRen_3;
+
+            flucase.EndLabDate = EndLabDate;
+            flucase.FResult = FResult;
 
             flucase.Comments = Comments;
             flucase.FinalResult = FinalResult;
@@ -3034,7 +3172,6 @@ namespace Paho.Controllers
 
                     flucase.CaseLabTests.Add(
                         new CaseLabTest {
-
                             LabID = labTestViewModel.LabID,
                             Processed = labTestViewModel.Processed,
                             SampleNumber = labTestViewModel.SampleNumber,
@@ -3392,7 +3529,6 @@ namespace Paho.Controllers
             if (tests.Count >= 4) flucase.MuestraID4 = tests[3].ID;
             if (tests.Count >= 5) flucase.MuestraID5 = tests[4].ID;
             if (tests.Count >= 6) flucase.MuestraID6 = tests[5].ID;
-
             if (tests.Count >= 7) flucase.MuestraID7 = tests[6].ID;
             if (tests.Count >= 8) flucase.MuestraID8 = tests[7].ID;
             if (tests.Count >= 9) flucase.MuestraID9 = tests[8].ID;
@@ -3420,6 +3556,9 @@ namespace Paho.Controllers
 
             if (PCR_RecordHistory && PCR_Count == 0)
                 HistoryRecord(flucase.ID, 4, flucase.flow, 8);
+
+            //**** CaseLab
+            CaseLabRecord(flucase.ID, (Int32)user.InstitutionID, CaseLabs);
 
             return result;
         }
