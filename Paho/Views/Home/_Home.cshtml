@@ -3944,13 +3944,15 @@
                                     @(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSubtype"))
                                 </span>
                                 <div @*data-bind="disabled: CanEdit()"*@>
-                                    <select name="VirusSubTypeID" id="VirusSubTypeID" class="form-control" data-bind="options:$parent.SubTypeByLabRes,
-                                    optionsText: 'Name',
-                                    optionsValue: 'Id',
-                                    value:VirusSubTypeID,
-                                    visible: EnableVirusSubTypeID,
-                                    optionsCaption: '@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSubtype"))...',
-                                    enable:CanEdit"></select>
+                                    @* <select name="VirusSubTypeID" id="VirusSubTypeID" class="form-control" data-bind="options:$parent.SubTypeByLabRes, *@
+                                    <select class="form-control" data-bind="options: $parent.SubTypeByLabRes,
+                                        optionsText: 'Name',
+                                        optionsValue: 'Id',
+                                        optionsCaption: '@(((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("msgCaselistVigTabLabelSubtype"))...',
+                                        value: VirusSubTypeID,
+                                        visible: EnableVirusSubTypeID,                                        
+                                        enable:CanEdit">
+                                    </select>
                                 </div>
                             </div>
                             <div class='input-group col-md-4' data-bind="visible: EnableTestResultID_VirusSubTypeID()">
@@ -4080,8 +4082,9 @@
                 <div class="row rowform" data-bind="visible: app.Views.Contact.Flow_Local_Institution_Lab()">
                     <div class="col-md-8"></div>
                     <div class="col-md-4">
-                        <div class="btn-group">                            
+                        <div class="btn-group">
                             <button id="addLabTest_1" type="button" class="btn btn-primary" data-bind="enable: CanEdit, click: addLabTest.bind($data, 1)">@(LabelAddResult)</button>
+                            @*<button type="button" class="btn btn-primary" data-bind="enable: CanEdit, click: addLabTest.bind($data, 1)">@(LabelAddResult)</button>*@
                         </div>
                     </div>
                 </div>

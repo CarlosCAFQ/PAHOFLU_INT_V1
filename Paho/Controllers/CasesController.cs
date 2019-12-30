@@ -2148,9 +2148,16 @@ namespace Paho.Controllers
             IQueryable<Institution> institutions = null;
 
             var user = UserManager.FindById(User.Identity.GetUserId());
+            var user_cty = user.Institution.CountryID;
+
             institutions = db.Institutions.OfType<Lab>().Where(i => i.ID == user.Institution.ID);
             var institutionsIds = institutions.Select(x => (long?)x.ID).ToArray();
-            var user_cty = user.Institution.CountryID;
+
+            System.Diagnostics.Debug.WriteLine(institutionsIds.Length);
+
+            var userLab = false;
+            if (institutionsIds.Length > 0)
+                userLab = true;
 
             //var InstFlow_NPHL = false;
             //var ExistInstitutionFlow_NPHL = db.InstitutionsConfiguration.OfType<InstitutionConfiguration>().Where( i => i.InstitutionParentID == flucase.HospitalID && i.InstitutionTo.NPHL == true).Any();
@@ -2456,99 +2463,155 @@ namespace Paho.Controllers
 
             if (flucase != null)
             {
+                //var XXX = GetSubTypebyLab(user.InstitutionID);
+
+                //var YYY = (from cal in db.CaseLabses
+                //           where cal.FlucaseID == Id
+                //           select cal)
+                //           .ToList()
+                //           .Select(cal => new
+                //           {
+                //               Id = cal.Id,
+                //               FlucaseID = cal.FlucaseID,
+
+                //               LabID = cal.LabID,
+                //               ProcLab = cal.LabID.ToString(),
+                //               //var CanPCRLab = db.Institutions.Where(i => i.ID == user.Institution.ID).First()?.PCR;           
+                //               //ProcLabName = db.Institutions.Where(i => i.ID == Int32.Parse(cal.LabID.ToString())).First().FullName,
+                //               //ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).First().FullName,
+                //               ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).Any() ? db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).FirstOrDefault().FullName : "LAB. GENERICO",
+                //               CanEdit = institutionsIds.Contains(cal.LabID),
+                //               RecDate = cal.RecDate,
+                //               Identification_Test = cal.Identification_Test,
+                //               Processed = cal.Processed,
+                //               TempSample = cal.TempSample,
+                //               NoProRenId = cal.NoProRenId,
+                //               NoProRen = cal.NoProRen,
+                //               SubTypeByLabRes = GetSubTypebyLab(cal.LabID)
+                //           }
+                //    ).ToList();
+
                 return Json(new
                 {
-                    //UsrInstID = user.Institution.ID,
+                    UsrInstID = user.Institution.ID,
                     UsrInstName = user.Institution.FullName,
+                    UsrLab = userLab,
                     id = flucase.ID.ToString(),
-                    
+
+                    //CaseLabs = (from cal in db.CaseLabses
+                    //            where cal.FlucaseID == Id
+                    //            select new
+                    //            {
+                    //                Id = cal.Id,
+                    //                FlucaseID = cal.FlucaseID,
+
+                    //                LabID = cal.LabID,
+                    //                ProcLab = cal.LabID.ToString(),
+                    //                //var CanPCRLab = db.Institutions.Where(i => i.ID == user.Institution.ID).First()?.PCR;           
+                    //                //ProcLabName = db.Institutions.Where(i => i.ID == Int32.Parse(cal.LabID.ToString())).First().FullName,
+                    //                //ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).First().FullName,
+                    //                ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).Any() ? db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).FirstOrDefault().FullName : "LAB. GENERICO",
+                    //                CanEdit = institutionsIds.Contains(cal.LabID),
+                    //                RecDate = cal.RecDate,
+                    //                Identification_Test = cal.Identification_Test,
+                    //                Processed = cal.Processed,
+                    //                TempSample = cal.TempSample,
+                    //                NoProRenId = cal.NoProRenId,
+                    //                NoProRen = cal.NoProRen,
+                    //                SubTypeByLabRes = GetSubTypebyLab((long)cal.LabID)
+                    //            }
+                    //),
                     CaseLabs = (from cal in db.CaseLabses
-                                where cal.FlucaseID == Id
-                                select new
-                                {
-                                    Id = cal.Id,
-                                    FlucaseID = cal.FlucaseID,
+                               where cal.FlucaseID == Id
+                               select cal)
+                           .ToList()
+                           .Select(cal => new
+                           {
+                               Id = cal.Id,
+                               FlucaseID = cal.FlucaseID,
 
-                                    LabID = cal.LabID,
-                                    ProcLab = cal.LabID.ToString(),
-                                    //var CanPCRLab = db.Institutions.Where(i => i.ID == user.Institution.ID).First()?.PCR;           
-                                    //ProcLabName = db.Institutions.Where(i => i.ID == Int32.Parse(cal.LabID.ToString())).First().FullName,
-                                    //ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).First().FullName,
-                                    ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).Any() ? db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).FirstOrDefault().FullName : "HolaAAA",
-                                    //ProcLabName = "Mi laboratorio xxx",
+                               LabID = cal.LabID,
+                               ProcLab = cal.LabID.ToString(),
+                               //var CanPCRLab = db.Institutions.Where(i => i.ID == user.Institution.ID).First()?.PCR;           
+                               //ProcLabName = db.Institutions.Where(i => i.ID == Int32.Parse(cal.LabID.ToString())).First().FullName,
+                               //ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).First().FullName,
+                               ProcLabName = db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).Any() ? db.Institutions.OfType<Lab>().Where(i => i.ID == cal.LabID).FirstOrDefault().FullName : "LAB. GENERICO",
+                               CanEdit = institutionsIds.Contains(cal.LabID),
+                               RecDate = cal.RecDate,
+                               Identification_Test = cal.Identification_Test,
+                               Processed = cal.Processed,
+                               TempSample = cal.TempSample,
+                               NoProRenId = cal.NoProRenId,
+                               NoProRen = cal.NoProRen,
+                               SubTypeByLabRes = GetSubTypebyLab(cal.LabID)
+                           }
+                    ).ToList(),
 
-                                    CanEdit = institutionsIds.Contains(cal.LabID),
-                                    RecDate = cal.RecDate,
-                                    Identification_Test = cal.Identification_Test,
-                                    Processed = cal.Processed,
-                                    TempSample = cal.TempSample,
-                                    NoProRenId = cal.NoProRenId,
-                                    NoProRen = cal.NoProRen
-                                }
-                    ),
+                ////RecDate = flucase.RecDate,
+                ////Identification_Test = flucase.Identification_Test,
+                ////Processed = flucase.Processed,
+                ////NoProRen = flucase.NoProRen,
+                ////NoProRenId = flucase.NoProRenId,
+                ////TempSample1 = flucase.TempSample1,
 
-                    RecDate = flucase.RecDate,
-                    Identification_Test = flucase.Identification_Test,
-                    Processed = flucase.Processed,
-                    RecDate2 = flucase.RecDate2,
-                    Identification_Test2 = flucase.Identification_Test2,
-                    Processed2 = flucase.Processed2,
-                    RecDate3 = flucase.RecDate3,
-                    Identification_Test3 = flucase.Identification_Test3,
-                    Processed3 = flucase.Processed3,
+                ////RecDate2 = flucase.RecDate2,
+                ////Identification_Test2 = flucase.Identification_Test2,
+                ////Processed2 = flucase.Processed2,
+                ////NoProRen2 = flucase.NoProRen2,
+                ////NoProRenId2 = flucase.NoProRenId2,
+                ////TempSample2 = flucase.TempSample2,
+
+                ////RecDate3 = flucase.RecDate3,
+                ////Identification_Test3 = flucase.Identification_Test3,
+                ////Processed3 = flucase.Processed3,
+                ////NoProRen3 = flucase.NoProRen3,
+                ////NoProRenId3 = flucase.NoProRenId3,
+                ////TempSample3 = flucase.TempSample3,
+
+
+
+                // Laboratorio Nacional solo para HN
+
+                ////RecDate_National = flucase.RecDate_National,
+                ////Processed_National = flucase.Processed_National,
+                ////Identification_Test_National = flucase.Identification_Test_National,
+                ////TempSample_National = flucase.TempSample_National,
+                ////NoProRenId_National = flucase.NoProRenId_National,
+                ////NoProRen_National = flucase.NoProRen_National,
+
+
+                // Laboratorio Intermedio
+                ////Rec_Date_NPHL = flucase.Rec_Date_NPHL,                    
+                ////Temp_NPHL = flucase.Temp_NPHL,
+                ////Identification_Test_NPHL = flucase.Identification_Test_NPHL,
+                ////Observation_NPHL = flucase.Observation_NPHL,                    
+                ////Ship_Date_NPHL = flucase.Ship_Date_NPHL,
+                ////NPHL_Processed = flucase.NPHL_Processed,
+                ////NPHL_NoProRenId = flucase.NPHL_NoProRenId,
+                ////NPHL_NoProRen = flucase.NPHL_NoProRen,
+
+                ////Rec_Date_NPHL_2 = flucase.Rec_Date_NPHL_2,
+                ////Temp_NPHL_2 = flucase.Temp_NPHL_2,
+                ////Identification_Test_NPHL_2 = flucase.Identification_Test_NPHL_2,
+                ////Observation_NPHL_2 = flucase.Observation_NPHL_2,
+                ////Ship_Date_NPHL_2 = flucase.Ship_Date_NPHL_2,
+                ////NPHL_Processed_2 = flucase.NPHL_Processed_2,
+                ////NPHL_NoProRenId_2 = flucase.NPHL_NoProRenId_2,
+                ////NPHL_NoProRen_2 = flucase.NPHL_NoProRen_2,
+
+                ////Rec_Date_NPHL_3 = flucase.Rec_Date_NPHL_3,
+                ////Temp_NPHL_3 = flucase.Temp_NPHL_3,
+                ////Identification_Test_NPHL_3 = flucase.Identification_Test_NPHL_3,
+                ////Observation_NPHL_3 = flucase.Observation_NPHL_3,
+                ////Ship_Date_NPHL_3 = flucase.Ship_Date_NPHL_3,
+                ////NPHL_Processed_3 = flucase.NPHL_Processed_3,
+                ////NPHL_NoProRenId_3 = flucase.NPHL_NoProRenId_3,
+                ////NPHL_NoProRen_3 = flucase.NPHL_NoProRen_3,
+
                     EndLabDate = flucase.EndLabDate,
                     FResult = flucase.FResult,
-                    NoProRen = flucase.NoProRen,
-                    NoProRenId = flucase.NoProRenId,
-                    TempSample1 = flucase.TempSample1,
-
-                    NoProRen2 = flucase.NoProRen2,
-                    NoProRenId2 = flucase.NoProRenId2,
-                    TempSample2 = flucase.TempSample2,
-
-                    NoProRen3 = flucase.NoProRen3,
-                    NoProRenId3 = flucase.NoProRenId3,
-                    TempSample3 = flucase.TempSample3,
-
-                    // Laboratorio Nacional solo para HN
-
-                    RecDate_National = flucase.RecDate_National,
-                    Processed_National = flucase.Processed_National,
-                    Identification_Test_National = flucase.Identification_Test_National,
-                    TempSample_National = flucase.TempSample_National,
-                    NoProRenId_National = flucase.NoProRenId_National,
-                    NoProRen_National = flucase.NoProRen_National,
-
-
-                    // Laboratorio Intermedio
-                    Rec_Date_NPHL = flucase.Rec_Date_NPHL,                    
-                    Temp_NPHL = flucase.Temp_NPHL,
-                    Identification_Test_NPHL = flucase.Identification_Test_NPHL,
-                    Observation_NPHL = flucase.Observation_NPHL,                    
-                    Ship_Date_NPHL = flucase.Ship_Date_NPHL,
-                    NPHL_Processed = flucase.NPHL_Processed,
-                    NPHL_NoProRenId = flucase.NPHL_NoProRenId,
-                    NPHL_NoProRen = flucase.NPHL_NoProRen,
-
-                    Rec_Date_NPHL_2 = flucase.Rec_Date_NPHL_2,
-                    Temp_NPHL_2 = flucase.Temp_NPHL_2,
-                    Identification_Test_NPHL_2 = flucase.Identification_Test_NPHL_2,
-                    Observation_NPHL_2 = flucase.Observation_NPHL_2,
-                    Ship_Date_NPHL_2 = flucase.Ship_Date_NPHL_2,
-                    NPHL_Processed_2 = flucase.NPHL_Processed_2,
-                    NPHL_NoProRenId_2 = flucase.NPHL_NoProRenId_2,
-                    NPHL_NoProRen_2 = flucase.NPHL_NoProRen_2,
-
-                    Rec_Date_NPHL_3 = flucase.Rec_Date_NPHL_3,
-                    Temp_NPHL_3 = flucase.Temp_NPHL_3,
-                    Identification_Test_NPHL_3 = flucase.Identification_Test_NPHL_3,
-                    Observation_NPHL_3 = flucase.Observation_NPHL_3,
-                    Ship_Date_NPHL_3 = flucase.Ship_Date_NPHL_3,
-                    NPHL_Processed_3 = flucase.NPHL_Processed_3,
-                    NPHL_NoProRenId_3 = flucase.NPHL_NoProRenId_3,
-                    NPHL_NoProRen_3 = flucase.NPHL_NoProRen_3,
-
                     Comments = flucase.Comments,
+
                     FinalResult = flucase.FinalResult,
                     FinalResultVirusTypeID = flucase.FinalResultVirusTypeID,
                     FinalResultVirusSubTypeID = flucase.FinalResultVirusSubTypeID,
@@ -2810,7 +2873,6 @@ namespace Paho.Controllers
                     SaveAndAdd_1 = SaveAndAdd_1,
                     SaveAndAdd_2 = SaveAndAdd_2,
                     SaveAndAdd_3 = SaveAndAdd_3
-
                 }, JsonRequestBehavior.AllowGet);
             }
             else

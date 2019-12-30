@@ -644,12 +644,12 @@ function CaseLab(SampleNumber) {
     self_CL.LabTests_Sample3 = ko.observableArray([]);
 
     ///
-    //self.LabTests_Sample2 = ko.observableArray([]);
-    //self.LabTests_Sample3 = ko.observableArray([]);
-    //self.LabTestsExternal = ko.observableArray([]);
-    //self.LabsResult = ko.observableArray([]);
-    //self.LabsResultExternal = ko.observableArray(app.Views.Home.labsExternal());
-    //self.SubTypeByLabRes = ko.observableArray([]);
+    //self_CL.LabTests_Sample2 = ko.observableArray([]);
+    //self_CL.LabTests_Sample3 = ko.observableArray([]);
+    //self_CL.LabTestsExternal = ko.observableArray([]);
+    //self_CL.LabsResult = ko.observableArray([]);
+    //self_CL.LabsResultExternal = ko.observableArray(app.Views.Home.labsExternal());
+    self_CL.SubTypeByLabRes = ko.observableArray([]);
     self_CL.ArrayValidate = ko.observableArray([]);
     self_CL.msgError = "";
     ///
@@ -676,17 +676,18 @@ function CaseLab(SampleNumber) {
     }, self_CL);
 
     self_CL.RecDate.subscribe(function (newRecDate) {
-        //console.log("self_CL.RecDate.subscribe->START");
-
+        console.log("self_CL.RecDate.subscribe->START");
+        console.log(newRecDate);
         //if (self_CL.hasReset() != true && newRecDate != "" && newRecDate != null) {
         if (app.Views.Lab.hasReset() != true && newRecDate != "" && newRecDate != null) {
+            console.log("a1");
             var current_value = jQuery.type(newRecDate) === 'date' ? newRecDate : parseDate(newRecDate, date_format_);
             var date_sample_date_ = jQuery.type(app.Views.Hospital.SampleDate()) === 'date' ? app.Views.Hospital.SampleDate() : parseDate(app.Views.Hospital.SampleDate(), date_format_);
             var date_shipping_date = $("#ShipDate").val() == "" ? null : jQuery.type(app.Views.Hospital.ShipDate()) === 'date' ? app.Views.Hospital.ShipDate() : parseDate(app.Views.Hospital.ShipDate(), date_format_);
 
 
             if ($("#Rec_Date_NPHL").length > 0 && self_CL.NPHL_FlowExist() == true) {
-
+                console.log("a2");
                 var date_Ship_Date_NPHL = jQuery.type(self_CL.Ship_Date_NPHL()) === 'date' ? self_CL.Ship_Date_NPHL() : parseDate(self_CL.Ship_Date_NPHL(), date_format_);
 
                 //if ((date_Ship_Date_NPHL == null || date_Ship_Date_NPHL == "") && self_CL.hasReset() != true) {
@@ -703,6 +704,7 @@ function CaseLab(SampleNumber) {
                 }
             //} else if ((date_shipping_date != null) && self_CL.hasReset() != true) {
             } else if ((date_shipping_date != null) && app.Views.Lab.hasReset() != true) {
+                console.log("a3");
                 if (self_CL.UsrCountry() == 11 || self_CL.UsrCountry() == 119) {
                     if (moment(current_value).isBefore(moment(date_sample_date_), "days")) {
                         //alert("La fecha de recepción de Muestra 1 no puede ser menor a la fecha de envio de muestra de la Muestra 1");
@@ -735,7 +737,7 @@ function CaseLab(SampleNumber) {
                 }
             }
         }
-        //console.log(self_CL.RecDate());
+        console.log(self_CL.RecDate());
     });
 
     self_CL.Processed.subscribe(function (NewIsProcessed) {
@@ -1229,7 +1231,7 @@ function CaseLab(SampleNumber) {
 };
 
 function LabViewModel(app, dataModel) {
-    //console.log("function LabViewModel(app, dataModel)->STARTT");
+    console.log("function LabViewModel(app, dataModel)->START-TT");
 
     var self = this;
     var date_format_ = app.dataModel.date_format_;
@@ -1250,8 +1252,12 @@ function LabViewModel(app, dataModel) {
 
     self.Id = "";
     self.UsrCountry = ko.observable(app.Views.Home.UsrCountry());       // Pais del usuario logueado
-    self.UsrInstID = ko.observable($('#IIDL').val());                   // ID de la institucion del usuario
+    self.UsrInstID = ko.observable($('#IIDL').val());                   // ID de la institucion del usuario debria ser llenado x UsrInstID que llega en GetLab
     self.UsrInstName = ko.observable("");
+    self.UsrLab = ko.observable(false);                                // Current user LAB
+    //console.log("r1a");
+    //console.log(self.UsrInstID());
+    //console.log("r1b");
 
     //**self.ISPID = ko.observable(97);                                     //Es 97 porque es el ID de la tabla institución
     self.NPHL = ko.observable(false);    // Variable que identifica si el usuario que ingresa la información de laboratorio es NPHL
@@ -2120,10 +2126,13 @@ function LabViewModel(app, dataModel) {
         self.GeneticGroup("");
         self.GeneticGroup_2("");
         self.GeneticGroup_3("");
-
-        self.LabTests([]);
-        self.LabTests_Sample2([]);
-        self.LabTests_Sample3([]);
+        //console.log("111");
+        //self.LabTests([]);
+        //console.log("111a");
+        //self.LabTests_Sample2([]);
+        //console.log("111b");
+        //self.LabTests_Sample3([]);
+        //console.log("111c");
         self.LabsResult([]);
         self.LabsResultExternal([]);
         self.SubTypeByLabRes([]);
@@ -2338,7 +2347,10 @@ function LabViewModel(app, dataModel) {
 
     //console.log("\tself.GetLab->Antes");
     self.GetLab = function (id) {
+        console.log("LAB->P->self.GetLab->START");
         self.Id = id;
+
+
         var labRecDate = [];            //**** NEW: 190926 // Fecha de recepcion x cada lab
 
         $.getJSON(app.dataModel.getLabUrl, { id: id }, function (data, status) {
@@ -2346,9 +2358,11 @@ function LabViewModel(app, dataModel) {
             console.log(data.CaseLabs);
             console.log(data.LabTests);
             console.log(data.LabTests.length);
+            console.log(data.SubTypeByLabRes);
             console.log("\tData recibida getJSON-END");
 
             self.UsrInstName(data.UsrInstName);         //#### CAFQ: NEW_FLOW
+            self.UsrLab(data.UsrLab);
              
                 // Laboratorio intermedio
                 (data.Rec_Date_NPHL) ? self.Rec_Date_NPHL(moment(data.Rec_Date_NPHL).clone().toDate()) : self.Rec_Date_NPHL(null);
@@ -2396,8 +2410,8 @@ function LabViewModel(app, dataModel) {
                 //self.NoProRenId(data.CaseLabs[0].NoProRenId);
                 //self.TempSample1(data.CaseLabs[0].TempSample);
 
-                self.hasGet(true);
-                //console.log(self.hasGet());
+            self.hasGet(true);
+            //console.log(self.hasGet());
 
                 (data.RecDate2) ? self.RecDate2(moment(data.RecDate2).clone().toDate()) : self.RecDate2(null);
                 self.Identification_Test2(data.Identification_Test2);
@@ -2420,500 +2434,530 @@ function LabViewModel(app, dataModel) {
                 self.NoProRenId_National(data.NoProRenId_National);
                 self.TempSample_National(data.TempSample_National);
 
-                (data.EndLabDate) ? self.EndLabDate(moment(data.EndLabDate).clone().toDate()) : self.EndLabDate(null);
-                self.FResult(data.FResult);
-                self.Comments(data.Comments);
-                self.FinalResult(data.FinalResult);
-                self.FinalResultVirusTypeID(data.FinalResultVirusTypeID);
-                self.FinalResultVirusSubTypeID(data.FinalResultVirusSubTypeID);
-                self.FinalResultVirusLineageID(data.FinalResultVirusLineageID);
-                self.FinalResult_2(data.FinalResult_2);
-                self.FinalResultVirusTypeID_2(data.FinalResultVirusTypeID_2);
-                self.FinalResultVirusSubTypeID_2(data.FinalResultVirusSubTypeID_2);
-                self.FinalResultVirusLineageID_2(data.FinalResultVirusLineageID_2);
-                self.FinalResult_3(data.FinalResult_3);
-                self.FinalResultVirusTypeID_3(data.FinalResultVirusTypeID_3);
-                self.FinalResultVirusSubTypeID_3(data.FinalResultVirusSubTypeID_3);
-                self.FinalResultVirusLineageID_3(data.FinalResultVirusLineageID_3);
+            (data.EndLabDate) ? self.EndLabDate(moment(data.EndLabDate).clone().toDate()) : self.EndLabDate(null);
+            self.FResult(data.FResult);
+            self.Comments(data.Comments);
+            self.FinalResult(data.FinalResult);
+            self.FinalResultVirusTypeID(data.FinalResultVirusTypeID);
+            self.FinalResultVirusSubTypeID(data.FinalResultVirusSubTypeID);
+            self.FinalResultVirusLineageID(data.FinalResultVirusLineageID);
+            self.FinalResult_2(data.FinalResult_2);
+            self.FinalResultVirusTypeID_2(data.FinalResultVirusTypeID_2);
+            self.FinalResultVirusSubTypeID_2(data.FinalResultVirusSubTypeID_2);
+            self.FinalResultVirusLineageID_2(data.FinalResultVirusLineageID_2);
+            self.FinalResult_3(data.FinalResult_3);
+            self.FinalResultVirusTypeID_3(data.FinalResultVirusTypeID_3);
+            self.FinalResultVirusSubTypeID_3(data.FinalResultVirusSubTypeID_3);
+            self.FinalResultVirusLineageID_3(data.FinalResultVirusLineageID_3);
                 
-                self.GeneticGroup(data.GeneticGroup);
-                self.GeneticGroup_2(data.GeneticGroup_2);
-                self.GeneticGroup_3(data.GeneticGroup_3);
+            self.GeneticGroup(data.GeneticGroup);
+            self.GeneticGroup_2(data.GeneticGroup_2);
+            self.GeneticGroup_3(data.GeneticGroup_3);
                 
-                // Comentariado porque el laboratorio no puede cerrar el caso
-                //if (self.FinalResult() != "" ) {
-                //    $("#CaseStatus").attr("disabled", false);
-                //} else
-                //{
-                //    $("#CaseStatus").attr("disabled", true);
-                //}
-                self.LabsResult(data.LabsResult);
-                self.SubTypeByLabRes(data.SubTypeByLabRes);
-                self.CanConclude(data.CanConclude);
-                app.Views.Home.CanConclude(data.CanConclude);
-                app.Views.Home.SaveAndAdd_1(data.SaveAndAdd_1);
-                app.Views.Home.SaveAndAdd_2(data.SaveAndAdd_2);
-                app.Views.Home.SaveAndAdd_3(data.SaveAndAdd_3);
-                //app.Views.Contact.flow_record(data.flow_record);
-                //app.Views.Contact.flow_institution(data.flow_institution);
-                //$("#o_S").val(data.DataStatement);
-                self.CanIFILab(data.CanIFILab);
-                self.CanPCRLab(data.CanPCRLab);
+            // Comentariado porque el laboratorio no puede cerrar el caso
+            //if (self.FinalResult() != "" ) {
+            //    $("#CaseStatus").attr("disabled", false);
+            //} else
+            //{
+            //    $("#CaseStatus").attr("disabled", true);
+            //}
+            self.LabsResult(data.LabsResult);
+            self.SubTypeByLabRes(data.SubTypeByLabRes);
+            self.CanConclude(data.CanConclude);
+            app.Views.Home.CanConclude(data.CanConclude);
+            app.Views.Home.SaveAndAdd_1(data.SaveAndAdd_1);
+            app.Views.Home.SaveAndAdd_2(data.SaveAndAdd_2);
+            app.Views.Home.SaveAndAdd_3(data.SaveAndAdd_3);
+            //app.Views.Contact.flow_record(data.flow_record);
+            //app.Views.Contact.flow_institution(data.flow_institution);
+            //$("#o_S").val(data.DataStatement);
+            self.CanIFILab(data.CanIFILab);
+            self.CanPCRLab(data.CanPCRLab);
 
-                self.ForeignLabCountry(data.ForeignLabCountry);
-                self.ForeignLabLocal(data.ForeignLabLocal);
-                self.flow_max_record(data.flow_max_record);
-                //console.log("max_flow " + self.flow_max_record());
-                //console.log("flow_institution " + app.Views.Contact.flow_institution());
+            self.ForeignLabCountry(data.ForeignLabCountry);
+            self.ForeignLabLocal(data.ForeignLabLocal);
+            self.flow_max_record(data.flow_max_record);
+            //console.log("max_flow " + self.flow_max_record());
+            //console.log("flow_institution " + app.Views.Contact.flow_institution());
 
-                // Datos cabecera lab
-                self.LabTestsEndFlow([]);
-                self.CaseLabses([]);                    //**** NEW: 190926
-                if (data.CaseLabs != "") {
-                    //console.log("Nro cabeceras->" + data.CaseLabs.length.toString());
-                    for (indexCL = 0; indexCL < data.CaseLabs.length; ++indexCL) {
-                        var caselab = new CaseLab(1);                       // Crea un objeto de la clase CaseLabses, enviandole el parametro numero de muestra(1)
+            // Datos cabecera lab
+            self.LabTestsEndFlow([]);
+            self.CaseLabses([]);                    //**** NEW: 190926
+            if (data.CaseLabs != "") {
+                //console.log("Nro cabeceras->" + data.CaseLabs.length.toString());
+                // self.UsrInstID
+                var hasHeadLab = false;
 
-                        caselab.Id = data.CaseLabs[indexCL].Id;               // Llenando las propiedades
-                        caselab.FlucaseID = data.CaseLabs[indexCL].FlucaseID;
+                for (indexCL = 0; indexCL < data.CaseLabs.length; ++indexCL) {
+                    var caselab = new CaseLab(1);                       // Crea un objeto de la clase CaseLabses, enviandole el parametro numero de muestra(1)
 
-                        var labId = data.CaseLabs[indexCL].LabID;
-                        caselab.LabID(labId);           // //caselab.LabID(data.CaseLabs[index].LabID);
-                        caselab.ProcLab(data.CaseLabs[indexCL].ProcLab);               //#### x ELIMINAR                                    
-                        caselab.ProcLabName(data.CaseLabs[indexCL].ProcLabName);       //#### x ELIMINAR 
+                    caselab.Id = data.CaseLabs[indexCL].Id;               // Llenando las propiedades
+                    caselab.FlucaseID = data.CaseLabs[indexCL].FlucaseID;
 
-                        caselab.CanEdit(data.CaseLabs[indexCL].CanEdit);
+                    var labId = data.CaseLabs[indexCL].LabID;
+                    caselab.LabID(labId);                                           // //caselab.LabID(data.CaseLabs[index].LabID);
+                    caselab.ProcLab(data.CaseLabs[indexCL].ProcLab);                //#### x ELIMINAR                                    
+                    caselab.ProcLabName(data.CaseLabs[indexCL].ProcLabName);        //#### x ELIMINAR 
 
-                        if (data.CaseLabs[indexCL].RecDate) {
-                            var fech = moment(data.CaseLabs[indexCL].RecDate).clone().toDate()
-                            //caselab.RecDate12(moment(data.CaseLabs[index].RecDate).clone().toDate());
-                            caselab.RecDate(fech);
-                            //labRecDate.push({ labId: labId, dateRec: fech });
-                        }
-                        caselab.Identification_Test(data.CaseLabs[indexCL].Identification_Test);
-                        caselab.Processed((data.CaseLabs[indexCL].Processed != null) ? data.CaseLabs[indexCL].Processed.toString() : "");
-                        caselab.TempSample(data.CaseLabs[indexCL].TempSample);
-                        caselab.NoProRenId(data.CaseLabs[indexCL].NoProRenId);
-                        caselab.NoProRen(data.CaseLabs[indexCL].NoProRen);
+                    caselab.CanEdit(data.CaseLabs[indexCL].CanEdit);
 
-                        //****************
-                        caselab.LabTests([]);
-                        if (data.LabTests != "") {
-                            for (index = 0; index < data.LabTests.length; ++index) {
-                                if (data.LabTests[index].ProcLab.toString() == labId) {
-                                    var labtest = new LabTest(1, caselab);
-
-                                    labtest.Id = data.LabTests[index].Id;
-                                    //labtest.RecDate(caselab.RecDate);                   //**** NEW: 190926
-                                    labtest.CaseLabID = self.Id;
-                                    labtest.CanEdit(data.LabTests[index].CanEdit);
-                                    labtest.CanModLab(data.LabTests[index].CanModLab);
-                                    labtest.CanDeleteProcess(data.LabTests[index].CanDeleteProcess);
-                                    //console.log(data.LabTests[index].CanEdit);
-                                    labtest.CanPCR((typeof data.LabTests[index].CanPCR === "undefined") ? false : data.LabTests[index].CanPCR);
-                                    labtest.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
-                                    labtest.EndFlow(data.LabTests[index].EndFlow);
-
-                                    labtest.LabID(data.LabTests[index].ProcLab.toString());
-                                    labtest.ProcLab(data.LabTests[index].ProcLab.toString());               //#### x ELIMINAR                                    
-                                    labtest.ProcLabName(data.LabTests[index].ProcLabName.toString());       //#### x ELIMINAR 
-                                    //console.log("\td1");
-                                    //console.log(data.LabTests[index].ProcLab.toString());
-                                    //console.log(data.LabTests[index].ProcLabName.toString());
-                                    ////console.log(labtest.ProcLabName());
-                                    //console.log("\td2");
-                                    labtest.ProcessLab(data.LabTests[index].ProcessLab.toString());
-                                    labtest.TestType(data.LabTests[index].TestType);
-                                    labtest.SampleNumber(1);
-                                    if (data.LabTests[index].TestDate)
-                                        labtest.TestDate(moment(data.LabTests[index].TestDate).clone().toDate());
-                                    labtest.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 2) ? 'NB' : data.LabTests[index].TestResultID);
-                                    labtest.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N') ? null : data.LabTests[index].VirusTypeID);
-                                    //console.log(labtest.TestResultID());
-                                    labtest.CTVirusType(data.LabTests[index].CTVirusType);
-                                    labtest.CTRLVirusType(data.LabTests[index].CTRLVirusType);
-                                    labtest.OtherVirusTypeID(data.LabTests[index].OtherVirusTypeID);
-                                    labtest.CTOtherVirusType(data.LabTests[index].CTOtherVirusType);
-                                    labtest.CTRLOtherVirusType(data.LabTests[index].CTRLOtherVirusType);
-                                    labtest.OtherVirus(data.LabTests[index].OtherVirus);
-                                    labtest.InfA(data.LabTests[index].InfA);
-                                    labtest.VirusSubTypeID(data.LabTests[index].VirusSubTypeID);
-                                    //console.log(data.LabTests[index].CTSubType);
-                                    labtest.CTSubType(data.LabTests[index].CTSubType);
-                                    labtest.CTRLSubType(data.LabTests[index].CTRLSubType);
-                                    labtest.TestResultID_VirusSubType(data.LabTests[index].TestResultID_VirusSubType);
-                                    labtest.VirusSubTypeID_2(data.LabTests[index].VirusSubTypeID_2);
-                                    labtest.CTSubType_2(data.LabTests[index].CTSubType_2);
-                                    labtest.CTRLSubType_2(data.LabTests[index].CTRLSubType_2);
-                                    labtest.TestResultID_VirusSubType_2(data.LabTests[index].TestResultID_VirusSubType_2);
-                                    labtest.InfB(data.LabTests[index].InfB);
-                                    labtest.VirusLineageID(data.LabTests[index].VirusLineageID);
-                                    labtest.CTLineage(data.LabTests[index].CTLineage);
-                                    labtest.CTRLLineage(data.LabTests[index].CTRLLineage);
-                                    labtest.ParaInfI(data.LabTests[index].ParaInfI);
-                                    labtest.ParaInfII(data.LabTests[index].ParaInfII);
-                                    labtest.ParaInfIII(data.LabTests[index].ParaInfIII);
-                                    labtest.RSV(data.LabTests[index].RSV);
-                                    labtest.Adenovirus(data.LabTests[index].Adenovirus);
-                                    labtest.Metapneumovirus(data.LabTests[index].Metapneumovirus);
-                                    labtest.RNP(data.LabTests[index].RNP);
-                                    labtest.CTRLRNP(data.LabTests[index].CTRLRNP);
-                                    labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
-                                    if (data.LabTests[index].TestEndDate)
-                                        labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
-
-                                    //****
-                                    //labTestsX.push(labtest);
-                                    caselab.LabTests.push(labtest);
-                                    self.LabTestsEndFlow.push(labtest);
-                                    //console.log("Se hizo push en array->CaseLabs.LabTests");
-                                }
-                            }// END for
-                        }
-                        //console.log("E1");
-                        ////console.log(self.UsrInstName());
-                        ////console.log(caselab.LabTests());
-                        //console.log(caselab.LabTests()[0].ProcLabName());
-                        ////console.log(caselab.LabTests()[0].ProcLab());
-                        //console.log(caselab.LabTests()[0].ProcessLab());
-                        //console.log(caselab.LabTests()[1].ProcLabName());
-                        ////console.log(caselab.LabTests()[1].ProcLab());
-                        //console.log(caselab.LabTests()[1].ProcessLab());
-                        //console.log("E1a");
-                        //****************
-                        self.CaseLabses.push(caselab);
+                    if (data.CaseLabs[indexCL].RecDate) {
+                        var fech = moment(data.CaseLabs[indexCL].RecDate).clone().toDate()
+                        //caselab.RecDate12(moment(data.CaseLabs[index].RecDate).clone().toDate());
+                        caselab.RecDate(fech);
+                        //labRecDate.push({ labId: labId, dateRec: fech });
                     }
-                }
-                else
-                {
-                    console.log("Sin test->START");
-                    var caselab = new CaseLab(1);
+                    caselab.Identification_Test(data.CaseLabs[indexCL].Identification_Test);
+                    caselab.Processed((data.CaseLabs[indexCL].Processed != null) ? data.CaseLabs[indexCL].Processed.toString() : "");
+                    caselab.TempSample(data.CaseLabs[indexCL].TempSample);
+                    caselab.NoProRenId(data.CaseLabs[indexCL].NoProRenId);
+                    caselab.NoProRen(data.CaseLabs[indexCL].NoProRen);
+                    //self.SubTypeByLabRes
+                    caselab.SubTypeByLabRes(data.CaseLabs[indexCL].SubTypeByLabRes);
 
-                    caselab.FlucaseID = self.Id;
-                    
-                    console.log(data.LabsResult);
-                    var labId = data.LabsResult[0].Id;
-                    //caselab.LabID(data.CaseLabs[index].LabID);
-                    caselab.LabID(labId);
-                    caselab.CanEdit(true);
-                    //console.log("p2a");
+                    //****************
+                    caselab.LabTests([]);
+                    if (data.LabTests != "") {
+                        for (index = 0; index < data.LabTests.length; ++index) {
+                            if (data.LabTests[index].ProcLab.toString() == labId) {
+                                var labtest = new LabTest(1, caselab);
+
+                                labtest.Id = data.LabTests[index].Id;
+                                //labtest.RecDate(caselab.RecDate);                   //**** NEW: 190926
+                                labtest.CaseLabID = self.Id;
+                                labtest.CanEdit(data.LabTests[index].CanEdit);
+                                labtest.CanModLab(data.LabTests[index].CanModLab);
+                                labtest.CanDeleteProcess(data.LabTests[index].CanDeleteProcess);
+                                //console.log(data.LabTests[index].CanEdit);
+                                labtest.CanPCR((typeof data.LabTests[index].CanPCR === "undefined") ? false : data.LabTests[index].CanPCR);
+                                labtest.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
+                                labtest.EndFlow(data.LabTests[index].EndFlow);
+
+                                labtest.LabID(data.LabTests[index].ProcLab.toString());
+                                labtest.ProcLab(data.LabTests[index].ProcLab.toString());               //#### x ELIMINAR                                    
+                                labtest.ProcLabName(data.LabTests[index].ProcLabName.toString());       //#### x ELIMINAR 
+                                //console.log("\td1");
+                                //console.log(data.LabTests[index].ProcLab.toString());
+                                //console.log(data.LabTests[index].ProcLabName.toString());
+                                ////console.log(labtest.ProcLabName());
+                                //console.log("\td2");
+                                labtest.ProcessLab(data.LabTests[index].ProcessLab.toString());
+                                labtest.TestType(data.LabTests[index].TestType);
+                                labtest.SampleNumber(1);
+                                if (data.LabTests[index].TestDate)
+                                    labtest.TestDate(moment(data.LabTests[index].TestDate).clone().toDate());
+                                labtest.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 2) ? 'NB' : data.LabTests[index].TestResultID);
+                                labtest.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N') ? null : data.LabTests[index].VirusTypeID);
+                                //console.log(labtest.TestResultID());
+                                labtest.CTVirusType(data.LabTests[index].CTVirusType);
+                                labtest.CTRLVirusType(data.LabTests[index].CTRLVirusType);
+                                labtest.OtherVirusTypeID(data.LabTests[index].OtherVirusTypeID);
+                                labtest.CTOtherVirusType(data.LabTests[index].CTOtherVirusType);
+                                labtest.CTRLOtherVirusType(data.LabTests[index].CTRLOtherVirusType);
+                                labtest.OtherVirus(data.LabTests[index].OtherVirus);
+                                labtest.InfA(data.LabTests[index].InfA);
+                                labtest.VirusSubTypeID(data.LabTests[index].VirusSubTypeID);
+                                //console.log(data.LabTests[index].CTSubType);
+                                labtest.CTSubType(data.LabTests[index].CTSubType);
+                                labtest.CTRLSubType(data.LabTests[index].CTRLSubType);
+                                labtest.TestResultID_VirusSubType(data.LabTests[index].TestResultID_VirusSubType);
+                                labtest.VirusSubTypeID_2(data.LabTests[index].VirusSubTypeID_2);
+                                labtest.CTSubType_2(data.LabTests[index].CTSubType_2);
+                                labtest.CTRLSubType_2(data.LabTests[index].CTRLSubType_2);
+                                labtest.TestResultID_VirusSubType_2(data.LabTests[index].TestResultID_VirusSubType_2);
+                                labtest.InfB(data.LabTests[index].InfB);
+                                labtest.VirusLineageID(data.LabTests[index].VirusLineageID);
+                                labtest.CTLineage(data.LabTests[index].CTLineage);
+                                labtest.CTRLLineage(data.LabTests[index].CTRLLineage);
+                                labtest.ParaInfI(data.LabTests[index].ParaInfI);
+                                labtest.ParaInfII(data.LabTests[index].ParaInfII);
+                                labtest.ParaInfIII(data.LabTests[index].ParaInfIII);
+                                labtest.RSV(data.LabTests[index].RSV);
+                                labtest.Adenovirus(data.LabTests[index].Adenovirus);
+                                labtest.Metapneumovirus(data.LabTests[index].Metapneumovirus);
+                                labtest.RNP(data.LabTests[index].RNP);
+                                labtest.CTRLRNP(data.LabTests[index].CTRLRNP);
+                                labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
+                                if (data.LabTests[index].TestEndDate)
+                                    labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
+
+                                //****
+                                //labTestsX.push(labtest);
+                                caselab.LabTests.push(labtest);
+                                self.LabTestsEndFlow.push(labtest);
+                                //console.log("Se hizo push en array->CaseLabs.LabTests");
+                            }
+                        }// END for
+                    }
+                    //console.log("E1");
+                    ////console.log(self.UsrInstName());
+                    ////console.log(caselab.LabTests());
+                    //console.log(caselab.LabTests()[0].ProcLabName());
+                    ////console.log(caselab.LabTests()[0].ProcLab());
+                    //console.log(caselab.LabTests()[0].ProcessLab());
+                    //console.log(caselab.LabTests()[1].ProcLabName());
+                    ////console.log(caselab.LabTests()[1].ProcLab());
+                    //console.log(caselab.LabTests()[1].ProcessLab());
+                    //console.log("E1a");
+                    //****************
                     self.CaseLabses.push(caselab);
-                    //console.log("Se hizo push en array cuando no llegaron datos->CaseLabses");
-                    console.log("Sin test->END");
+                    //****
+                    if (self.UsrInstID() == labId)
+                        hasHeadLab = true;
                 }
-                console.log("Array de objetos CaseLabses y LabTests->1S");
-                console.log(self.CaseLabses());                             // Array de cabeceras
-                console.log(self.CaseLabses()[0]); 
-                console.log(self.CaseLabses()[0].LabTests());             // Array de test de la cabecera 1
-                //console.log(self.CaseLabses()[0].Identification_Test());
-                //console.log(self.CaseLabses()[0].Processed());
-                //console.log(self.CaseLabses()[1].LabTests());             // Array de test de la cabecera 2
-                //console.log(self.CaseLabses()[1].Identification_Test());
-                //console.log(self.CaseLabses()[1].Processed());
-                console.log("Array de objetos CaseLabses y LabTests->1E");
+                if (self.UsrLab() == true && hasHeadLab == false) {     // User es de Lab && Aun no existe Head Lab
+                    console.log("Sin test->START_2");
 
-                //self.LabTestsEndFlow([]);
-                //if (data.LabTests != "") {
-                //    for (index = 0; index < data.LabTests.length; ++index) {
-                //        var labtestEF = new LabTest(1);
+                    var caselab = new CaseLab(1);
+                    //console.log("Despues de crear objeto caselab");
+                    caselab.FlucaseID = self.Id;
+                    caselab.LabID(self.UsrInstID());
+                    caselab.CanEdit(true);
+                    caselab.SubTypeByLabRes(self.SubTypeByLabRes());
+                    //app.Views.Lab.SubTypeByLabRes();
 
-                //        labtestEF.Id = data.LabTests[index].Id;
-                //        labtestEF.CaseLabID = self.Id;
-                //        labtestEF.CanEdit(data.LabTests[index].CanEdit);
-                //        labtestEF.CanPCR((typeof data.LabTests[index].CanPCR === "undefined") ? false : data.LabTests[index].CanPCR);
-                //        labtestEF.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
-                //        labtestEF.EndFlow(data.LabTests[index].EndFlow);
-                //        labtestEF.ProcLab(data.LabTests[index].ProcLab.toString());
-                //        labtestEF.LabID(data.LabTests[index].ProcLab.toString());
-                //        labtestEF.ProcLabName(data.LabTests[index].ProcLabName.toString());
+                    self.CaseLabses.push(caselab);
 
-                //        self.LabTestsEndFlow.push(labtestEF);
-                //    }
-                //}
-                //self.LabTests([]);
-                //if (data.LabTests != "") {
-                //    //console.log("Antes de crear objetos labtest->START");
-                //    for (index = 0; index < data.LabTests.length; ++index) {
-                //        //**** NEW: 190926
-                //        procLab = data.LabTests[index].ProcLab;
-                //        resultado = $.grep(labRecDate, function (e) { return e.labId == procLab; });
-                //        //console.log("p4a");
-                //        //self.RecDate12(resultado[0].dateRec);
-                //        //console.log("p4b");
+                    console.log("Sin test->END_2");
+                }
+            }
+            else
+            {
+                console.log("Sin test->START");
+
+                var caselab = new CaseLab(1);
+                console.log("Despues de crear objeto caselab");
+                caselab.FlucaseID = self.Id;
+                //console.log("a2");
+                //console.log(data.LabsResult);
+                //console.log("a3");
+                //var labId = data.LabsResult[0].Id;
+                //var labId = null;
+                //console.log("a4");
+                //caselab.LabID(data.CaseLabs[index].LabID);
+                //caselab.LabID(labId);
+                caselab.LabID(self.UsrInstID());
+                //console.log("a5");
+                caselab.CanEdit(true);
+                caselab.SubTypeByLabRes(self.SubTypeByLabRes());
+                //console.log("p2a");
+                self.CaseLabses.push(caselab);
+
+                console.log("Sin test->END");
+            }
+            console.log("Array de objetos CaseLabses y SubTypeByLabRes->START");
+            console.log(self.CaseLabses());                             // Array de cabeceras
+            console.log(self.SubTypeByLabRes());
+            //console.log(self.CaseLabses()[0]); 
+            //console.log(self.CaseLabses()[0].LabTests());             // Array de test de la cabecera 1
+            //console.log(self.CaseLabses()[0].Identification_Test());
+            //console.log(self.CaseLabses()[0].Processed());
+            //console.log(self.CaseLabses()[1].LabTests());             // Array de test de la cabecera 2
+            //console.log(self.CaseLabses()[1].Identification_Test());
+            //console.log(self.CaseLabses()[1].Processed());
+            console.log("Array de objetos CaseLabses y SubTypeByLabRes->END");
+
+            //self.LabTestsEndFlow([]);
+            //if (data.LabTests != "") {
+            //    for (index = 0; index < data.LabTests.length; ++index) {
+            //        var labtestEF = new LabTest(1);
+
+            //        labtestEF.Id = data.LabTests[index].Id;
+            //        labtestEF.CaseLabID = self.Id;
+            //        labtestEF.CanEdit(data.LabTests[index].CanEdit);
+            //        labtestEF.CanPCR((typeof data.LabTests[index].CanPCR === "undefined") ? false : data.LabTests[index].CanPCR);
+            //        labtestEF.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
+            //        labtestEF.EndFlow(data.LabTests[index].EndFlow);
+            //        labtestEF.ProcLab(data.LabTests[index].ProcLab.toString());
+            //        labtestEF.LabID(data.LabTests[index].ProcLab.toString());
+            //        labtestEF.ProcLabName(data.LabTests[index].ProcLabName.toString());
+
+            //        self.LabTestsEndFlow.push(labtestEF);
+            //    }
+            //}
+            //self.LabTests([]);
+            //if (data.LabTests != "") {
+            //    //console.log("Antes de crear objetos labtest->START");
+            //    for (index = 0; index < data.LabTests.length; ++index) {
+            //        //**** NEW: 190926
+            //        procLab = data.LabTests[index].ProcLab;
+            //        resultado = $.grep(labRecDate, function (e) { return e.labId == procLab; });
+            //        //console.log("p4a");
+            //        //self.RecDate12(resultado[0].dateRec);
+            //        //console.log("p4b");
                         
-                //        //**** NEW: 190926 END
+            //        //**** NEW: 190926 END
 
-                //        var labtest = new LabTest(1);
-                //        labtest.Id = data.LabTests[index].Id;
-                //        ///////labtest.RecDate = resultado[0].dateRec;                   //**** NEW: 190926
-                //        labtest.CaseLabID = self.Id;
-                //        labtest.CanEdit(data.LabTests[index].CanEdit);
-                //        labtest.CanModLab(data.LabTests[index].CanModLab);
-				//		labtest.CanDeleteProcess(data.LabTests[index].CanDeleteProcess);																
-                //        //console.log(data.LabTests[index].CanEdit);
-                //        labtest.CanPCR((typeof data.LabTests[index].CanPCR === "undefined" ) ? false : data.LabTests[index].CanPCR );
-                //        labtest.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
-                //        labtest.EndFlow(data.LabTests[index].EndFlow);
-                //        labtest.ProcLab(data.LabTests[index].ProcLab.toString());
-                //        labtest.LabID(data.LabTests[index].ProcLab.toString());
-                //        labtest.ProcLabName(data.LabTests[index].ProcLabName.toString());
-                //        console.log("\td1");
-                //        console.log(data.LabTests[index].ProcLabName.toString());
-                //        console.log(labtest.ProcLabName());
-                //        console.log("\td2");
-                //        labtest.ProcessLab(data.LabTests[index].ProcessLab.toString());
-                //        labtest.TestType(data.LabTests[index].TestType);
-                //        labtest.SampleNumber(1);
-                //        if (data.LabTests[index].TestDate)
-                //            labtest.TestDate(moment(data.LabTests[index].TestDate).clone().toDate());
-                //        labtest.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 2) ? 'NB' : data.LabTests[index].TestResultID);
-                //        labtest.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N') ? null : data.LabTests[index].VirusTypeID);
-                //        console.log(labtest.TestResultID());
-                //        labtest.CTVirusType(data.LabTests[index].CTVirusType);
-                //        labtest.CTRLVirusType(data.LabTests[index].CTRLVirusType);
-                //        labtest.OtherVirusTypeID(data.LabTests[index].OtherVirusTypeID);
-                //        labtest.CTOtherVirusType(data.LabTests[index].CTOtherVirusType);
-                //        labtest.CTRLOtherVirusType(data.LabTests[index].CTRLOtherVirusType);
-                //        labtest.OtherVirus(data.LabTests[index].OtherVirus);
-                //        labtest.InfA(data.LabTests[index].InfA);
-                //        labtest.VirusSubTypeID(data.LabTests[index].VirusSubTypeID);
-                //        //console.log(data.LabTests[index].CTSubType);
-                //        labtest.CTSubType(data.LabTests[index].CTSubType);
-                //        labtest.CTRLSubType(data.LabTests[index].CTRLSubType);
-                //        labtest.TestResultID_VirusSubType(data.LabTests[index].TestResultID_VirusSubType);
-                //        labtest.VirusSubTypeID_2(data.LabTests[index].VirusSubTypeID_2);
-                //        labtest.CTSubType_2(data.LabTests[index].CTSubType_2);
-                //        labtest.CTRLSubType_2(data.LabTests[index].CTRLSubType_2);
-                //        labtest.TestResultID_VirusSubType_2(data.LabTests[index].TestResultID_VirusSubType_2);
-                //        labtest.InfB(data.LabTests[index].InfB);
-                //        labtest.VirusLineageID(data.LabTests[index].VirusLineageID);
-                //        labtest.CTLineage(data.LabTests[index].CTLineage);
-                //        labtest.CTRLLineage(data.LabTests[index].CTRLLineage);
-                //        labtest.ParaInfI(data.LabTests[index].ParaInfI);
-                //        labtest.ParaInfII(data.LabTests[index].ParaInfII);
-                //        labtest.ParaInfIII(data.LabTests[index].ParaInfIII);
-                //        labtest.RSV(data.LabTests[index].RSV);
-                //        labtest.Adenovirus(data.LabTests[index].Adenovirus);
-                //        labtest.Metapneumovirus(data.LabTests[index].Metapneumovirus);
-                //        labtest.RNP(data.LabTests[index].RNP);
-                //        labtest.CTRLRNP(data.LabTests[index].CTRLRNP);
-                //        labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
-                //        if (data.LabTests[index].TestEndDate)
-                //            labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
+            //        var labtest = new LabTest(1);
+            //        labtest.Id = data.LabTests[index].Id;
+            //        ///////labtest.RecDate = resultado[0].dateRec;                   //**** NEW: 190926
+            //        labtest.CaseLabID = self.Id;
+            //        labtest.CanEdit(data.LabTests[index].CanEdit);
+            //        labtest.CanModLab(data.LabTests[index].CanModLab);
+			//		labtest.CanDeleteProcess(data.LabTests[index].CanDeleteProcess);																
+            //        //console.log(data.LabTests[index].CanEdit);
+            //        labtest.CanPCR((typeof data.LabTests[index].CanPCR === "undefined" ) ? false : data.LabTests[index].CanPCR );
+            //        labtest.CanIFI((typeof data.LabTests[index].CanIFI === "undefined") ? false : data.LabTests[index].CanIFI);
+            //        labtest.EndFlow(data.LabTests[index].EndFlow);
+            //        labtest.ProcLab(data.LabTests[index].ProcLab.toString());
+            //        labtest.LabID(data.LabTests[index].ProcLab.toString());
+            //        labtest.ProcLabName(data.LabTests[index].ProcLabName.toString());
+            //        console.log("\td1");
+            //        console.log(data.LabTests[index].ProcLabName.toString());
+            //        console.log(labtest.ProcLabName());
+            //        console.log("\td2");
+            //        labtest.ProcessLab(data.LabTests[index].ProcessLab.toString());
+            //        labtest.TestType(data.LabTests[index].TestType);
+            //        labtest.SampleNumber(1);
+            //        if (data.LabTests[index].TestDate)
+            //            labtest.TestDate(moment(data.LabTests[index].TestDate).clone().toDate());
+            //        labtest.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N' && data.LabTests[index].VirusTypeID == 2) ? 'NB' : data.LabTests[index].TestResultID);
+            //        labtest.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests[index].TestType == 1 && data.LabTests[index].TestResultID == 'N') ? null : data.LabTests[index].VirusTypeID);
+            //        console.log(labtest.TestResultID());
+            //        labtest.CTVirusType(data.LabTests[index].CTVirusType);
+            //        labtest.CTRLVirusType(data.LabTests[index].CTRLVirusType);
+            //        labtest.OtherVirusTypeID(data.LabTests[index].OtherVirusTypeID);
+            //        labtest.CTOtherVirusType(data.LabTests[index].CTOtherVirusType);
+            //        labtest.CTRLOtherVirusType(data.LabTests[index].CTRLOtherVirusType);
+            //        labtest.OtherVirus(data.LabTests[index].OtherVirus);
+            //        labtest.InfA(data.LabTests[index].InfA);
+            //        labtest.VirusSubTypeID(data.LabTests[index].VirusSubTypeID);
+            //        //console.log(data.LabTests[index].CTSubType);
+            //        labtest.CTSubType(data.LabTests[index].CTSubType);
+            //        labtest.CTRLSubType(data.LabTests[index].CTRLSubType);
+            //        labtest.TestResultID_VirusSubType(data.LabTests[index].TestResultID_VirusSubType);
+            //        labtest.VirusSubTypeID_2(data.LabTests[index].VirusSubTypeID_2);
+            //        labtest.CTSubType_2(data.LabTests[index].CTSubType_2);
+            //        labtest.CTRLSubType_2(data.LabTests[index].CTRLSubType_2);
+            //        labtest.TestResultID_VirusSubType_2(data.LabTests[index].TestResultID_VirusSubType_2);
+            //        labtest.InfB(data.LabTests[index].InfB);
+            //        labtest.VirusLineageID(data.LabTests[index].VirusLineageID);
+            //        labtest.CTLineage(data.LabTests[index].CTLineage);
+            //        labtest.CTRLLineage(data.LabTests[index].CTRLLineage);
+            //        labtest.ParaInfI(data.LabTests[index].ParaInfI);
+            //        labtest.ParaInfII(data.LabTests[index].ParaInfII);
+            //        labtest.ParaInfIII(data.LabTests[index].ParaInfIII);
+            //        labtest.RSV(data.LabTests[index].RSV);
+            //        labtest.Adenovirus(data.LabTests[index].Adenovirus);
+            //        labtest.Metapneumovirus(data.LabTests[index].Metapneumovirus);
+            //        labtest.RNP(data.LabTests[index].RNP);
+            //        labtest.CTRLRNP(data.LabTests[index].CTRLRNP);
+            //        labtest.CTRLNegative(data.LabTests[index].CTRLNegative);
+            //        if (data.LabTests[index].TestEndDate)
+            //            labtest.TestEndDate(moment(data.LabTests[index].TestEndDate).clone().toDate());
 
-                //        self.LabTests.push(labtest);
-                //        console.log("Se hizo push en array->LabTests");
-                //    }
-                //    //console.log("Antes de crear objetos labtest->END");
-                //}
-                //console.log("Array de objetos LabTest->1");
-                //console.log(self.LabTests());
-                //console.log("Array de objetos LabTest->1a");
+            //        self.LabTests.push(labtest);
+            //        console.log("Se hizo push en array->LabTests");
+            //    }
+            //    //console.log("Antes de crear objetos labtest->END");
+            //}
+            //console.log("Array de objetos LabTest->1");
+            //console.log(self.LabTests());
+            //console.log("Array de objetos LabTest->1a");
 
-                //self.LabTests_Sample2([]);
-                //if (data.LabTests_Sample2 != "") {
-                //    for (index = 0; index < data.LabTests_Sample2.length; ++index) {
-                //        var labtest_s2 = new LabTest(2);
-                //        labtest_s2.Id = data.LabTests_Sample2[index].Id;
-                //        labtest_s2.CaseLabID = self.Id;
-                //        labtest_s2.CanEdit(data.LabTests_Sample2[index].CanEdit);
-                //        labtest_s2.CanModLab(data.LabTests_Sample2[index].CanModLab);
-				//		labtest_s2.CanDeleteProcess(data.LabTests_Sample2[index].CanDeleteProcess);																		   
-                //        labtest_s2.CanPCR((typeof data.LabTests_Sample2[index].CanPCR === "undefined") ? false : data.LabTests_Sample2[index].CanPCR);
-                //        labtest_s2.CanIFI((typeof data.LabTests_Sample2[index].CanIFI === "undefined") ? false : data.LabTests_Sample2[index].CanIFI);
-                //        labtest_s2.ProcLab(data.LabTests_Sample2[index].ProcLab.toString());
-                //        //console.log("--ProcLab Sample2 -- " + labtest.ProcLab());
-                //        labtest_s2.LabID(data.LabTests_Sample2[index].ProcLab.toString());
-                //        labtest_s2.ProcLabName(data.LabTests_Sample2[index].ProcLabName.toString());
-                //        labtest_s2.ProcessLab(data.LabTests_Sample2[index].ProcessLab.toString());
-                //        labtest_s2.TestType(data.LabTests_Sample2[index].TestType);
-                //        labtest_s2.SampleNumber(2);
-                //        if (data.LabTests_Sample2[index].TestDate)
-                //            labtest_s2.TestDate(moment(data.LabTests_Sample2[index].TestDate).clone().toDate());
-                //        //labtest_s2.TestResultID(data.LabTests_Sample2[index].TestResultID);
-                //        //labtest_s2.VirusTypeID(data.LabTests_Sample2[index].VirusTypeID);
-                //        labtest_s2.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample2[index].TestResultID);
-                //        labtest_s2.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N') ? null : data.LabTests_Sample2[index].VirusTypeID);
-                //        labtest_s2.CTVirusType(data.LabTests_Sample2[index].CTVirusType);
-                //        labtest_s2.CTRLVirusType(data.LabTests_Sample2[index].CTRLVirusType);
-                //        labtest_s2.OtherVirusTypeID(data.LabTests_Sample2[index].OtherVirusTypeID);
-                //        labtest_s2.CTOtherVirusType(data.LabTests_Sample2[index].CTOtherVirusType);
-                //        labtest_s2.CTRLOtherVirusType(data.LabTests_Sample2[index].CTRLOtherVirusType);
-                //        labtest_s2.OtherVirus(data.LabTests_Sample2[index].OtherVirus);
-                //        labtest_s2.InfA(data.LabTests_Sample2[index].InfA);
-                //        labtest_s2.VirusSubTypeID(data.LabTests_Sample2[index].VirusSubTypeID);
-                //        labtest_s2.CTSubType(data.LabTests_Sample2[index].CTSubType);
-                //        labtest_s2.CTRLSubType(data.LabTests_Sample2[index].CTRLSubType);
-                //        labtest_s2.InfB(data.LabTests_Sample2[index].InfB);
-                //        labtest_s2.VirusLineageID(data.LabTests_Sample2[index].VirusLineageID);
-                //        labtest_s2.CTLineage(data.LabTests_Sample2[index].CTLineage);
-                //        labtest_s2.CTRLLineage(data.LabTests_Sample2[index].CTRLLineage);
-                //        labtest_s2.ParaInfI(data.LabTests_Sample2[index].ParaInfI);
-                //        labtest_s2.ParaInfII(data.LabTests_Sample2[index].ParaInfII);
-                //        labtest_s2.ParaInfIII(data.LabTests_Sample2[index].ParaInfIII);
-                //        labtest_s2.RSV(data.LabTests_Sample2[index].RSV);
-                //        labtest_s2.Adenovirus(data.LabTests_Sample2[index].Adenovirus);
-                //        labtest_s2.Metapneumovirus(data.LabTests_Sample2[index].Metapneumovirus);
-                //        labtest_s2.RNP(data.LabTests_Sample2[index].RNP);
-                //        labtest_s2.CTRLRNP(data.LabTests_Sample2[index].CTRLRNP);
-                //        labtest_s2.CTRLNegative(data.LabTests_Sample2[index].CTRLNegative);
-                //        if (data.LabTests_Sample2[index].TestEndDate)
-                //            labtest_s2.TestEndDate(moment(data.LabTests_Sample2[index].TestEndDate).clone().toDate());
-                //        self.LabTests_Sample2.push(labtest_s2);
-                //    }
-                //}
+            //self.LabTests_Sample2([]);
+            //if (data.LabTests_Sample2 != "") {
+            //    for (index = 0; index < data.LabTests_Sample2.length; ++index) {
+            //        var labtest_s2 = new LabTest(2);
+            //        labtest_s2.Id = data.LabTests_Sample2[index].Id;
+            //        labtest_s2.CaseLabID = self.Id;
+            //        labtest_s2.CanEdit(data.LabTests_Sample2[index].CanEdit);
+            //        labtest_s2.CanModLab(data.LabTests_Sample2[index].CanModLab);
+			//		labtest_s2.CanDeleteProcess(data.LabTests_Sample2[index].CanDeleteProcess);																		   
+            //        labtest_s2.CanPCR((typeof data.LabTests_Sample2[index].CanPCR === "undefined") ? false : data.LabTests_Sample2[index].CanPCR);
+            //        labtest_s2.CanIFI((typeof data.LabTests_Sample2[index].CanIFI === "undefined") ? false : data.LabTests_Sample2[index].CanIFI);
+            //        labtest_s2.ProcLab(data.LabTests_Sample2[index].ProcLab.toString());
+            //        //console.log("--ProcLab Sample2 -- " + labtest.ProcLab());
+            //        labtest_s2.LabID(data.LabTests_Sample2[index].ProcLab.toString());
+            //        labtest_s2.ProcLabName(data.LabTests_Sample2[index].ProcLabName.toString());
+            //        labtest_s2.ProcessLab(data.LabTests_Sample2[index].ProcessLab.toString());
+            //        labtest_s2.TestType(data.LabTests_Sample2[index].TestType);
+            //        labtest_s2.SampleNumber(2);
+            //        if (data.LabTests_Sample2[index].TestDate)
+            //            labtest_s2.TestDate(moment(data.LabTests_Sample2[index].TestDate).clone().toDate());
+            //        //labtest_s2.TestResultID(data.LabTests_Sample2[index].TestResultID);
+            //        //labtest_s2.VirusTypeID(data.LabTests_Sample2[index].VirusTypeID);
+            //        labtest_s2.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N' && data.LabTests_Sample2[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample2[index].TestResultID);
+            //        labtest_s2.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample2[index].TestType == 1 && data.LabTests_Sample2[index].TestResultID == 'N') ? null : data.LabTests_Sample2[index].VirusTypeID);
+            //        labtest_s2.CTVirusType(data.LabTests_Sample2[index].CTVirusType);
+            //        labtest_s2.CTRLVirusType(data.LabTests_Sample2[index].CTRLVirusType);
+            //        labtest_s2.OtherVirusTypeID(data.LabTests_Sample2[index].OtherVirusTypeID);
+            //        labtest_s2.CTOtherVirusType(data.LabTests_Sample2[index].CTOtherVirusType);
+            //        labtest_s2.CTRLOtherVirusType(data.LabTests_Sample2[index].CTRLOtherVirusType);
+            //        labtest_s2.OtherVirus(data.LabTests_Sample2[index].OtherVirus);
+            //        labtest_s2.InfA(data.LabTests_Sample2[index].InfA);
+            //        labtest_s2.VirusSubTypeID(data.LabTests_Sample2[index].VirusSubTypeID);
+            //        labtest_s2.CTSubType(data.LabTests_Sample2[index].CTSubType);
+            //        labtest_s2.CTRLSubType(data.LabTests_Sample2[index].CTRLSubType);
+            //        labtest_s2.InfB(data.LabTests_Sample2[index].InfB);
+            //        labtest_s2.VirusLineageID(data.LabTests_Sample2[index].VirusLineageID);
+            //        labtest_s2.CTLineage(data.LabTests_Sample2[index].CTLineage);
+            //        labtest_s2.CTRLLineage(data.LabTests_Sample2[index].CTRLLineage);
+            //        labtest_s2.ParaInfI(data.LabTests_Sample2[index].ParaInfI);
+            //        labtest_s2.ParaInfII(data.LabTests_Sample2[index].ParaInfII);
+            //        labtest_s2.ParaInfIII(data.LabTests_Sample2[index].ParaInfIII);
+            //        labtest_s2.RSV(data.LabTests_Sample2[index].RSV);
+            //        labtest_s2.Adenovirus(data.LabTests_Sample2[index].Adenovirus);
+            //        labtest_s2.Metapneumovirus(data.LabTests_Sample2[index].Metapneumovirus);
+            //        labtest_s2.RNP(data.LabTests_Sample2[index].RNP);
+            //        labtest_s2.CTRLRNP(data.LabTests_Sample2[index].CTRLRNP);
+            //        labtest_s2.CTRLNegative(data.LabTests_Sample2[index].CTRLNegative);
+            //        if (data.LabTests_Sample2[index].TestEndDate)
+            //            labtest_s2.TestEndDate(moment(data.LabTests_Sample2[index].TestEndDate).clone().toDate());
+            //        self.LabTests_Sample2.push(labtest_s2);
+            //    }
+            //}
 
-                //self.LabTests_Sample3([]);
-                //if (data.LabTests_Sample3 != "") {
-                //    for (index = 0; index < data.LabTests_Sample3.length; ++index) {
-                //        var labtest_s3 = new LabTest(3);
-                //        labtest_s3.Id = data.LabTests_Sample3[index].Id;
-                //        labtest_s3.CaseLabID = self.Id;
-                //        labtest_s3.CanEdit(data.LabTests_Sample3[index].CanEdit);
-                //        labtest_s3.CanModLab(data.LabTests_Sample3[index].CanModLab);
-				//		labtest_s3.CanDeleteProcess(data.LabTests_Sample3[index].CanDeleteProcess);																		   
-                //        labtest_s3.CanPCR((typeof data.LabTests_Sample3[index].CanPCR === "undefined") ? false : data.LabTests_Sample3[index].CanPCR);
-                //        labtest_s3.CanIFI((typeof data.LabTests_Sample3[index].CanIFI === "undefined") ? false : data.LabTests_Sample3[index].CanIFI);
-                //        labtest_s3.ProcLab(data.LabTests_Sample3[index].ProcLab.toString());
-                //        //console.log("--ProcLab Sample3 -- " + labtest.ProcLab());
-                //        labtest_s3.LabID(data.LabTests_Sample3[index].ProcLab.toString());
-                //        labtest_s3.ProcLabName(data.LabTests_Sample3[index].ProcLabName.toString());
-                //        labtest_s3.ProcessLab(data.LabTests_Sample3[index].ProcessLab.toString());
-                //        labtest_s3.TestType(data.LabTests_Sample3[index].TestType);
-                //        labtest_s3.SampleNumber(3);
-                //        if (data.LabTests_Sample3[index].TestDate)
-                //            labtest_s3.TestDate(moment(data.LabTests_Sample3[index].TestDate).clone().toDate());
-                //        //labtest_s3.TestResultID(data.LabTests_Sample3[index].TestResultID);
-                //        //labtest_s3.VirusTypeID(data.LabTests_Sample3[index].VirusTypeID);
-                //        labtest_s3.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample3[index].TestResultID);
-                //        labtest_s3.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N') ? null : data.LabTests_Sample3[index].VirusTypeID);
-                //        labtest_s3.CTVirusType(data.LabTests_Sample3[index].CTVirusType);
-                //        labtest_s3.CTRLVirusType(data.LabTests_Sample3[index].CTRLVirusType);
-                //        labtest_s3.OtherVirusTypeID(data.LabTests_Sample3[index].OtherVirusTypeID);
-                //        labtest_s3.CTOtherVirusType(data.LabTests_Sample3[index].CTOtherVirusType);
-                //        labtest_s3.CTRLOtherVirusType(data.LabTests_Sample3[index].CTRLOtherVirusType);
-                //        labtest_s2.OtherVirus(data.LabTests_Sample3[index].OtherVirus);
-                //        labtest_s3.InfA(data.LabTests_Sample3[index].InfA);
-                //        labtest_s3.VirusSubTypeID(data.LabTests_Sample3[index].VirusSubTypeID);
-                //        labtest_s3.CTSubType(data.LabTests_Sample3[index].CTSubType);
-                //        labtest_s3.CTRLSubType(data.LabTests_Sample3[index].CTRLSubType);
-                //        labtest_s3.InfB(data.LabTests_Sample3[index].InfB);
-                //        labtest_s3.VirusLineageID(data.LabTests_Sample3[index].VirusLineageID);
-                //        labtest_s3.CTLineage(data.LabTests_Sample3[index].CTLineage);
-                //        labtest_s3.CTRLLineage(data.LabTests_Sample3[index].CTRLLineage);
-                //        labtest_s3.ParaInfI(data.LabTests_Sample3[index].ParaInfI);
-                //        labtest_s3.ParaInfII(data.LabTests_Sample3[index].ParaInfII);
-                //        labtest_s3.ParaInfIII(data.LabTests_Sample3[index].ParaInfIII);
-                //        labtest_s3.RSV(data.LabTests_Sample3[index].RSV);
-                //        labtest_s3.Adenovirus(data.LabTests_Sample3[index].Adenovirus);
-                //        labtest_s3.Metapneumovirus(data.LabTests_Sample3[index].Metapneumovirus);
-                //        labtest_s3.RNP(data.LabTests_Sample3[index].RNP);
-                //        labtest_s3.CTRLRNP(data.LabTests_Sample3[index].CTRLRNP);
-                //        labtest_s3.CTRLNegative(data.LabTests_Sample3[index].CTRLNegative);
-                //        if (data.LabTests_Sample3[index].TestEndDate)
-                //            labtest_s3.TestEndDate(moment(data.LabTests_Sample3[index].TestEndDate).clone().toDate());
-                //        self.LabTests_Sample3.push(labtest_s3);
-                //    }
-                //}
+            //self.LabTests_Sample3([]);
+            //if (data.LabTests_Sample3 != "") {
+            //    for (index = 0; index < data.LabTests_Sample3.length; ++index) {
+            //        var labtest_s3 = new LabTest(3);
+            //        labtest_s3.Id = data.LabTests_Sample3[index].Id;
+            //        labtest_s3.CaseLabID = self.Id;
+            //        labtest_s3.CanEdit(data.LabTests_Sample3[index].CanEdit);
+            //        labtest_s3.CanModLab(data.LabTests_Sample3[index].CanModLab);
+			//		labtest_s3.CanDeleteProcess(data.LabTests_Sample3[index].CanDeleteProcess);																		   
+            //        labtest_s3.CanPCR((typeof data.LabTests_Sample3[index].CanPCR === "undefined") ? false : data.LabTests_Sample3[index].CanPCR);
+            //        labtest_s3.CanIFI((typeof data.LabTests_Sample3[index].CanIFI === "undefined") ? false : data.LabTests_Sample3[index].CanIFI);
+            //        labtest_s3.ProcLab(data.LabTests_Sample3[index].ProcLab.toString());
+            //        //console.log("--ProcLab Sample3 -- " + labtest.ProcLab());
+            //        labtest_s3.LabID(data.LabTests_Sample3[index].ProcLab.toString());
+            //        labtest_s3.ProcLabName(data.LabTests_Sample3[index].ProcLabName.toString());
+            //        labtest_s3.ProcessLab(data.LabTests_Sample3[index].ProcessLab.toString());
+            //        labtest_s3.TestType(data.LabTests_Sample3[index].TestType);
+            //        labtest_s3.SampleNumber(3);
+            //        if (data.LabTests_Sample3[index].TestDate)
+            //            labtest_s3.TestDate(moment(data.LabTests_Sample3[index].TestDate).clone().toDate());
+            //        //labtest_s3.TestResultID(data.LabTests_Sample3[index].TestResultID);
+            //        //labtest_s3.VirusTypeID(data.LabTests_Sample3[index].VirusTypeID);
+            //        labtest_s3.TestResultID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 1) ? 'NA' : (app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N' && data.LabTests_Sample3[index].VirusTypeID == 2) ? 'NB' : data.LabTests_Sample3[index].TestResultID);
+            //        labtest_s3.VirusTypeID((app.Views.Home.UsrCountry() == 7 && data.LabTests_Sample3[index].TestType == 1 && data.LabTests_Sample3[index].TestResultID == 'N') ? null : data.LabTests_Sample3[index].VirusTypeID);
+            //        labtest_s3.CTVirusType(data.LabTests_Sample3[index].CTVirusType);
+            //        labtest_s3.CTRLVirusType(data.LabTests_Sample3[index].CTRLVirusType);
+            //        labtest_s3.OtherVirusTypeID(data.LabTests_Sample3[index].OtherVirusTypeID);
+            //        labtest_s3.CTOtherVirusType(data.LabTests_Sample3[index].CTOtherVirusType);
+            //        labtest_s3.CTRLOtherVirusType(data.LabTests_Sample3[index].CTRLOtherVirusType);
+            //        labtest_s2.OtherVirus(data.LabTests_Sample3[index].OtherVirus);
+            //        labtest_s3.InfA(data.LabTests_Sample3[index].InfA);
+            //        labtest_s3.VirusSubTypeID(data.LabTests_Sample3[index].VirusSubTypeID);
+            //        labtest_s3.CTSubType(data.LabTests_Sample3[index].CTSubType);
+            //        labtest_s3.CTRLSubType(data.LabTests_Sample3[index].CTRLSubType);
+            //        labtest_s3.InfB(data.LabTests_Sample3[index].InfB);
+            //        labtest_s3.VirusLineageID(data.LabTests_Sample3[index].VirusLineageID);
+            //        labtest_s3.CTLineage(data.LabTests_Sample3[index].CTLineage);
+            //        labtest_s3.CTRLLineage(data.LabTests_Sample3[index].CTRLLineage);
+            //        labtest_s3.ParaInfI(data.LabTests_Sample3[index].ParaInfI);
+            //        labtest_s3.ParaInfII(data.LabTests_Sample3[index].ParaInfII);
+            //        labtest_s3.ParaInfIII(data.LabTests_Sample3[index].ParaInfIII);
+            //        labtest_s3.RSV(data.LabTests_Sample3[index].RSV);
+            //        labtest_s3.Adenovirus(data.LabTests_Sample3[index].Adenovirus);
+            //        labtest_s3.Metapneumovirus(data.LabTests_Sample3[index].Metapneumovirus);
+            //        labtest_s3.RNP(data.LabTests_Sample3[index].RNP);
+            //        labtest_s3.CTRLRNP(data.LabTests_Sample3[index].CTRLRNP);
+            //        labtest_s3.CTRLNegative(data.LabTests_Sample3[index].CTRLNegative);
+            //        if (data.LabTests_Sample3[index].TestEndDate)
+            //            labtest_s3.TestEndDate(moment(data.LabTests_Sample3[index].TestEndDate).clone().toDate());
+            //        self.LabTests_Sample3.push(labtest_s3);
+            //    }
+            //}
 
-                //console.log("Data para foreach-START");
-                //console.log(self.CaseLabses());
-                ////console.log(self.LabTests());
-                //console.log("Data para foreach-END");
+            //console.log("Data para foreach-START");
+            //console.log(self.CaseLabses());
+            ////console.log(self.LabTests());
+            //console.log("Data para foreach-END");
 
-                $("#FinalResult").prop('disabled', true);
-                $("#FinalResultVirusTypeID").prop('disabled', true);
-                $("#FinalResultVirusSubTypeID_1").prop('disabled', true);
-                $("#FinalResultVirusLineageID").prop('disabled', true);
-                $("#FinalResult_2").prop('disabled', true);
-                $("#FinalResultVirusTypeID_2").prop('disabled', true);
-                $("#FinalResultVirusSubTypeID_2").prop('disabled', true);
-                $("#FinalResultVirusLineageID_2").prop('disabled', true);
-                $("#FinalResult_3").prop('disabled', true);
-                $("#FinalResultVirusTypeID_3").prop('disabled', true);
-                $("#FinalResultVirusSubTypeID_3").prop('disabled', true);
-                $("#FinalResultVirusLineageID_3").prop('disabled', true);
+            $("#FinalResult").prop('disabled', true);
+            $("#FinalResultVirusTypeID").prop('disabled', true);
+            $("#FinalResultVirusSubTypeID_1").prop('disabled', true);
+            $("#FinalResultVirusLineageID").prop('disabled', true);
+            $("#FinalResult_2").prop('disabled', true);
+            $("#FinalResultVirusTypeID_2").prop('disabled', true);
+            $("#FinalResultVirusSubTypeID_2").prop('disabled', true);
+            $("#FinalResultVirusLineageID_2").prop('disabled', true);
+            $("#FinalResult_3").prop('disabled', true);
+            $("#FinalResultVirusTypeID_3").prop('disabled', true);
+            $("#FinalResultVirusSubTypeID_3").prop('disabled', true);
+            $("#FinalResultVirusLineageID_3").prop('disabled', true);
 
-                if (self.ForeignLabCountry() == true) {
+            if (self.ForeignLabCountry() == true) {
 
-                }
+            }
 
-                if (self.NPHL() == true)
-                {
-                    $("#Rec_Date_NPHL").prop('disabled', false);                    
-                    $("#Temp_NPHL").prop('disabled', false);
-                    $("#Identification_Test_NPHL").prop('disabled', false);
-                    $("#Ship_Date_NPHL").prop('disabled', false);                    
-                    $("#Observation_NPHL").prop('disabled', false);
-                    $("input[id*='NPHL_Processed']").prop('disabled', false);
-                    $("#NPHL_NoProRenId").prop('disabled', false);
-                    $("#NPHL_NoReason").prop('disabled', false);
+            //if (self.NPHL() == true)
+            //{
+            //    $("#Rec_Date_NPHL").prop('disabled', false);                    
+            //    $("#Temp_NPHL").prop('disabled', false);
+            //    $("#Identification_Test_NPHL").prop('disabled', false);
+            //    $("#Ship_Date_NPHL").prop('disabled', false);                    
+            //    $("#Observation_NPHL").prop('disabled', false);
+            //    $("input[id*='NPHL_Processed']").prop('disabled', false);
+            //    $("#NPHL_NoProRenId").prop('disabled', false);
+            //    $("#NPHL_NoReason").prop('disabled', false);
 
-                    $("#Rec_Date_NPHL_2").prop('disabled', false);
-                    $("#Temp_NPHL_2").prop('disabled', false);
-                    $("#Identification_Test_NPHL_2").prop('disabled', false);
-                    $("#Ship_Date_NPHL_2").prop('disabled', false);
-                    $("#Observation_NPHL_2").prop('disabled', false);
-                    $("input[id*='NPHL_Processed_2']").prop('disabled', false);
-                    $("#NPHL_NoProRenId_2").prop('disabled', false);
-                    $("#NPHL_NoReason_2").prop('disabled', false);
+            //    $("#Rec_Date_NPHL_2").prop('disabled', false);
+            //    $("#Temp_NPHL_2").prop('disabled', false);
+            //    $("#Identification_Test_NPHL_2").prop('disabled', false);
+            //    $("#Ship_Date_NPHL_2").prop('disabled', false);
+            //    $("#Observation_NPHL_2").prop('disabled', false);
+            //    $("input[id*='NPHL_Processed_2']").prop('disabled', false);
+            //    $("#NPHL_NoProRenId_2").prop('disabled', false);
+            //    $("#NPHL_NoReason_2").prop('disabled', false);
 
-                    $("#Rec_Date_NPHL_3").prop('disabled', false);
-                    $("#Temp_NPHL_3").prop('disabled', false);
-                    $("#Identification_Test_NPHL_3").prop('disabled', false);
-                    $("#Ship_Date_NPHL_3").prop('disabled', false);
-                    $("#Observation_NPHL_3").prop('disabled', false);
-                    $("input[id*='NPHL_Processed_3']").prop('disabled', false);
-                    $("#NPHL_NoProRenId_3").prop('disabled', false);
-                    $("#NPHL_NoReason_3").prop('disabled', false);
-                } else
-                {
-                    $("#Rec_Date_NPHL").prop('disabled', true);                    
-                    $("#Temp_NPHL").prop('disabled', true);
-                    $("#Identification_Test_NPHL").prop('disabled', true);
-                    $("#Ship_Date_NPHL").prop('disabled', true);
-                    $("#Observation_NPHL").prop('disabled', true);
-                    $("input[id*='NPHL_Processed']").prop('disabled', true);
-                    $("#NPHL_NoProRenId").prop('disabled', true);
-                    $("#NPHL_NoReason").prop('disabled', true);
+            //    $("#Rec_Date_NPHL_3").prop('disabled', false);
+            //    $("#Temp_NPHL_3").prop('disabled', false);
+            //    $("#Identification_Test_NPHL_3").prop('disabled', false);
+            //    $("#Ship_Date_NPHL_3").prop('disabled', false);
+            //    $("#Observation_NPHL_3").prop('disabled', false);
+            //    $("input[id*='NPHL_Processed_3']").prop('disabled', false);
+            //    $("#NPHL_NoProRenId_3").prop('disabled', false);
+            //    $("#NPHL_NoReason_3").prop('disabled', false);
+            //} else
+            //{
+            //    $("#Rec_Date_NPHL").prop('disabled', true);                    
+            //    $("#Temp_NPHL").prop('disabled', true);
+            //    $("#Identification_Test_NPHL").prop('disabled', true);
+            //    $("#Ship_Date_NPHL").prop('disabled', true);
+            //    $("#Observation_NPHL").prop('disabled', true);
+            //    $("input[id*='NPHL_Processed']").prop('disabled', true);
+            //    $("#NPHL_NoProRenId").prop('disabled', true);
+            //    $("#NPHL_NoReason").prop('disabled', true);
 
-                    $("#Rec_Date_NPHL_2").prop('disabled', true);
-                    $("#Temp_NPHL_2").prop('disabled', true);     
-                    $("#Identification_Test_NPHL_2").prop('disabled', true);
-                    $("#Ship_Date_NPHL_2").prop('disabled', true);                    
-                    $("#Observation_NPHL_2").prop('disabled', true);
-                    $("input[id*='NPHL_Processed_2']").prop('disabled', true);
-                    $("#NPHL_NoProRenId_2").prop('disabled', true);
-                    $("#NPHL_NoReason_2").prop('disabled', true);
+            //    $("#Rec_Date_NPHL_2").prop('disabled', true);
+            //    $("#Temp_NPHL_2").prop('disabled', true);     
+            //    $("#Identification_Test_NPHL_2").prop('disabled', true);
+            //    $("#Ship_Date_NPHL_2").prop('disabled', true);                    
+            //    $("#Observation_NPHL_2").prop('disabled', true);
+            //    $("input[id*='NPHL_Processed_2']").prop('disabled', true);
+            //    $("#NPHL_NoProRenId_2").prop('disabled', true);
+            //    $("#NPHL_NoReason_2").prop('disabled', true);
 
-                    $("#Rec_Date_NPHL_3").prop('disabled', true);
-                    $("#Temp_NPHL_3").prop('disabled', true);
-                    $("#Identification_Test_NPHL_3").prop('disabled', true);
-                    $("#Ship_Date_NPHL_3").prop('disabled', true);
-                    $("#Observation_NPHL_3").prop('disabled', true);
-                    $("input[id*='NPHL_Processed_3']").prop('disabled', true);
-                    $("#NPHL_NoProRenId_3").prop('disabled', true);
-                    $("#NPHL_NoReason_3").prop('disabled', true);
-                    
-                }
+            //    $("#Rec_Date_NPHL_3").prop('disabled', true);
+            //    $("#Temp_NPHL_3").prop('disabled', true);
+            //    $("#Identification_Test_NPHL_3").prop('disabled', true);
+            //    $("#Ship_Date_NPHL_3").prop('disabled', true);
+            //    $("#Observation_NPHL_3").prop('disabled', true);
+            //    $("input[id*='NPHL_Processed_3']").prop('disabled', true);
+            //    $("#NPHL_NoProRenId_3").prop('disabled', true);
+            //    $("#NPHL_NoReason_3").prop('disabled', true);                    
+            //}
 
-                self.hasGet(false);
-                //console.log("hasGetGeneral");
-                //console.log(self.hasGet());
-                //self.OrdenFinalResult();  // Esta línea es para probar si el orden estsa funcionando 
-                if (self.FinalResult() == "") {
-                    self.OrdenFinalResult();
-                };
-
-            })
-             .fail(function (jqXHR, textStatus, errorThrown) {
-                 alert(errorThrown);
-             })
+            self.hasGet(false);
+            //console.log("hasGetGeneral");
+            //console.log(self.hasGet());
+            //self.OrdenFinalResult();  // Esta línea es para probar si el orden estsa funcionando 
+            if (self.FinalResult() == "") {
+                self.OrdenFinalResult();
+            };
+        })  // END $.getJSON
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+        })
+        console.log("LAB->P->self.GetLab->END");
     };
     //console.log("\tself.GetLab->Final");
 
     self.OrdenFinalResult = function () {
-        console.log("LAB->P->OrdenFinalResult->START");
+        //console.log("LAB->P->OrdenFinalResult->START");
 
         if (self.hasGet() == false) {
             console.log("LAB->P->OFR 1");
@@ -3448,7 +3492,7 @@ function LabViewModel(app, dataModel) {
             
         }
 
-        console.log("LAB->P->OrdenFinalResult->END");
+        //console.log("LAB->P->OrdenFinalResult->END");
     };
 
     //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -4077,7 +4121,7 @@ function LabViewModel(app, dataModel) {
         return true;
     };
 
-    //console.log("function LabViewModel(app, dataModel)->ENDD");
+    console.log("function LabViewModel(app, dataModel)->END-DD");
 }
 
 app.addViewModel({

@@ -31,7 +31,8 @@
             <span class="input-group-addon">
                 @LabelReceptionDate
             </span>
-            <input id="RecDate" type='text' class="form-control " data-bind='enable: CanEdit, datepicker: RecDate , datepickerOptions: { maxDate:"@Model.DatePickerConfig",  dateFormat:"@Model.DateFormatDP"}' />
+            @*<input id="RecDate" type='text' class="form-control " data-bind='enable: CanEdit, datepicker: RecDate , datepickerOptions: { maxDate:"@Model.DatePickerConfig",  dateFormat:"@Model.DateFormatDP"}' />*@
+            <input type='text' class="form-control " data-bind='enable: CanEdit, datepicker: RecDate , datepickerOptions: { maxDate:"@Model.DatePickerConfig",  dateFormat:"@Model.DateFormatDP"}' />
         </div>
     </div>
     <!-- Temperature -->
@@ -80,7 +81,8 @@
             <span class="input-group-addon">
                 @LabelBarCode
             </span>
-            <input id="Identification_Test" name="Identification_Test" type='text' class="form-control case_letter" data-bind="value: Identification_Test, enable: CanEdit" />
+            @*<input id="Identification_Test" name="Identification_Test" type='text' class="form-control case_letter" data-bind="value: Identification_Test, enable: CanEdit" />*@
+            <input id="Identification_Test" type='text' class="form-control case_letter" data-bind="value: Identification_Test, enable: CanEdit" />
         </div>
     </div>
 </div>

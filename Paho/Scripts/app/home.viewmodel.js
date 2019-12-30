@@ -244,6 +244,7 @@
     };
 
     self.NewFluCase = function () {
+        console.log("HOM->NewFluCase->START");
         //self.ResetFluCase();
         //self.EditFluCase();
         $("#RecordNumber").text(msgviewHome_btnNew);
@@ -251,9 +252,12 @@
             $("#tab-contact :input, #tab-GEO :input, #tab-hospital :input, #tab-risk :input, #tab-case :input").attr('disabled', false);
             $("#RegDate").attr('disabled', true);
             $("#tab-lab :input").prop('disabled', true);
+            console.log("NFC->1a");
             self.ResetFluCase();
+            console.log("NFC->1b");
             self.EditFluCase();
             if (app.Views.Contact.Id() == null) {
+                console.log("NFC->2");
                 $("a[href*='tab-case']").hide();
                 $("#tab-case").hide();
                 $("a[href*='tab-lab']").hide();
@@ -261,10 +265,13 @@
 
         } else
         {
+            console.log("NFC->3");
             $("#tab-lab :input").prop('disabled', false);
         }
         $("#tabs").tabs("option", "active", 0);
-        self.selectedInstitutionId() != "" ?  app.Views.Contact.hospitalName($('#Hospitals option:selected').text()) : "";
+        self.selectedInstitutionId() != "" ? app.Views.Contact.hospitalName($('#Hospitals option:selected').text()) : "";
+
+        console.log("HOM->NewFluCase->END");
     };
 
 
@@ -300,7 +307,10 @@
         app.Views.GEO.ResetGEO();
         app.Views.Risk.ResetRisk();
         app.Views.Hospital.ResetHospital();
+        console.log("b1");
         app.Views.Lab.ResetLab();
+        console.log("b2");
+
         //$("#save").attr("disabled", false);
         //$("#saveGEO").attr("disabled", false);
         //$("#saveRisk").attr("disabled", false);
@@ -537,7 +547,8 @@
     };
 
     self.FlowDataCaseStatus = function () {
-        //console.log("FlowCaseStatus");
+        console.log("HOM->FlowCaseStatus->START");
+
         var flow_check = $.grep(app.Views.Lab.LabTestsEndFlow(), function (x) {         // LabTests -> LabTestsEndFlow
             return x.EndFlow() === "TRUE";
         });
@@ -779,6 +790,7 @@
             
         }
 
+        console.log("HOM->FlowCaseStatus->END");
     };      // END self.FlowDataCaseStatus
 
     self.FlowDataLab = function () {
