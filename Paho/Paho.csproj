@@ -285,6 +285,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AreasController.cs" />
     <Compile Include="Controllers\AssignFinalResult.cs" />
+    <Compile Include="Controllers\BaselineConfigurationController.cs" />
     <Compile Include="Controllers\CatCloseParametersController.cs" />
     <Compile Include="Controllers\CatSampleReasonsNoProcessedController.cs" />
     <Compile Include="Controllers\CatVirusFlowController.cs" />
@@ -2459,6 +2460,8 @@
     <Content Include="Views\CatCloseParameters\Delete.cshtml" />
     <Content Include="Views\CatVirusFlow\Edit.cshtml" />
     <Content Include="Views\CatVirusFlow\Delete.cshtml" />
+    <Content Include="Views\BaselineConfiguration\Index.cshtml" />
+    <Content Include="Views\BaselineConfiguration\_BaseLineConfiguration.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

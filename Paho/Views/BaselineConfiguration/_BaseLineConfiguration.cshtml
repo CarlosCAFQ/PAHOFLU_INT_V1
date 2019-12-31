@@ -1,0 +1,130 @@
+﻿@model Paho.Models.BaselineConfigurationViewModel
+
+@{
+    string labelCatalog = Paho.Controllers.ResourcesM.SgetMessage("msgMenuParametersBaseline", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string labelCountry = Paho.Controllers.ResourcesM.SgetMessage("msgViewExportarLabelCountry", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string labelFieldSelect = Paho.Controllers.ResourcesM.SgetMessage("msgViewExportarFieldSelect", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    //string labelCreate = Paho.Controllers.ResourcesM.SgetMessage("msgViewCatPopulation_Crear", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+
+}
+
+<!-- ko with: app.Views.Exportar -->
+    <div class="row" style="margin-bottom:15px; margin-top:1em;">
+        <div class='input-group'>
+            <span class="input-group-addon">
+                <b>@(labelCatalog)</b>
+            </span>
+        </div>
+    </div>
+
+    <!--País:-->
+    <div class="row" style="margin-bottom: 15px; margin-top: 1em;">
+        <div class="col-md-5">
+            <div class='input-group'>
+                <span class="input-group-addon">
+                    @(labelCountry)
+                </span>
+                <select id="Pais" class="form-control" data-bind="options: activecountries,
+                               optionsText: 'Name',
+                               optionsValue: 'Id',
+                               value: selectedCountryId,
+                               optionsCaption: '@(labelFieldSelect)',
+                               event:{ change: ReloadInstitutions},"></select>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <script type="text/javascript">
+        //$('#myModal').on('shown.bs.modal', function () {
+        //    var aa = "123";
+        //})
+
+        var countries = @Html.Raw(Json.Encode(Model.Countries));
+        @*var areas= @Html.Raw(Json.Encode(Model.Areas));
+        //console.log(areas);
+        var regions= @Html.Raw(Json.Encode(Model.Regions));
+        var institutions = @Html.Raw(Json.Encode(Model.Institutions));
+        var reportsCountries = @Html.Raw(Json.Encode(Model.ReportsCountries));*@
+        //console.log(reportsCountries);
+        var CountryID = @Html.Raw(Model.CountryID);
+        @*var selcty = @ViewBag.UsrCtry;
+        var PAHOFLU_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormat")))";
+        var moment_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormatMoment")))";
+        var ISO_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormatISO")))";
+        var DatePicker_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormatDP")))";*@
+
+        /*   Mensajes de alerta de validaciones   */
+        @*var msgViewExportarValidateSelectionReport = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarValidateSelectionReport")))";
+        var msgViewExportarLabelReports = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarLabelReports")))";
+        var msgViewExportarValidateSelectionHospital = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarValidateSelectionHospital")))";
+        var msgViewExportarValidateSelectionYear = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarValidateSelectionYear")))";
+        var msgViewExportarValidateSelectionCriteria = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarValidateSelectionCriteria")))";*@
+
+        //***************************************
+        $('a#ExportarM').addClass("active");        //#### CAFQ: 180806
+        //***************************************
+    </script>
+
+<!-- /ko -->
+
+@*@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>BaselineConfigurationViewModel</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.CountryID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CountryID, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CountryID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Year, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Year, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Year, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StartWeek, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StartWeek, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.StartWeek, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndWeek, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EndWeek, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EndWeek, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}*@
+
+@*<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>*@

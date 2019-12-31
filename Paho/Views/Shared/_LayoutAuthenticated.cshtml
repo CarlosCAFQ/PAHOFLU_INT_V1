@@ -1,4 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string labelCatalog = Paho.Controllers.ResourcesM.SgetMessage("msgMenuParametersBaseline", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string labelCatVirusFlowView = Paho.Controllers.ResourcesM.SgetMessage("msgMenuCatVirusFlowView", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    //string labelReturnToList = Paho.Controllers.ResourcesM.SgetMessage("msgReturnToList", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    //string labelCreate = Paho.Controllers.ResourcesM.SgetMessage("msgViewCatPopulation_Crear", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+
+    //ViewBag.Title = labelCatalog + " - " + labelCatalogName;
+}
+
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -174,7 +184,7 @@
                                 <li>@Html.ActionLink((string)Paho.Controllers.ResourcesM.SgetMessage("msgMenuCatInstitucionView", ViewBag.UsrCtry, ViewBag.UsrCtryLang), "Index", "CatInstitucion", new { area = "" }, null)</li>
                                 <li>@Html.ActionLink((string)Paho.Controllers.ResourcesM.SgetMessage("msgMenuCatInstitucionConfView", ViewBag.UsrCtry, ViewBag.UsrCtryLang), "Index", "CatInstitucionConf", new { area = "" }, null)</li>
                                 <li>@Html.ActionLink("Parámetros para cierre", "Index", "CatCloseParameters", new { area = "" }, null)</li>
-                                <li>@Html.ActionLink((string)Paho.Controllers.ResourcesM.SgetMessage("msgMenuCatVirusFlowView", ViewBag.UsrCtry, ViewBag.UsrCtryLang), "Index", "CatVirusFlow", new { area = "" }, null)</li>
+                                <li>@Html.ActionLink(labelCatVirusFlowView, "Index", "CatVirusFlow", new { area = "" }, null)</li>
                                 @*<li>@Html.ActionLink((string)Paho.Controllers.ResourcesM.SgetMessage("msgMenuCatCloseParametersView", ViewBag.UsrCtry, ViewBag.UsrCtryLang), "Index", "CatCloseParameters", new { area = "" }, null)</li>*@
                                 @*<li>@Html.ActionLink((((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("viewLayoutAuthenticated_LabelDataDictionary")), "Index", "Diccionario", new { area = "" }, null) </li>
                                 <li>@Html.ActionLink((((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("viewLayoutAuthenticated_LabelInstitutionCatalog")), "Index", "CatInstitucion", new { area = "" }, null)</li>
@@ -183,10 +193,15 @@
                                 <li>@Html.ActionLink((((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("viewLayoutAuthenticated_LabelSubTypeVirusCatalog")), "Index", "CatVirusSubTypes", new { area = "" }, null)</li>
                                 <li>@Html.ActionLink((((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("viewLayoutAuthenticated_LabelAgeGroupsCatalog")), "Index", "CatAgeGroup", new { area = "" }, null)</li>
                                 <li>@Html.ActionLink((((Paho.Controllers.HomeController)this.ViewContext.Controller).getMsg("viewLayoutAuthenticated_LabelVaccineSourceCatalog")), "Index", "CatVaccinSources", new { area = "" }, null)</li>*@
-
+                                @if (ViewBag.UsrCtry == 7)
+                                {
+                                    <li>@Html.ActionLink(labelCatalog, "Index", "BaselineConfiguration", new { area = "" }, null)</li>
+                                }
                             </ul>
                         </li>
                     }
+
+
 
                     @if ((User.IsInRole("Admin") || ViewBag.ILI) && (ViewBag.UsrCtry == 7))
                     {
