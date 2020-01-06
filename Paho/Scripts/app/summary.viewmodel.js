@@ -752,6 +752,7 @@ function SummayItem(data) {
 }
 
 function SummaryViewModel(app, dataModel) {
+    console.log("svm1");
     var self = this;
 
     var date_format_moment = app.dataModel.date_format_moment;

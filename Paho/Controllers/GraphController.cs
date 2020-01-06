@@ -2982,7 +2982,7 @@ namespace Paho.Controllers
                 return "";
 
             //****
-            if (countryId == 9)                     // Costa Rica
+            if (countryId == 9 || countryId == 7)                     // Costa Rica
                 recuperarDatosExcelLineasBasalesTuned(countryId, sheet, listGlobal, aParametros);
             else
                 recuperarDatosExcelLineasBasales(countryId, aCEP1, aUA1, aUE1, sheet, aParametros);
@@ -3071,7 +3071,7 @@ namespace Paho.Controllers
             }
 
             //****
-            if (countryId == 9)                     // Costa Rica
+            if (countryId == 9 || countryId == 7)                     // Costa Rica o Chile
             {
                 ArrayList arrayList = new ArrayList();
 
@@ -3291,7 +3291,7 @@ namespace Paho.Controllers
         private static void recuperarDatosExcelLineasBasalesTuned(int CountryID, string sheet, List<object> listGlobal, ArrayList aParaLiBa)
         {
             string cPathPlan = "";
-            int COL_PARAMETROS = 12;
+            int COL_PARAMETROS = 12;    // L
             cPathPlan = ConfigurationManager.AppSettings["GraphicsPath"];
             cPathPlan = cPathPlan + "LinBa_" + CountryID.ToString() + ".xlsx";
 
@@ -3304,15 +3304,15 @@ namespace Paho.Controllers
                         var excelWorkBook = excelPackage.Workbook;
                         int nAnio;
                         int row = 3;
-                        int col = 1;
-                        int colData = col + 1;
+                        int col = 1;                // SE
+                        int colData = col + 1;      // Porcentaje de positividad para influenza año YYYY
 
                         var excelWorksheet = excelWorkBook.Worksheets[sheet];
 
-                        aParaLiBa.Add(excelWorksheet.Cells[row, COL_PARAMETROS].Value);                     // Titulo: J3
-                        string cAnio = (string)excelWorksheet.Cells[row + 1, COL_PARAMETROS].Value;         // Anio evluacion: J4
+                        aParaLiBa.Add(excelWorksheet.Cells[row, COL_PARAMETROS].Value);                     // Titulo: L3
+                        string cAnio = (string)excelWorksheet.Cells[row + 1, COL_PARAMETROS].Value;         // Anio evluacion: L4
                         aParaLiBa.Add(cAnio);
-                        string cSeIn = (string)excelWorksheet.Cells[row + 2, COL_PARAMETROS].Value;         // Semana inicio anio: J5
+                        string cSeIn = (string)excelWorksheet.Cells[row + 2, COL_PARAMETROS].Value;         // Semana inicio anio: L5
                         aParaLiBa.Add(cSeIn);
                         aParaLiBa.Add((string)excelWorksheet.Cells[row + 3, COL_PARAMETROS].Value);         // Total semanas del periodo
                         aParaLiBa.Add(excelWorksheet.Cells[row - 1, col + 1].Value);                        // Label serie1 (anio a medir)

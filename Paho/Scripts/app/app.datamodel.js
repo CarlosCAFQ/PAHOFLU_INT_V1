@@ -28,6 +28,11 @@
     self.getVirusTypesUrl = "/testcases/GetVirusTypes";
     self.getInstitutionsUrl = "/cases/GetInstitutions";
     self.getRegionsUrl = "/cases/GetRegions";
+    self.getInstitutionsUrl = "/cases/GetInstitutions";
+
+    self.getBaselineConfigUrl = "/BaselineConfiguration/GetParameters";
+    self.saveBaselineConfigUrl = "/BaselineConfiguration/SaveParameters";
+
     //#### DENOMINADORES
     self.getSummayDetailsUrl = "/summary/GetSummaryDetails";
     self.getSummayDetailsExcel = "/exportar/GetSummaryDetailsExcel";

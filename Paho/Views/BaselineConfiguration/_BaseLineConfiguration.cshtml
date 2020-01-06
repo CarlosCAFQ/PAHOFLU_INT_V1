@@ -4,11 +4,19 @@
     string labelCatalog = Paho.Controllers.ResourcesM.SgetMessage("msgMenuParametersBaseline", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
     string labelCountry = Paho.Controllers.ResourcesM.SgetMessage("msgViewExportarLabelCountry", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
     string labelFieldSelect = Paho.Controllers.ResourcesM.SgetMessage("msgViewExportarFieldSelect", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
-    //string labelCreate = Paho.Controllers.ResourcesM.SgetMessage("msgViewCatPopulation_Crear", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+
+    string labelSendUpdates = Paho.Controllers.ResourcesM.SgetMessage("msgLineasBasalesSendUpdates", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+
+    string labelAttachment = Paho.Controllers.ResourcesM.SgetMessage("msgTicketAttachment", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    string labelAttachmentSize = Paho.Controllers.ResourcesM.SgetMessage("msgTicketAttachmentSize", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
+    
+
+
+               //string labelCreate = Paho.Controllers.ResourcesM.SgetMessage("msgViewCatPopulation_Crear", ViewBag.UsrCtry, ViewBag.UsrCtryLang);
 
 }
 
-<!-- ko with: app.Views.Exportar -->
+<!-- ko with: app.Views.Baselineconf -->
     <div class="row" style="margin-bottom:15px; margin-top:1em;">
         <div class='input-group'>
             <span class="input-group-addon">
@@ -24,38 +32,102 @@
                 <span class="input-group-addon">
                     @(labelCountry)
                 </span>
-                <select id="Pais" class="form-control" data-bind="options: activecountries,
+                @*<select id="Pais" class="form-control" data-bind="options: countries,
                                optionsText: 'Name',
                                optionsValue: 'Id',
                                value: selectedCountryId,
                                optionsCaption: '@(labelFieldSelect)',
-                               event:{ change: ReloadInstitutions},"></select>
+                               event:{ change: ReloadInstitutions},">
+                </select>*@
+                <select id="Pais" class="form-control" data-bind="options: countries,
+                               optionsText: 'Name',
+                               optionsValue: 'Id',
+                               value: selectedCountryId,
+                               optionsCaption: '@(labelFieldSelect)',
+                               event: { change: ReloadParameters}">
+
+                </select>
             </div>
         </div>
     </div>
 
-
     
+    <div class="row" style="margin-bottom:15px; margin-top:1em;">
+        <div class="col-md-3">
+            <div class='input-group'>
+                <span class="input-group-addon">
+                    <!--Año:-->
+                    @*@(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarLabelYear"))*@
+                    Año:
+                </span>
+                <input id="Year" type='text' class="form-control" data-bind="value: Year" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class='input-group'>
+                <span class="input-group-addon">
+                    <!--Semana inicio:-->
+                    @*@(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarLabelMonth"))*@
+                    Semana inicio:
+                </span>
+                <input id="StartWeek" type='text' class="form-control" data-bind="value: StartWeek" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class='input-group'>
+                <span class="input-group-addon">
+                    <!--Total semanas periodo:-->
+                    @*@(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarLabelEW"))*@
+                    Total semanas periodo
+                </span>
+                <input id="EndWeek" type='text' class="form-control" data-bind="value: EndWeek" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:15px; margin-top:1em;">
+        <div class="col-md-6">
+            <div class='input-group'>
+                <span class="input-group-addon">
+                    <!--Año:-->
+                    @*@(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarLabelYear"))*@
+                    Titulo:
+                </span>
+                <input id="Title" type='text' class="form-control" data-bind="value: Title" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-10 fileChooser">
+        <div class='input-group'>
+            <label for="ticketFile">@(labelAttachment)</label>
+            <input class="ticketFileChooser" type="file" id="ticketFile" accept=".xls, .xlsx" />
+            <span>@(labelAttachmentSize)</span>
+            @*<span id="fileSize1"></span>*@
+            <img id="clearButton1" src="~/Content/themes/base/images/CrossSmall.png" onclick="cleanFileElement(1)">
+        </div>
+    </div>
+
+    <div class="col-md-10">
+        <div class="input-group">
+            @*<button id="cleanForm" type="button" class="btn btn-primary" onclick="CleanForm()">@(((Paho.Controllers.TicketController)this.ViewContext.Controller).getMsg("msgTicketCleanForm"))</button>*@
+            <button id="newTicket" type="button" class="btn btn-primary" data-bind="click: SaveParameters">@(labelSendUpdates)</button>
+
+            @*<img id="attachmentLoader" src="~/Content/themes/base/images/loader-1s-29px.gif" />*@
+
+        </div>
+    </div>
+
+   
     <script type="text/javascript">
-        //$('#myModal').on('shown.bs.modal', function () {
-        //    var aa = "123";
-        //})
+        countries = @Html.Raw(Json.Encode(Model.Countries));
 
-        var countries = @Html.Raw(Json.Encode(Model.Countries));
-        @*var areas= @Html.Raw(Json.Encode(Model.Areas));
-        //console.log(areas);
-        var regions= @Html.Raw(Json.Encode(Model.Regions));
-        var institutions = @Html.Raw(Json.Encode(Model.Institutions));
-        var reportsCountries = @Html.Raw(Json.Encode(Model.ReportsCountries));*@
-        //console.log(reportsCountries);
-        var CountryID = @Html.Raw(Model.CountryID);
-        @*var selcty = @ViewBag.UsrCtry;
-        var PAHOFLU_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormat")))";
-        var moment_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormatMoment")))";
-        var ISO_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormatISO")))";
-        var DatePicker_date_format = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgDateFormatDP")))";*@
+        var PAHOFLU_date_format = "@(Html.Raw(Paho.Controllers.ResourcesM.SgetMessage("msgDateFormat", ViewBag.UsrCtry, ViewBag.UsrCtryLang)))";
+        var moment_date_format = "@(Html.Raw(Paho.Controllers.ResourcesM.SgetMessage("msgDateFormatMoment", ViewBag.UsrCtry, ViewBag.UsrCtryLang)))";
+        var ISO_date_format = "@(Html.Raw(Paho.Controllers.ResourcesM.SgetMessage("msgDateFormatISO", ViewBag.UsrCtry, ViewBag.UsrCtryLang)))";
+        var DatePicker_date_format = "@(Html.Raw(Paho.Controllers.ResourcesM.SgetMessage("msgDateFormatDP", ViewBag.UsrCtry, ViewBag.UsrCtryLang)))";
 
-        /*   Mensajes de alerta de validaciones   */
+       /*   Mensajes de alerta de validaciones   */
         @*var msgViewExportarValidateSelectionReport = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarValidateSelectionReport")))";
         var msgViewExportarLabelReports = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarLabelReports")))";
         var msgViewExportarValidateSelectionHospital = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarValidateSelectionHospital")))";
@@ -63,7 +135,7 @@
         var msgViewExportarValidateSelectionCriteria = "@(Html.Raw(((Paho.Controllers.ExportarController)this.ViewContext.Controller).getMsg("msgViewExportarValidateSelectionCriteria")))";*@
 
         //***************************************
-        $('a#ExportarM').addClass("active");        //#### CAFQ: 180806
+        $('a#MaintenanceM').addClass("active");
         //***************************************
     </script>
 
